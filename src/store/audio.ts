@@ -1,4 +1,5 @@
 import path from "path";
+import { Live2dViewer } from "live2dmanager";
 import { v4 as uuidv4 } from "uuid";
 import Encoding from "encoding-japanese";
 import { diffArrays } from "diff";
@@ -1740,7 +1741,13 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
   PLAY_AUDIO: {
     action: createUILockAction(
-      async ({ commit, dispatch }, { audioKey }: { audioKey: AudioKey }) => {
+      async (
+        { commit, dispatch, state },
+        {
+          audioKey,
+          live2dViewer,
+        }: { audioKey: AudioKey; live2dViewer: Live2dViewer | undefined }
+      ) => {
         await dispatch("STOP_AUDIO");
 
         // 音声用意
@@ -1761,6 +1768,15 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
               nowGenerating: false,
             });
           }
+        }
+
+        if (live2dViewer && state.isShowLive2dViewer) {
+          const buf = await blob.arrayBuffer();
+          if (live2dViewer._models.getSize() > 0) {
+            live2dViewer._models.at(0).startLipSync(buf);
+          }
+        } else {
+          console.log("live2dViewer is undefined");
         }
 
         return dispatch("PLAY_AUDIO_BLOB", {
@@ -1816,33 +1832,41 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
   },
 
   PLAY_CONTINUOUSLY_AUDIO: {
-    action: createUILockAction(async ({ state, getters, commit, dispatch }) => {
-      const currentAudioKey = state._activeAudioKey;
-      const currentAudioPlayStartPoint = getters.AUDIO_PLAY_START_POINT;
+    action: createUILockAction(
+      async (
+        { state, getters, commit, dispatch },
+        { live2dViewer }: { live2dViewer: Live2dViewer | undefined }
+      ) => {
+        const currentAudioKey = state._activeAudioKey;
+        const currentAudioPlayStartPoint = getters.AUDIO_PLAY_START_POINT;
 
-      let index = 0;
-      if (currentAudioKey !== undefined) {
-        index = state.audioKeys.findIndex((v) => v === currentAudioKey);
-      }
-
-      commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: true });
-      try {
-        for (let i = index; i < state.audioKeys.length; ++i) {
-          const audioKey = state.audioKeys[i];
-          commit("SET_ACTIVE_AUDIO_KEY", { audioKey });
-          const isEnded = await dispatch("PLAY_AUDIO", { audioKey });
-          if (!isEnded) {
-            break;
-          }
+        let index = 0;
+        if (currentAudioKey !== undefined) {
+          index = state.audioKeys.findIndex((v) => v === currentAudioKey);
         }
-      } finally {
-        commit("SET_ACTIVE_AUDIO_KEY", { audioKey: currentAudioKey });
-        commit("SET_AUDIO_PLAY_START_POINT", {
-          startPoint: currentAudioPlayStartPoint,
-        });
-        commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: false });
+
+        commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: true });
+        try {
+          for (let i = index; i < state.audioKeys.length; ++i) {
+            const audioKey = state.audioKeys[i];
+            commit("SET_ACTIVE_AUDIO_KEY", { audioKey });
+            const isEnded = await dispatch("PLAY_AUDIO", {
+              audioKey,
+              live2dViewer,
+            });
+            if (!isEnded) {
+              break;
+            }
+          }
+        } finally {
+          commit("SET_ACTIVE_AUDIO_KEY", { audioKey: currentAudioKey });
+          commit("SET_AUDIO_PLAY_START_POINT", {
+            startPoint: currentAudioPlayStartPoint,
+          });
+          commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: false });
+        }
       }
-    }),
+    ),
   },
 });
 

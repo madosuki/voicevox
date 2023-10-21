@@ -2,7 +2,7 @@
   <menu-bar />
 
   <q-layout reveal elevated container class="layout-container">
-    <header-bar />
+    <header-bar :getLive2dViewer="getLive2dViewer" />
 
     <q-page-container>
       <q-page class="main-row-panes">
@@ -70,7 +70,7 @@
               @update:model-value="updatePortraitPane"
             >
               <template #before>
-                <character-portrait />
+                <character-portrait ref="characterPortrait" />
               </template>
               <template #after>
                 <q-splitter
@@ -145,6 +145,7 @@
             <audio-detail
               v-if="activeAudioKey != undefined"
               :active-audio-key="activeAudioKey"
+              :getLive2dViewer="getLive2dViewer"
             />
           </template>
         </q-splitter>
@@ -180,6 +181,7 @@
 
 <script setup lang="ts">
 import path from "path";
+import { Live2dViewer } from "live2dmanager";
 import { computed, onBeforeUpdate, onMounted, ref, VNodeRef, watch } from "vue";
 import draggable from "vuedraggable";
 import { QResizeObserver } from "quasar";
@@ -844,6 +846,11 @@ watch(activeAudioKey, (audioKey) => {
 const showAddAudioItemButton = computed(() => {
   return store.state.showAddAudioItemButton;
 });
+
+const characterPortrait = ref<InstanceType<typeof CharacterPortrait> | null>();
+const getLive2dViewer = (): Live2dViewer | undefined => {
+  return characterPortrait.value?.getLive2dViewer();
+};
 </script>
 
 <style scoped lang="scss">

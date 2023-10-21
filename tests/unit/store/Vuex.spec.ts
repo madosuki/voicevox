@@ -147,6 +147,7 @@ describe("store/vuex.js test", () => {
         progress: -1,
         isVuexReady: false,
         defaultPresetKeys: {},
+        isShowLive2dViewer: false,
       },
       getters: {
         ...uiStore.getters,

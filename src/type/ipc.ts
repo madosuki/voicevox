@@ -301,6 +301,11 @@ export type IpcIHData = {
     args: [obj: { filePath: string }];
     return: Result<ArrayBuffer>;
   };
+
+  GET_LIVE2D_ASSETS_PATH: {
+    args: [];
+    return: string;
+  };
 };
 
 /**

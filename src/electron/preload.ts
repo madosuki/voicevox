@@ -269,6 +269,10 @@ const api: Sandbox = {
   reloadApp: async ({ isMultiEngineOffMode }) => {
     return await ipcRendererInvoke("RELOAD_APP", { isMultiEngineOffMode });
   },
+
+  getLive2dAssetsPath: async () => {
+    return await ipcRendererInvoke("GET_LIVE2D_ASSETS_PATH");
+  },
 };
 
 contextBridge.exposeInMainWorld(SandboxKey, api);

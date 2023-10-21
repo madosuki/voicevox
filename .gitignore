@@ -40,3 +40,7 @@ electron-builder.yml
 
 # generated licenses.json
 /*licenses.json
+
+live2dcubismcore.js
+live2dcubismcore.js.map
+live2dcubismcore.min.js

@@ -4,7 +4,13 @@
     <span v-if="isMultipleEngine" class="character-engine-name">{{
       engineName
     }}</span>
-    <img :src="portraitPath" class="character-portrait" :alt="characterName" />
+    <img
+      v-if="!isLive2d"
+      :src="portraitPath"
+      class="character-portrait"
+      :alt="characterName"
+    />
+    <div v-else class="live2d character-portrait"></div>
     <div v-if="isInitializingSpeaker" class="loading">
       <q-spinner color="primary" size="5rem" :thickness="4" />
     </div>
@@ -12,7 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { Live2dViewer, Live2dModel } from "live2dmanager";
+import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
@@ -89,6 +96,99 @@ const isInitializingSpeaker = computed(() => {
 });
 
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
+
+const readFileFunction = async (filePath: string) => {
+  const result = await window.electron.readFile({ filePath });
+  if (result.ok) {
+    return result.value;
+  }
+  return new ArrayBuffer(0);
+};
+
+const isLive2d = ref(false);
+let isLive2dInitialize = false;
+const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
+const live2dCanvas = document.createElement("canvas");
+const live2dViewer = new Live2dViewer(live2dCanvas);
+live2dViewer.initialize();
+
+const getLive2dViewer = () => {
+  return live2dViewer;
+};
+defineExpose({
+  getLive2dViewer,
+});
+
+let isClicked = false;
+const mousedown = (e: MouseEvent) => {
+  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
+  isClicked = true;
+};
+const mouseleave = () => {
+  isClicked = false;
+  live2dViewer.onTouchesEnded();
+};
+const mouseup = () => {
+  isClicked = false;
+  live2dViewer.onTouchesEnded();
+};
+const mousemove = (e: MouseEvent) => {
+  if (isClicked) {
+    live2dViewer.onTouchesMoved(e.pageX, e.pageY);
+  }
+};
+const showLive2d = () => {
+  const place = document.getElementsByClassName("live2d");
+  console.log(`is exists live2d container element: ${place.length}`);
+  if (place.length <= 0) return;
+  place[0].appendChild(live2dCanvas);
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIWER", { isShowLive2dViewer: true });
+
+  live2dCanvas.addEventListener("mousedown", mousedown);
+  live2dCanvas.addEventListener("mouseup", mouseup);
+  live2dCanvas.addEventListener("mouseleave", mouseleave);
+  live2dCanvas.addEventListener("mousemove", mousemove);
+
+  live2dViewer.run();
+};
+
+const disAppearLive2d = () => {
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIWER", { isShowLive2dViewer: false });
+  isLive2d.value = false;
+  live2dCanvas.removeEventListener("mousedown", mousedown);
+  live2dCanvas.removeEventListener("mouseup", mouseup);
+  live2dCanvas.removeEventListener("mouseleave", mouseleave);
+  live2dCanvas.removeEventListener("mousedown", mousedown);
+};
+
+watch(characterName, (newVal: string) => {
+  console.log(newVal);
+  if (!newVal.includes("春日部つむぎ")) {
+    disAppearLive2d();
+    return;
+  }
+  isLive2d.value = true;
+});
+
+onUpdated(async () => {
+  if (!isLive2d.value) return;
+  if (!isShowLive2d.value && !isLive2dInitialize) {
+    const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
+    console.log(live2dAssetsPath);
+    const live2dModel = new Live2dModel(
+      live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+      "春日部つむぎ公式live2Dモデル.model3.json",
+      live2dViewer,
+      true,
+      readFileFunction
+    );
+    live2dModel.loadAssets();
+    live2dViewer.addModel(live2dModel);
+    live2dViewer.setCurrentModel(0);
+    isLive2dInitialize = true;
+  }
+  showLive2d();
+});
 </script>
 
 <style scoped lang="scss">

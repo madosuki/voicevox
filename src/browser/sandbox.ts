@@ -313,4 +313,7 @@ export const api: Sandbox = {
   reloadApp(/* obj: { isMultiEngineOffMode: boolean } */) {
     throw new Error(`Not supported on Browser version: reloadApp`);
   },
+  getLive2dAssetsPath() {
+    throw new Error("Not supported on Browser version: getLive2dAssetsPath");
+  },
 };

@@ -50,6 +50,7 @@
     "encoding-japanese": "1.0.30",
     "glob": "8.0.3",
     "immer": "9.0.2",
+    "live2dmanager": "github:madosuki/live2dManager",
     "markdown-it": "12.0.4",
     "move-file": "3.0.0",
     "multistream": "4.1.0",

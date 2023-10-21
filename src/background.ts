@@ -84,6 +84,9 @@ if (!isDevelopment) {
   configMigration014({ fixedUserDataDir, beforeUserDataDir }); // 以前のファイルがあれば持ってくる
 }
 
+// Live2d assets directory
+const live2dAssetsPath = path.join(fixedUserDataDir, "live2d_assets");
+
 // silly以上のログをコンソールに出力
 log.transports.console.format = "[{h}:{i}:{s}.{ms}] [{level}] {text}";
 log.transports.console.level = "silly";
@@ -931,6 +934,10 @@ ipcMainHandle("READ_FILE", async (_, { filePath }) => {
     const a = e as SystemError;
     return failure(a.code, a);
   }
+});
+
+ipcMainHandle("GET_LIVE2D_ASSETS_PATH", () => {
+  return live2dAssetsPath;
 });
 
 // app callback

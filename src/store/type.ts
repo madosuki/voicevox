@@ -1,4 +1,5 @@
 import { Patch } from "immer";
+import { Live2dViewer } from "live2dmanager";
 import {
   MutationTree,
   MutationsBase,
@@ -437,7 +438,10 @@ export type AudioStoreTypes = {
   };
 
   PLAY_AUDIO: {
-    action(payload: { audioKey: AudioKey }): boolean;
+    action(payload: {
+      audioKey: AudioKey;
+      live2dViewer: Live2dViewer | undefined;
+    }): boolean;
   };
 
   PLAY_AUDIO_BLOB: {
@@ -452,7 +456,7 @@ export type AudioStoreTypes = {
   };
 
   PLAY_CONTINUOUSLY_AUDIO: {
-    action(): void;
+    action(payload: { live2dViewer: Live2dViewer | undefined }): void;
   };
 };
 
@@ -885,6 +889,7 @@ export type IndexStoreState = {
   defaultStyleIds: DefaultStyleId[];
   userCharacterOrder: SpeakerId[];
   isMultiEngineOffMode: boolean;
+  isShowLive2dViewer: boolean;
 };
 
 export type IndexStoreTypes = {
@@ -973,6 +978,11 @@ export type IndexStoreTypes = {
   SET_IS_MULTI_ENGINE_OFF_MODE: {
     mutation: { isMultiEngineOffMode: boolean };
     action(payload: boolean): void;
+  };
+
+  SET_IS_SHOW_LIVE2D_VIWER: {
+    mutation: { isShowLive2dViewer: boolean };
+    action(payload: { isShowLive2dViewer: boolean }): void;
   };
 };
 

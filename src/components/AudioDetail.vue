@@ -81,6 +81,7 @@
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import ToolTip from "./ToolTip.vue";
 import AccentPhrase from "./AccentPhrase.vue";
@@ -97,6 +98,7 @@ import { EngineManifest } from "@/openapi/models";
 const props =
   defineProps<{
     activeAudioKey: AudioKey;
+    getLive2dViewer: () => Live2dViewer | undefined;
   }>();
 
 const store = useStore();
@@ -240,8 +242,10 @@ watch(accentPhrases, async () => {
 // audio play
 const play = async () => {
   try {
+    const live2dViewer: Live2dViewer | undefined = props.getLive2dViewer();
     await store.dispatch("PLAY_AUDIO", {
       audioKey: props.activeAudioKey,
+      live2dViewer,
     });
   } catch (e) {
     let msg: string | undefined;

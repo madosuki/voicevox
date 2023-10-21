@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import { computed, ComputedRef } from "vue";
 import {
   generateAndConnectAndSaveAudioWithDialog,
@@ -45,6 +46,11 @@ type SpacerContent = {
 };
 
 const store = useStore();
+
+const props =
+  defineProps<{
+    getLive2dViewer: () => Live2dViewer | undefined;
+  }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 const canUndo = computed(() => store.getters.CAN_UNDO);
@@ -104,7 +110,8 @@ const redo = () => {
 };
 const playContinuously = async () => {
   try {
-    await store.dispatch("PLAY_CONTINUOUSLY_AUDIO");
+    const live2dViewer = props.getLive2dViewer();
+    await store.dispatch("PLAY_CONTINUOUSLY_AUDIO", { live2dViewer });
   } catch (e) {
     let msg: string | undefined;
     // FIXME: GENERATE_AUDIO_FROM_AUDIO_ITEMのエラーを変えた場合変更する
