@@ -346,12 +346,12 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
     },
   },
 
-  SET_IS_SHOW_LIVE2D_VIWER: {
+  SET_IS_SHOW_LIVE2D_VIEWER: {
     mutation(state, { isShowLive2dViewer }) {
       state.isShowLive2dViewer = isShowLive2dViewer;
     },
     action({ commit }, { isShowLive2dViewer }) {
-      commit("SET_IS_SHOW_LIVE2D_VIWER", { isShowLive2dViewer });
+      commit("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer });
     },
   },
 });

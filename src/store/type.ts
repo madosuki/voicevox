@@ -980,7 +980,7 @@ export type IndexStoreTypes = {
     action(payload: boolean): void;
   };
 
-  SET_IS_SHOW_LIVE2D_VIWER: {
+  SET_IS_SHOW_LIVE2D_VIEWER: {
     mutation: { isShowLive2dViewer: boolean };
     action(payload: { isShowLive2dViewer: boolean }): void;
   };

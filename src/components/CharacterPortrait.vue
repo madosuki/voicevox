@@ -142,7 +142,7 @@ const showLive2d = () => {
   console.log(`is exists live2d container element: ${place.length}`);
   if (place.length <= 0) return;
   place[0].appendChild(live2dCanvas);
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIWER", { isShowLive2dViewer: true });
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
 
   live2dCanvas.addEventListener("mousedown", mousedown);
   live2dCanvas.addEventListener("mouseup", mouseup);
@@ -153,7 +153,7 @@ const showLive2d = () => {
 };
 
 const disAppearLive2d = () => {
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIWER", { isShowLive2dViewer: false });
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
   isLive2d.value = false;
   live2dCanvas.removeEventListener("mousedown", mousedown);
   live2dCanvas.removeEventListener("mouseup", mouseup);
