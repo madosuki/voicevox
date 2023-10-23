@@ -5,7 +5,7 @@
       engineName
     }}</span>
     <img
-      v-if="!isLive2d"
+      v-if="!isLoadLive2dCore || !isLive2d"
       :src="portraitPath"
       class="character-portrait"
       :alt="characterName"
@@ -107,10 +107,18 @@ const readFileFunction = async (filePath: string) => {
 
 const isLive2d = ref(false);
 let isLive2dInitialize = false;
+const isLoadLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
-const live2dViewer = new Live2dViewer(live2dCanvas);
-live2dViewer.initialize();
+
+let live2dViewer: Live2dViewer | undefined = undefined;
+try {
+  live2dViewer = new Live2dViewer(live2dCanvas);
+  live2dViewer.initialize();
+  isLoadLive2dCore.value = true;
+} catch (e) {
+  console.log(e);
+}
 
 const getLive2dViewer = () => {
   return live2dViewer;
@@ -121,23 +129,27 @@ defineExpose({
 
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
-  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
   isClicked = true;
+  if (!live2dViewer) return;
+  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
 };
 const mouseleave = () => {
   isClicked = false;
+  if (!live2dViewer) return;
   live2dViewer.onTouchesEnded();
 };
 const mouseup = () => {
   isClicked = false;
+  if (!live2dViewer) return;
   live2dViewer.onTouchesEnded();
 };
 const mousemove = (e: MouseEvent) => {
-  if (isClicked) {
+  if (isClicked && live2dViewer) {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
 const showLive2d = () => {
+  if (!live2dViewer) return;
   const place = document.getElementsByClassName("live2d");
   console.log(`is exists live2d container element: ${place.length}`);
   if (place.length <= 0) return;
@@ -171,8 +183,8 @@ watch(characterName, (newVal: string) => {
 });
 
 onUpdated(async () => {
-  if (!isLive2d.value) return;
-  if (!isShowLive2d.value && !isLive2dInitialize) {
+  if (!isLoadLive2dCore.value || !isLive2d.value) return;
+  if (!isShowLive2d.value && !isLive2dInitialize && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
     console.log(live2dAssetsPath);
     const live2dModel = new Live2dModel(
