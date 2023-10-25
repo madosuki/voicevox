@@ -109,7 +109,7 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
 const isLive2dPortrait = ref(false);
-let isLive2dInitialize = false;
+const isLive2dInitialized = ref(false);
 const isLoadLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
@@ -120,7 +120,7 @@ try {
   live2dViewer.initialize();
   isLoadLive2dCore.value = true;
 } catch (e) {
-  console.log(e);
+  window.electron.logWarn(e);
 }
 
 const getLive2dViewer = () => {
@@ -153,9 +153,13 @@ const mousemove = (e: MouseEvent) => {
 };
 const showLive2d = () => {
   if (!live2dViewer || isShowLive2d.value) return;
+  if (!isLive2dPortrait.value) {
+    isLive2dPortrait.value = true;
+  }
+
   const place = document.getElementsByClassName("live2d");
   console.log(`is exists live2d container element: ${place.length}`);
-  if (place.length <= 0) return;
+  if (place.length < 1) return;
   place[0].appendChild(live2dCanvas);
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
 
@@ -177,11 +181,12 @@ const disAppearLive2d = () => {
 };
 
 watch(characterName, (newVal: string) => {
+  if (!isLoadLive2dCore.value) return;
+
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
       disAppearLive2d();
     }
-
     return;
   }
 
@@ -193,16 +198,18 @@ watch(characterName, (newVal: string) => {
 });
 
 onUpdated(async () => {
-  if (
-    !isEnableLive2dFeature.value ||
-    !isLoadLive2dCore.value ||
-    !isLive2dPortrait.value
-  )
+  if (!isLoadLive2dCore.value) return;
+  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
+    disAppearLive2d();
     return;
+  }
 
-  if (!isShowLive2d.value && !isLive2dInitialize && live2dViewer) {
+  if (!isLive2dPortrait.value) {
+    return;
+  }
+
+  if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
-    console.log(live2dAssetsPath);
     const live2dModel = new Live2dModel(
       live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
       "春日部つむぎ公式live2Dモデル.model3.json",
@@ -213,8 +220,9 @@ onUpdated(async () => {
     live2dModel.loadAssets();
     live2dViewer.addModel(live2dModel);
     live2dViewer.setCurrentModel(0);
-    isLive2dInitialize = true;
+    isLive2dInitialized.value = true;
   }
+
   showLive2d();
 });
 </script>
