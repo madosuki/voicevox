@@ -52,6 +52,7 @@ export const settingStoreState: SettingStoreState = {
     enableMultiEngine: false,
     enableMultiSelect: false,
     shouldKeepTuningOnTextChange: false,
+    enableLive2dPortrait: false,
   },
   splitTextWhenPaste: "PERIOD_AND_NEW_LINE",
   splitterPosition: {

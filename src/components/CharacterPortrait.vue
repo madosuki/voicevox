@@ -5,7 +5,7 @@
       engineName
     }}</span>
     <img
-      v-if="!isLoadLive2dCore || !isLive2d"
+      v-if="!isEnableLive2dFeature || !isLoadLive2dCore || !isLive2dPortrait"
       :src="portraitPath"
       class="character-portrait"
       :alt="characterName"
@@ -105,7 +105,10 @@ const readFileFunction = async (filePath: string) => {
   return new ArrayBuffer(0);
 };
 
-const isLive2d = ref(false);
+const isEnableLive2dFeature = computed(
+  () => store.state.experimentalSetting.enableLive2dPortrait
+);
+const isLive2dPortrait = ref(false);
 let isLive2dInitialize = false;
 const isLoadLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
@@ -149,7 +152,7 @@ const mousemove = (e: MouseEvent) => {
   }
 };
 const showLive2d = () => {
-  if (!live2dViewer) return;
+  if (!live2dViewer || isShowLive2d.value) return;
   const place = document.getElementsByClassName("live2d");
   console.log(`is exists live2d container element: ${place.length}`);
   if (place.length <= 0) return;
@@ -166,7 +169,7 @@ const showLive2d = () => {
 
 const disAppearLive2d = () => {
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
-  isLive2d.value = false;
+  isLive2dPortrait.value = false;
   live2dCanvas.removeEventListener("mousedown", mousedown);
   live2dCanvas.removeEventListener("mouseup", mouseup);
   live2dCanvas.removeEventListener("mouseleave", mouseleave);
@@ -174,16 +177,29 @@ const disAppearLive2d = () => {
 };
 
 watch(characterName, (newVal: string) => {
-  console.log(newVal);
-  if (!newVal.includes("春日部つむぎ")) {
+  if (!isEnableLive2dFeature.value) {
+    if (isShowLive2d.value) {
+      disAppearLive2d();
+    }
+
+    return;
+  }
+
+  if (!newVal.includes("春日部つむぎ") && live2dViewer) {
     disAppearLive2d();
     return;
   }
-  isLive2d.value = true;
+  isLive2dPortrait.value = true;
 });
 
 onUpdated(async () => {
-  if (!isLoadLive2dCore.value || !isLive2d.value) return;
+  if (
+    !isEnableLive2dFeature.value ||
+    !isLoadLive2dCore.value ||
+    !isLive2dPortrait.value
+  )
+    return;
+
   if (!isShowLive2d.value && !isLive2dInitialize && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
     console.log(live2dAssetsPath);

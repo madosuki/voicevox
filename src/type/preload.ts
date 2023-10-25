@@ -493,6 +493,7 @@ export const experimentalSettingSchema = z.object({
   enableMultiEngine: z.boolean().default(false),
   enableMultiSelect: z.boolean().default(false),
   shouldKeepTuningOnTextChange: z.boolean().default(false),
+  enableLive2dPortrait: z.boolean().default(false),
 });
 
 export type ExperimentalSetting = z.infer<typeof experimentalSettingSchema>;

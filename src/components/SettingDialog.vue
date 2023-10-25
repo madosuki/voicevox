@@ -914,6 +914,31 @@
                 >
                 </q-toggle>
               </q-card-actions>
+              <q-card-actions class="q-px-md q-py-none bg-surface">
+                <div>Live2D立ち絵</div>
+                <div
+                  aria-label="Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします"
+                >
+                  <q-icon name="help_outline" size="sm" class="help-hover-icon">
+                    <q-tooltip
+                      :delay="500"
+                      anchor="center right"
+                      self="center left"
+                      transition-show="jump-right"
+                      transition-hide="jump-left"
+                      >Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします</q-tooltip
+                    >
+                  </q-icon>
+                </div>
+                <q-space />
+                <q-toggle
+                  :model-value="experimentalSetting.enableLive2dPortrait"
+                  @update:model-value="
+                    changeExperimentalSetting('enableLive2dPortrait', $event)
+                  "
+                >
+                </q-toggle>
+              </q-card-actions>
             </q-card>
             <q-card flat class="setting-card">
               <q-card-actions>
