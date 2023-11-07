@@ -218,6 +218,7 @@ onUpdated(async () => {
       readFileFunction
     );
     live2dModel.loadAssets();
+    live2dModel.setLipSyncWeight(10.0);
     live2dViewer.addModel(live2dModel);
     live2dViewer.setCurrentModel(0);
     isLive2dInitialized.value = true;
