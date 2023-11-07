@@ -158,7 +158,6 @@ const showLive2d = () => {
   }
 
   const place = document.getElementsByClassName("live2d");
-  console.log(`is exists live2d container element: ${place.length}`);
   if (place.length < 1) return;
   place[0].appendChild(live2dCanvas);
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
@@ -210,18 +209,25 @@ onUpdated(async () => {
 
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
-    const live2dModel = new Live2dModel(
-      live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
-      "春日部つむぎ公式live2Dモデル.model3.json",
-      live2dViewer,
-      true,
-      readFileFunction
-    );
-    live2dModel.loadAssets();
-    live2dModel.setLipSyncWeight(10.0);
-    live2dViewer.addModel(live2dModel);
-    live2dViewer.setCurrentModel(0);
-    isLive2dInitialized.value = true;
+    try {
+      const live2dModel = new Live2dModel(
+        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+        "春日部つむぎ公式live2Dモデル.model3.json",
+        live2dViewer,
+        true,
+        readFileFunction
+      );
+      live2dModel.loadAssets();
+      live2dModel.setLipSyncWeight(10.0);
+      live2dViewer.addModel(live2dModel);
+      live2dViewer.setCurrentModel(0);
+      isLive2dInitialized.value = true;
+    } catch (e) {
+      window.electron.logError(e);
+      live2dViewer.releaseAllModel();
+      live2dViewer.release();
+      return;
+    }
   }
 
   showLive2d();
