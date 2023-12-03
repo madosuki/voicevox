@@ -162,10 +162,10 @@ const showLive2d = () => {
   place[0].appendChild(live2dCanvas);
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
 
-  live2dCanvas.addEventListener("mousedown", mousedown);
-  live2dCanvas.addEventListener("mouseup", mouseup);
-  live2dCanvas.addEventListener("mouseleave", mouseleave);
-  live2dCanvas.addEventListener("mousemove", mousemove);
+  live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
+  live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
+  live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
+  live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
 
   live2dViewer.run();
 };
