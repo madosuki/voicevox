@@ -472,7 +472,7 @@ const play = async () => {
   nowPlaying.value = false;
 };
 const stop = () => {
-  store.dispatch("STOP_AUDIO");
+  store.dispatch("STOP_AUDIO", { live2dViewer: undefined });
 };
 
 // accent phraseにあるaccentと実際に登録するアクセントには差が生まれる
