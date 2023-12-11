@@ -1745,7 +1745,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           live2dViewer,
         }: { audioKey: AudioKey; live2dViewer: Live2dViewer | undefined }
       ) => {
-        await dispatch("STOP_AUDIO");
+        await dispatch("STOP_AUDIO", { live2dViewer });
 
         // 音声用意
         let blob = await dispatch("GET_AUDIO_CACHE", { audioKey });

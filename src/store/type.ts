@@ -707,7 +707,7 @@ export type AudioPlayerStoreTypes = {
   };
 
   STOP_AUDIO: {
-    action(): void;
+    action(payload: { live2dViewer: Live2dViewer | undefined }): void;
   };
 };
 

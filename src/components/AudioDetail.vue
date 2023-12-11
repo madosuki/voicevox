@@ -266,7 +266,8 @@ const play = async () => {
 };
 
 const stop = () => {
-  store.dispatch("STOP_AUDIO");
+  const live2dViewer: Live2dViewer | undefined = props.getLive2dViewer();
+  store.dispatch("STOP_AUDIO", { live2dViewer });
 };
 
 const nowPlaying = computed(() => store.getters.NOW_PLAYING);
