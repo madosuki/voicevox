@@ -179,6 +179,13 @@ const disAppearLive2d = () => {
   live2dCanvas.removeEventListener("mousedown", mousedown);
 };
 
+const releaseLive2d = () => {
+  if (live2dViewer != undefined) {
+    live2dViewer.release();
+  }
+};
+window.addEventListener("unload", releaseLive2d, { passive: true });
+
 watch(characterName, (newVal: string) => {
   if (!isLoadLive2dCore.value) return;
 
@@ -218,7 +225,7 @@ onUpdated(async () => {
         readFileFunction
       );
       live2dModel.loadAssets();
-      live2dModel.setLipSyncWeight(10.0);
+      live2dModel.setLipSyncWeight(20.0);
       live2dViewer.addModel(live2dModel);
       live2dViewer.setCurrentModel(0);
       isLive2dInitialized.value = true;
