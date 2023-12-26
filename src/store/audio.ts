@@ -1745,6 +1745,19 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           live2dViewer,
         }: { audioKey: AudioKey; live2dViewer: Live2dViewer | undefined }
       ) => {
+        const audioItem = state.audioItems[audioKey];
+        const speakerId = audioItem.voice.speakerId.toString();
+
+        let live2dModelIndex = 0;
+        if (speakerId === "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9") {
+          live2dModelIndex = 0;
+        }
+        if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
+          live2dModelIndex = 1;
+        }
+        if (live2dViewer) {
+          live2dViewer.setCurrentModel(live2dModelIndex);
+        }
         await dispatch("STOP_AUDIO", { live2dViewer });
 
         // 音声用意
@@ -1770,7 +1783,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         if (live2dViewer && state.isShowLive2dViewer) {
           const buf = await blob.arrayBuffer();
           if (live2dViewer._models.getSize() > 0) {
-            live2dViewer._models.at(0).startLipSync(buf);
+            live2dViewer._models.at(live2dModelIndex).startLipSync(buf);
           }
         } else {
           console.log("live2dViewer is undefined");

@@ -151,10 +151,25 @@ const mousemove = (e: MouseEvent) => {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
+
+const changeLive2dModelIndex = () => {
+  if (characterName.value.includes("ずんだもん")) {
+    live2dViewer?.setCurrentModel(0);
+  }
+
+  if (characterName.value.includes("春日部つむぎ")) {
+    live2dViewer?.setCurrentModel(1);
+  }
+};
+
 const showLive2d = () => {
-  if (!live2dViewer || isShowLive2d.value) return;
-  if (!isLive2dPortrait.value) {
-    isLive2dPortrait.value = true;
+  if (!live2dViewer) return;
+
+  changeLive2dModelIndex();
+  console.log(live2dViewer?.targetCurrentModelArrayIndex);
+  console.log(characterName.value);
+  if (isShowLive2d.value || !isLive2dPortrait.value) {
+    return;
   }
 
   const place = document.getElementsByClassName("live2d");
@@ -167,7 +182,8 @@ const showLive2d = () => {
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
   live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
 
-  live2dViewer.run();
+  console.log("run live2d");
+  live2dViewer.runSingleModel();
 };
 
 const disAppearLive2d = () => {
@@ -191,16 +207,27 @@ watch(characterName, (newVal: string) => {
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
+      console.log("disappear 1");
       disAppearLive2d();
     }
     return;
   }
 
-  if (!newVal.includes("春日部つむぎ") && live2dViewer) {
+  const isEnableLive2dPortrait =
+    newVal.includes("ずんだもん") || newVal.includes("春日部つむぎ");
+  if (
+    !isEnableLive2dPortrait &&
+    isLive2dPortrait.value &&
+    live2dViewer != undefined
+  ) {
+    console.log("disappear 2");
     disAppearLive2d();
     return;
   }
-  isLive2dPortrait.value = true;
+
+  if (isEnableLive2dPortrait) {
+    isLive2dPortrait.value = true;
+  }
 });
 
 onUpdated(async () => {
@@ -217,27 +244,40 @@ onUpdated(async () => {
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
     try {
-      const live2dModel = new Live2dModel(
+      const kasukabe_tsumugi = new Live2dModel(
         live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
         "春日部つむぎ公式live2Dモデル.model3.json",
         live2dViewer,
         true,
         readFileFunction
       );
-      live2dModel.loadAssets();
-      live2dModel.setLipSyncWeight(20.0);
-      live2dViewer.addModel(live2dModel);
+      await kasukabe_tsumugi.loadAssets();
+      kasukabe_tsumugi.setLipSyncWeight(20);
+
+      const zundamon = new Live2dModel(
+        live2dAssetsPath + "/Zundamon/",
+        "Zundamon.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      await zundamon.loadAssets();
+      zundamon.setLipSyncWeight(20);
+
+      live2dViewer.addModel(zundamon);
+      live2dViewer.addModel(kasukabe_tsumugi);
       live2dViewer.setCurrentModel(0);
       isLive2dInitialized.value = true;
     } catch (e) {
       window.electron.logError(e);
-      live2dViewer.releaseAllModel();
       live2dViewer.release();
       return;
     }
   }
 
-  showLive2d();
+  if (isLive2dPortrait.value) {
+    showLive2d();
+  }
 });
 </script>
 
