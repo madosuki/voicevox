@@ -166,8 +166,6 @@ const showLive2d = () => {
   if (!live2dViewer) return;
 
   changeLive2dModelIndex();
-  console.log(live2dViewer?.targetCurrentModelArrayIndex);
-  console.log(characterName.value);
   if (isShowLive2d.value || !isLive2dPortrait.value) {
     return;
   }
@@ -182,7 +180,6 @@ const showLive2d = () => {
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
   live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
 
-  console.log("run live2d");
   live2dViewer.runSingleModel();
 };
 
@@ -207,7 +204,6 @@ watch(characterName, (newVal: string) => {
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
-      console.log("disappear 1");
       disAppearLive2d();
     }
     return;
@@ -220,7 +216,6 @@ watch(characterName, (newVal: string) => {
     isLive2dPortrait.value &&
     live2dViewer != undefined
   ) {
-    console.log("disappear 2");
     disAppearLive2d();
     return;
   }
@@ -262,7 +257,7 @@ onUpdated(async () => {
         readFileFunction
       );
       await zundamon.loadAssets();
-      zundamon.setLipSyncWeight(20);
+      zundamon.setLipSyncWeight(10);
 
       live2dViewer.addModel(zundamon);
       live2dViewer.addModel(kasukabe_tsumugi);
