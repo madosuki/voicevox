@@ -248,6 +248,7 @@ onUpdated(async () => {
       );
       await kasukabe_tsumugi.loadAssets();
       kasukabe_tsumugi.setLipSyncWeight(20);
+      live2dViewer.addModel(kasukabe_tsumugi);
 
       const zundamon = new Live2dModel(
         live2dAssetsPath + "/Zundamon_vts/",
@@ -258,9 +259,8 @@ onUpdated(async () => {
       );
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
-
       live2dViewer.addModel(zundamon);
-      live2dViewer.addModel(kasukabe_tsumugi);
+
       live2dViewer.setCurrentModel(0);
       isLive2dInitialized.value = true;
     } catch (e) {
