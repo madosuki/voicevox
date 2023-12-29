@@ -239,17 +239,6 @@ onUpdated(async () => {
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
     try {
-      const kasukabe_tsumugi = new Live2dModel(
-        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
-        "春日部つむぎ公式live2Dモデル.model3.json",
-        live2dViewer,
-        true,
-        readFileFunction
-      );
-      await kasukabe_tsumugi.loadAssets();
-      kasukabe_tsumugi.setLipSyncWeight(20);
-      live2dViewer.addModel(kasukabe_tsumugi);
-
       const zundamon = new Live2dModel(
         live2dAssetsPath + "/Zundamon_vts/",
         "zundamon.model3.json",
@@ -260,6 +249,17 @@ onUpdated(async () => {
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel(zundamon);
+
+      const kasukabe_tsumugi = new Live2dModel(
+        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+        "春日部つむぎ公式live2Dモデル.model3.json",
+        live2dViewer,
+        true,
+        readFileFunction
+      );
+      await kasukabe_tsumugi.loadAssets();
+      kasukabe_tsumugi.setLipSyncWeight(20);
+      live2dViewer.addModel(kasukabe_tsumugi);
 
       live2dViewer.setCurrentModel(0);
       isLive2dInitialized.value = true;
