@@ -154,11 +154,13 @@ const mousemove = (e: MouseEvent) => {
 
 const changeLive2dModelIndex = () => {
   if (characterName.value.includes("ずんだもん")) {
-    live2dViewer?.setCurrentModel(0);
+    console.log("change to zundamon");
+    live2dViewer?.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
   }
 
   if (characterName.value.includes("春日部つむぎ")) {
-    live2dViewer?.setCurrentModel(1);
+    console.log("change to tsumugi");
+    live2dViewer?.setCurrentModel("35b2c544-660e-401e-b503-0e14c635303a");
   }
 };
 
@@ -248,7 +250,7 @@ onUpdated(async () => {
       );
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
-      live2dViewer.addModel(zundamon);
+      live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
 
       const kasukabe_tsumugi = new Live2dModel(
         live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
@@ -259,9 +261,12 @@ onUpdated(async () => {
       );
       await kasukabe_tsumugi.loadAssets();
       kasukabe_tsumugi.setLipSyncWeight(20);
-      live2dViewer.addModel(kasukabe_tsumugi);
+      live2dViewer.addModel(
+        "35b2c544-660e-401e-b503-0e14c635303a",
+        kasukabe_tsumugi
+      );
 
-      live2dViewer.setCurrentModel(0);
+      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
       isLive2dInitialized.value = true;
     } catch (e) {
       window.electron.logError(e);
