@@ -29,7 +29,7 @@ import {
 import { useStore } from "@/store";
 import { setHotkeyFunctions } from "@/store/setting";
 import {
-  HotkeyAction,
+  HotkeyActionType,
   HotkeyReturnType,
   ToolbarButtonTagType,
 } from "@/type/preload";
@@ -60,7 +60,7 @@ const nowPlayingContinuously = computed(
   () => store.state.nowPlayingContinuously
 );
 
-const undoRedoHotkeyMap = new Map<HotkeyAction, () => HotkeyReturnType>([
+const undoRedoHotkeyMap = new Map<HotkeyActionType, () => HotkeyReturnType>([
   // undo
   [
     "元に戻す",
@@ -84,7 +84,7 @@ const undoRedoHotkeyMap = new Map<HotkeyAction, () => HotkeyReturnType>([
 ]);
 setHotkeyFunctions(undoRedoHotkeyMap);
 
-const hotkeyMap = new Map<HotkeyAction, () => HotkeyReturnType>([
+const hotkeyMap = new Map<HotkeyActionType, () => HotkeyReturnType>([
   // play/stop continuously
   [
     "連続再生/停止",

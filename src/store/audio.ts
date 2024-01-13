@@ -1443,7 +1443,10 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
           if (state.savingSetting.exportText) {
             await writeTextFile({
-              text: extractExportText(state.audioItems[audioKey].text),
+              text: extractExportText(state.audioItems[audioKey].text, {
+                enableMemoNotation: state.enableMemoNotation,
+                enableRubyNotation: state.enableRubyNotation,
+              }),
               filePath: filePath.replace(/\.wav$/, ".txt"),
               encoding: state.savingSetting.fileEncoding,
             }).then(getValueOrThrow);
@@ -1609,7 +1612,12 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             return { result: "WRITE_ERROR", path: filePath };
           }
           labs.push(lab);
-          texts.push(extractExportText(state.audioItems[audioKey].text));
+          texts.push(
+            extractExportText(state.audioItems[audioKey].text, {
+              enableMemoNotation: state.enableMemoNotation,
+              enableRubyNotation: state.enableRubyNotation,
+            })
+          );
           // 最終音素の終了時刻を取得する
           const splitLab = lab.split(" ");
           labOffset = Number(splitLab[splitLab.length - 2]);
@@ -1716,7 +1724,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
               : "";
 
           const skippedText = extractExportText(
-            state.audioItems[audioKey].text
+            state.audioItems[audioKey].text,
+            {
+              enableMemoNotation: state.enableMemoNotation,
+              enableRubyNotation: state.enableRubyNotation,
+            }
           );
           texts.push(speakerName + skippedText);
         }
@@ -1983,7 +1995,10 @@ export const audioCommandStore = transformCommandStore(
         const engineId = state.audioItems[audioKey].voice.engineId;
         const styleId = state.audioItems[audioKey].voice.styleId;
         const query = state.audioItems[audioKey].query;
-        const skippedText = extractYomiText(text);
+        const skippedText = extractYomiText(text, {
+          enableMemoNotation: state.enableMemoNotation,
+          enableRubyNotation: state.enableRubyNotation,
+        });
 
         try {
           if (query != undefined) {
