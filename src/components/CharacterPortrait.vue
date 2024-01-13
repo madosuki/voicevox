@@ -110,7 +110,7 @@ const isEnableLive2dFeature = computed(
 );
 const isLive2dPortrait = ref(false);
 const isLive2dInitialized = ref(false);
-const isLoadLive2dCore = ref(false);
+const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
 
@@ -118,7 +118,7 @@ let live2dViewer: Live2dViewer | undefined = undefined;
 try {
   live2dViewer = new Live2dViewer(live2dCanvas);
   live2dViewer.initialize();
-  isLoadLive2dCore.value = true;
+  isLoadedLive2dCore.value = true;
 } catch (e) {
   window.electron.logWarn(e);
 }
@@ -154,12 +154,10 @@ const mousemove = (e: MouseEvent) => {
 
 const changeLive2dModelIndex = () => {
   if (characterName.value.includes("ずんだもん")) {
-    console.log("change to zundamon");
     live2dViewer?.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
   }
 
   if (characterName.value.includes("春日部つむぎ")) {
-    console.log("change to tsumugi");
     live2dViewer?.setCurrentModel("35b2c544-660e-401e-b503-0e14c635303a");
   }
 };
@@ -202,7 +200,7 @@ const releaseLive2d = () => {
 window.addEventListener("unload", releaseLive2d, { passive: true });
 
 watch(characterName, (newVal: string) => {
-  if (!isLoadLive2dCore.value) return;
+  if (!isLoadedLive2dCore.value) return;
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
@@ -228,7 +226,7 @@ watch(characterName, (newVal: string) => {
 });
 
 onUpdated(async () => {
-  if (!isLoadLive2dCore.value) return;
+  if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value && isShowLive2d.value) {
     disAppearLive2d();
     return;
