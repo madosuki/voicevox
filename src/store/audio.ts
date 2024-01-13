@@ -1791,6 +1791,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
               live2dModelsKey = speakerId;
             }
+
             if (live2dModelsKey !== "") {
               live2dViewer.setCurrentModel(live2dModelsKey);
             }
