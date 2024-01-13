@@ -1757,19 +1757,6 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           live2dViewer,
         }: { audioKey: AudioKey; live2dViewer: Live2dViewer | undefined }
       ) => {
-        const audioItem = state.audioItems[audioKey];
-        const speakerId = audioItem.voice.speakerId.toString();
-
-        let live2dModelsKey = "";
-        if (speakerId === "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9") {
-          live2dModelsKey = speakerId;
-        }
-        if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
-          live2dModelsKey = speakerId;
-        }
-        if (live2dViewer && live2dModelsKey !== "") {
-          live2dViewer.setCurrentModel(live2dModelsKey);
-        }
         await dispatch("STOP_AUDIO", { live2dViewer });
 
         // 音声用意
@@ -1793,9 +1780,26 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }
 
         if (live2dViewer && state.isShowLive2dViewer) {
+          if (state.nowPlayingContinuously) {
+            const audioItem = state.audioItems[audioKey];
+            const speakerId = audioItem.voice.speakerId.toString();
+
+            let live2dModelsKey = "";
+            if (speakerId === "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9") {
+              live2dModelsKey = speakerId;
+            }
+            if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
+              live2dModelsKey = speakerId;
+            }
+            if (live2dModelsKey !== "") {
+              live2dViewer.setCurrentModel(live2dModelsKey);
+            }
+          }
+
           const buf = await blob.arrayBuffer();
-          if (live2dViewer._models[live2dModelsKey] != undefined) {
-            live2dViewer._models[live2dModelsKey].startLipSync(buf);
+          const currentLive2dModelsKey = live2dViewer.targetCurrentModelKey;
+          if (live2dViewer._models[currentLive2dModelsKey] != undefined) {
+            live2dViewer._models[currentLive2dModelsKey].startLipSync(buf);
           }
         } else {
           console.log("live2dViewer is undefined");

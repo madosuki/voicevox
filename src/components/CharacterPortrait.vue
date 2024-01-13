@@ -5,7 +5,7 @@
       engineName
     }}</span>
     <img
-      v-if="!isEnableLive2dFeature || !isLoadLive2dCore || !isLive2dPortrait"
+      v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
       :src="portraitPath"
       class="character-portrait"
       :alt="characterName"
