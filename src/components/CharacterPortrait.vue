@@ -23,6 +23,7 @@ import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
+import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
 
 const store = useStore();
 
@@ -180,7 +181,7 @@ const showLive2d = () => {
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
   live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
 
-  live2dViewer.runSingleModel();
+  drawLive2dPortrait(live2dViewer);
 };
 
 const disAppearLive2d = () => {
