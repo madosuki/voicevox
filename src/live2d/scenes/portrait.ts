@@ -43,7 +43,7 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
         projection.multiplyByMatrix(live2dViewer._viewMatrix);
 
         model.update();
-        model.draw(projection, width, height, live2dViewer.frameBuffer);
+        model.draw(projection, 0, 0, width, height, live2dViewer.frameBuffer);
       }
     };
 
