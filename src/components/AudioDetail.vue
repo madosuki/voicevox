@@ -71,8 +71,8 @@
           "
           :is-active="accentPhraseIndex === activePoint"
           :selected-detail="selectedDetail"
-          :shift-key-flag="shiftKeyFlag"
-          :alt-key-flag="altKeyFlag"
+          :shift-key-flag="isShiftKeyDown"
+          :alt-key-flag="isAltKeyDown"
           @click="setPlayAndStartPoint"
         />
       </div>
@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { Live2dViewer } from "live2dmanager";
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import ToolTip from "./ToolTip.vue";
 import AccentPhrase from "./AccentPhrase.vue";
 import { useStore } from "@/store";
@@ -94,6 +94,7 @@ import {
 } from "@/type/preload";
 import { setHotkeyFunctions } from "@/store/setting";
 import { EngineManifest } from "@/openapi/models";
+import { useShiftKey, useAltKey } from "@/composables/useModifierKey";
 
 const props =
   defineProps<{
@@ -361,23 +362,8 @@ watch(nowPlaying, async (newState) => {
   }
 });
 
-const shiftKeyFlag = ref(false);
-const altKeyFlag = ref(false);
-
-const keyEventListter = (event: KeyboardEvent) => {
-  shiftKeyFlag.value = event.shiftKey;
-  altKeyFlag.value = event.altKey;
-};
-
-onMounted(() => {
-  window.addEventListener("keyup", keyEventListter);
-  document.addEventListener("keydown", keyEventListter);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keyup", keyEventListter);
-  document.removeEventListener("keydown", keyEventListter);
-});
+const isShiftKeyDown = useShiftKey();
+const isAltKeyDown = useAltKey();
 </script>
 
 <style scoped lang="scss">
