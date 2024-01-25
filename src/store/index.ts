@@ -195,7 +195,7 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
           const defaultStyleId = defaultStyleIds.find(
             (styleId) => styleId.speakerUuid == speakerUuid
           );
-          if (defaultStyleId === undefined) {
+          if (defaultStyleId == undefined) {
             return true;
           }
 
@@ -245,7 +245,7 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
             audioItem.voice.styleId
           );
 
-          if (characterInfo === undefined)
+          if (characterInfo == undefined)
             throw new Error("assert characterInfo !== undefined");
 
           const speakerUuid = characterInfo.metas.speakerUuid;
