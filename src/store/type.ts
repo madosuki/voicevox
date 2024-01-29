@@ -55,7 +55,7 @@ import {
   CommonDialogResult,
   NotifyAndNotShowAgainButtonOption,
   LoadingScreenOption,
-} from "@/components/Dialog";
+} from "@/components/Dialog/Dialog";
 
 /**
  * エディタ用のAudioQuery
