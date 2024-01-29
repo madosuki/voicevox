@@ -153,9 +153,7 @@ describe("store/vuex.js test", () => {
         progress: -1,
         isVuexReady: false,
         defaultPresetKeys: {},
-<<<<<<< HEAD
         isShowLive2dViewer: false,
-=======
         score: {
           tpqn: 480,
           tempos: [
@@ -189,7 +187,6 @@ describe("store/vuex.js test", () => {
         nowRendering: false,
         nowAudioExporting: false,
         cancellationOfAudioExportRequested: false,
->>>>>>> main
       },
       getters: {
         ...uiStore.getters,
