@@ -83,8 +83,8 @@
 <script setup lang="ts">
 import { Live2dViewer } from "live2dmanager";
 import { computed, nextTick, ref, watch } from "vue";
-import ToolTip from "./ToolTip.vue";
 import AccentPhrase from "./AccentPhrase.vue";
+import ToolTip from "@/components/ToolTip.vue";
 import { useStore } from "@/store";
 import {
   AudioKey,
