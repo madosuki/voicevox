@@ -1858,8 +1858,6 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           if (live2dViewer._models[currentLive2dModelsKey] != undefined) {
             live2dViewer._models[currentLive2dModelsKey].startLipSync(buf);
           }
-        } else {
-          console.log("live2dViewer is undefined");
         }
 
         return dispatch("PLAY_AUDIO_BLOB", {
