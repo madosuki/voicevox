@@ -118,7 +118,7 @@ const live2dCanvas = document.createElement("canvas");
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
   live2dViewer = new Live2dViewer(live2dCanvas);
-  live2dViewer.initialize();
+  live2dViewer.initialize(1024 * 1024 * 32);
   isLoadedLive2dCore.value = true;
 } catch (e) {
   window.electron.logWarn(e);
