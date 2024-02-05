@@ -114,11 +114,11 @@ const isLive2dInitialized = ref(false);
 const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
-live2dCanvas.setAttribute("style", "{width: 100%, height: 100%}");
+live2dCanvas.setAttribute("style", "width: 100%; height: 100%");
 
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
-  live2dViewer = new Live2dViewer(live2dCanvas);
+  live2dViewer = new Live2dViewer(live2dCanvas, 1024, 1024);
   live2dViewer.initialize();
   isLoadedLive2dCore.value = true;
 } catch (e) {
