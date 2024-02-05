@@ -248,7 +248,7 @@ onUpdated(async () => {
         false,
         readFileFunction
       );
-      await zundamon.loadAssets(false);
+      await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
 
@@ -259,7 +259,7 @@ onUpdated(async () => {
         true,
         readFileFunction
       );
-      await kasukabe_tsumugi.loadAssets(false);
+      await kasukabe_tsumugi.loadAssets();
       kasukabe_tsumugi.setLipSyncWeight(20);
       live2dViewer.addModel(
         "35b2c544-660e-401e-b503-0e14c635303a",
