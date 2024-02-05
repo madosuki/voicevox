@@ -154,23 +154,25 @@ describe("store/vuex.js test", () => {
         isVuexReady: false,
         defaultPresetKeys: {},
         isShowLive2dViewer: false,
-        score: {
-          tpqn: 480,
-          tempos: [
-            {
-              position: 0,
-              bpm: 120,
-            },
-          ],
-          timeSignatures: [
-            {
-              measureNumber: 1,
-              beats: 4,
-              beatType: 4,
-            },
-          ],
-          notes: [],
-        },
+        tpqn: 480,
+        tempos: [
+          {
+            position: 0,
+            bpm: 120,
+          },
+        ],
+        timeSignatures: [
+          {
+            measureNumber: 1,
+            beats: 4,
+            beatType: 4,
+          },
+        ],
+        tracks: [
+          {
+            notes: [],
+          },
+        ],
         phrases: new Map(),
         isShowSinger: true,
         sequencerZoomX: 1,
