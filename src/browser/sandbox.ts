@@ -315,6 +315,6 @@ export const api: Sandbox = {
     throw new Error(`Not supported on Browser version: reloadApp`);
   },
   getLive2dAssetsPath() {
-    throw new Error("Not supported on Browser version: getLive2dAssetsPath");
+    return Promise.resolve("public/live2d_assets/");
   },
 };
