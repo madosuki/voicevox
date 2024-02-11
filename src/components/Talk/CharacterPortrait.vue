@@ -99,13 +99,14 @@ const isInitializingSpeaker = computed(() => {
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
 const readFileFunction = async (filePath: string) => {
-  /*
   const result = await window.electron.readFile({ filePath });
   if (result.ok) {
     return result.value;
   }
   return new ArrayBuffer(0);
-  */
+
+  // for browser mode
+  /*
   try {
     const res = await fetch(filePath);
     return await res.arrayBuffer();
@@ -113,6 +114,7 @@ const readFileFunction = async (filePath: string) => {
     window.electron.logError(e);
     return new ArrayBuffer(0);
   }
+  */
 };
 
 const isEnableLive2dFeature = computed(
