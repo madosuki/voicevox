@@ -99,11 +99,20 @@ const isInitializingSpeaker = computed(() => {
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
 const readFileFunction = async (filePath: string) => {
+  /*
   const result = await window.electron.readFile({ filePath });
   if (result.ok) {
     return result.value;
   }
   return new ArrayBuffer(0);
+  */
+  try {
+    const res = await fetch(filePath);
+    return await res.arrayBuffer();
+  } catch (e) {
+    window.electron.logError(e);
+    return new ArrayBuffer(0);
+  }
 };
 
 const isEnableLive2dFeature = computed(
@@ -116,10 +125,11 @@ const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
 live2dCanvas.setAttribute("style", "width: 100%; height: 100%");
 
+const allocationMemory = 2048 * 2048 * 16 + 4096 * 4096 * 16;
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
   live2dViewer = new Live2dViewer(live2dCanvas, 1024, 1024);
-  live2dViewer.initialize();
+  live2dViewer.initialize(allocationMemory);
   isLoadedLive2dCore.value = true;
 } catch (e) {
   window.electron.logWarn(e);
