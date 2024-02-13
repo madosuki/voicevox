@@ -76,6 +76,11 @@ export type AudioState = {
   nowGenerating: boolean;
 };
 
+export type FetchAudioResult = {
+  audioQuery: EditorAudioQuery;
+  blob: Blob;
+};
+
 export type Command = {
   unixMillisec: number;
   undoPatches: Patch[];
@@ -245,14 +250,6 @@ export type AudioStoreTypes = {
     action(): void;
   };
 
-  GET_AUDIO_CACHE: {
-    action(payload: { audioKey: AudioKey }): Promise<Blob | null>;
-  };
-
-  GET_AUDIO_CACHE_FROM_AUDIO_ITEM: {
-    action(payload: { audioItem: AudioItem }): Promise<Blob | null>;
-  };
-
   SET_AUDIO_TEXT: {
     mutation: { audioKey: AudioKey; text: string };
   };
@@ -388,23 +385,16 @@ export type AudioStoreTypes = {
     getter(audioKey: AudioKey): string;
   };
 
-  GENERATE_LAB: {
-    action(payload: {
-      audioKey: AudioKey;
-      offset?: number;
-    }): string | undefined;
-  };
-
   GET_AUDIO_PLAY_OFFSETS: {
     action(payload: { audioKey: AudioKey }): number[];
   };
 
-  GENERATE_AUDIO: {
-    action(payload: { audioKey: AudioKey }): Promise<Blob>;
+  FETCH_AUDIO: {
+    action(payload: { audioKey: AudioKey }): Promise<FetchAudioResult>;
   };
 
-  GENERATE_AUDIO_FROM_AUDIO_ITEM: {
-    action(payload: { audioItem: AudioItem }): Blob;
+  FETCH_AUDIO_FROM_AUDIO_ITEM: {
+    action(payload: { audioItem: AudioItem }): Promise<FetchAudioResult>;
   };
 
   CONNECT_AUDIO: {
@@ -753,6 +743,8 @@ export type Singer = {
 
 export type Track = {
   singer?: Singer;
+  notesKeyShift: number;
+  voiceKeyShift: number;
   notes: Note[];
 };
 
@@ -764,6 +756,8 @@ export type PhraseState =
 
 export type Phrase = {
   singer?: Singer;
+  notesKeyShift: number;
+  voiceKeyShift: number;
   tpqn: number;
   tempos: Tempo[];
   notes: Note[];
@@ -808,6 +802,11 @@ export type SingingStoreTypes = {
   SET_SINGER: {
     mutation: { singer?: Singer };
     action(payload: { singer?: Singer }): void;
+  };
+
+  SET_VOICE_KEY_SHIFT: {
+    mutation: { voiceKeyShift: number };
+    action(payload: { voiceKeyShift: number }): void;
   };
 
   SET_SCORE: {
@@ -1773,7 +1772,7 @@ export type IEngineConnectorFactoryActions = ReturnType<
   IEngineConnectorFactory["instance"]
 >;
 
-type IEngineConnectorFactoryActionsMapper = <
+export type IEngineConnectorFactoryActionsMapper = <
   K extends keyof IEngineConnectorFactoryActions
 >(
   action: K
