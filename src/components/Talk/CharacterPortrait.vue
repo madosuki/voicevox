@@ -125,7 +125,6 @@ const isLive2dInitialized = ref(false);
 const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
-live2dCanvas.setAttribute("style", "width: 100%; height: 100%");
 
 const allocationMemory = 2048 * 2048 * 16 + 4096 * 4096 * 16;
 let live2dViewer: Live2dViewer | undefined = undefined;
