@@ -126,10 +126,10 @@ const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
 
-const allocationMemory = 2048 * 2048 * 16 + 4096 * 4096 * 16;
+const allocationMemory = 4096 * 4096 * 32;
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
-  live2dViewer = new Live2dViewer(live2dCanvas, 1024, 1024);
+  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
   live2dViewer.initialize(allocationMemory);
   isLoadedLive2dCore.value = true;
 } catch (e) {
@@ -172,6 +172,14 @@ const changeLive2dModelIndex = () => {
 
   if (characterName.value.includes("春日部つむぎ")) {
     live2dViewer?.setCurrentModel("35b2c544-660e-401e-b503-0e14c635303a");
+  }
+
+  if (characterName.value.includes("九州そら")) {
+    live2dViewer?.setCurrentModel("481fb609-6446-4870-9f46-90c4dd623403");
+  }
+
+  if (characterName.value.includes("中国うさぎ")) {
+    live2dViewer?.setCurrentModel("1f18ffc3-47ea-4ce0-9829-0576d03a7ec8");
   }
 };
 
@@ -223,7 +231,10 @@ watch(characterName, (newVal: string) => {
   }
 
   const isEnableLive2dPortrait =
-    newVal.includes("ずんだもん") || newVal.includes("春日部つむぎ");
+    newVal.includes("ずんだもん") ||
+    newVal.includes("春日部つむぎ") ||
+    newVal.includes("九州そら") ||
+    newVal.includes("中国うさぎ");
   if (
     !isEnableLive2dPortrait &&
     isLive2dPortrait.value &&
@@ -251,6 +262,7 @@ onUpdated(async () => {
 
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
+    const lived2dAssetsLoadErrors = [];
     try {
       const zundamon = new Live2dModel(
         live2dAssetsPath + "/Zundamon_vts/",
@@ -262,25 +274,72 @@ onUpdated(async () => {
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
+    } catch (e) {
+      window.electron.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
 
-      const kasukabe_tsumugi = new Live2dModel(
+    try {
+      const kasukabeTsumugi = new Live2dModel(
         live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
         "春日部つむぎ公式live2Dモデル.model3.json",
         live2dViewer,
         true,
         readFileFunction
       );
-      await kasukabe_tsumugi.loadAssets();
-      kasukabe_tsumugi.setLipSyncWeight(20);
+      await kasukabeTsumugi.loadAssets();
+      kasukabeTsumugi.setLipSyncWeight(20);
       live2dViewer.addModel(
         "35b2c544-660e-401e-b503-0e14c635303a",
-        kasukabe_tsumugi
+        kasukabeTsumugi
       );
-
-      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
-      isLive2dInitialized.value = true;
     } catch (e) {
       window.electron.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    try {
+      const kyuusyuuSora = new Live2dModel(
+        live2dAssetsPath + "/Sora_vts/",
+        "kyuusyuu_sora.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      await kyuusyuuSora.loadAssets();
+      kyuusyuuSora.setLipSyncWeight(20);
+      live2dViewer.addModel(
+        "481fb609-6446-4870-9f46-90c4dd623403",
+        kyuusyuuSora
+      );
+    } catch (e) {
+      window.electron.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    try {
+      const chugokuUsagi = new Live2dModel(
+        live2dAssetsPath + "/Usagi_vts/",
+        "usagi.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      await chugokuUsagi.loadAssets();
+      chugokuUsagi.setLipSyncWeight(20);
+      live2dViewer.addModel(
+        "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+        chugokuUsagi
+      );
+    } catch (e) {
+      window.electron.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    if (lived2dAssetsLoadErrors.length < 4) {
+      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
+      isLive2dInitialized.value = true;
+    } else {
       live2dViewer.release();
       return;
     }
