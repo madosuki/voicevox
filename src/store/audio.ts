@@ -37,6 +37,7 @@ import {
   handlePossiblyNotMorphableError,
   isMorphable,
 } from "./audioGenerate";
+import { ContinuousPlayer } from "./audioContinuousPlayer";
 import {
   AudioKey,
   CharacterInfo,
@@ -1652,7 +1653,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         {
           audioKey,
           live2dViewer,
-        }: { audioKey: AudioKey; live2dViewer: Live2dViewer | undefined }
+        }: { audioKey: AudioKey; live2dViewer?: Live2dViewer }
       ) => {
         await dispatch("STOP_AUDIO", { live2dViewer });
 
@@ -1675,7 +1676,44 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }
 
         const { blob } = fetchAudioResult;
-        if (live2dViewer && state.isShowLive2dViewer) {
+
+        return dispatch("PLAY_AUDIO_BLOB", {
+          audioBlob: blob,
+          audioKey,
+          live2dViewer,
+        });
+      }
+    ),
+  },
+
+  PLAY_AUDIO_BLOB: {
+    action: createUILockAction(
+      async (
+        { state, getters, commit, dispatch },
+        {
+          audioBlob,
+          audioKey,
+          live2dViewer,
+        }: { audioBlob: Blob; audioKey?: AudioKey; live2dViewer?: Live2dViewer }
+      ) => {
+        commit("SET_AUDIO_SOURCE", { audioBlob });
+        let offset: number | undefined;
+        // 途中再生用の処理
+        if (audioKey) {
+          const accentPhraseOffsets = await dispatch("GET_AUDIO_PLAY_OFFSETS", {
+            audioKey,
+          });
+          if (accentPhraseOffsets.length === 0)
+            throw new Error("accentPhraseOffsets.length === 0");
+          const startTime =
+            accentPhraseOffsets[getters.AUDIO_PLAY_START_POINT ?? 0];
+          if (startTime == undefined) throw Error("startTime == undefined");
+          // 小さい値が切り捨てられることでフォーカスされるアクセントフレーズが一瞬元に戻るので、
+          // 再生に影響のない程度かつ切り捨てられない値を加算する
+          offset = startTime + 10e-6;
+        }
+
+        if (live2dViewer && state.isShowLive2dViewer && audioKey) {
           if (state.nowPlayingContinuously) {
             const audioItem = state.audioItems[audioKey];
             const speakerId = audioItem.voice.speakerId.toString();
@@ -1693,42 +1731,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             }
           }
 
-          const buf = await blob.arrayBuffer();
+          const buf = await audioBlob.arrayBuffer();
           const currentLive2dModelsKey = live2dViewer.targetCurrentModelKey;
           if (live2dViewer._models[currentLive2dModelsKey] != undefined) {
             live2dViewer._models[currentLive2dModelsKey].startLipSync(buf);
           }
-        }
-
-        return dispatch("PLAY_AUDIO_BLOB", {
-          audioBlob: blob,
-          audioKey,
-        });
-      }
-    ),
-  },
-
-  PLAY_AUDIO_BLOB: {
-    action: createUILockAction(
-      async (
-        { getters, commit, dispatch },
-        { audioBlob, audioKey }: { audioBlob: Blob; audioKey?: AudioKey }
-      ) => {
-        commit("SET_AUDIO_SOURCE", { audioBlob });
-        let offset: number | undefined;
-        // 途中再生用の処理
-        if (audioKey) {
-          const accentPhraseOffsets = await dispatch("GET_AUDIO_PLAY_OFFSETS", {
-            audioKey,
-          });
-          if (accentPhraseOffsets.length === 0)
-            throw new Error("accentPhraseOffsets.length === 0");
-          const startTime =
-            accentPhraseOffsets[getters.AUDIO_PLAY_START_POINT ?? 0];
-          if (startTime == undefined) throw Error("startTime == undefined");
-          // 小さい値が切り捨てられることでフォーカスされるアクセントフレーズが一瞬元に戻るので、
-          // 再生に影響のない程度かつ切り捨てられない値を加算する
-          offset = startTime + 10e-6;
         }
 
         return dispatch("PLAY_AUDIO_PLAYER", { offset, audioKey });
@@ -1756,7 +1763,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
     action: createUILockAction(
       async (
         { state, getters, commit, dispatch },
-        { live2dViewer }: { live2dViewer: Live2dViewer | undefined }
+        { live2dViewer }: { live2dViewer?: Live2dViewer }
       ) => {
         const currentAudioKey = state._activeAudioKey;
         const currentAudioPlayStartPoint = getters.AUDIO_PLAY_START_POINT;
@@ -1766,26 +1773,40 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           index = state.audioKeys.findIndex((v) => v === currentAudioKey);
         }
 
-        commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: true });
-        try {
-          for (let i = index; i < state.audioKeys.length; ++i) {
-            const audioKey = state.audioKeys[i];
-            commit("SET_ACTIVE_AUDIO_KEY", { audioKey });
-            const isEnded = await dispatch("PLAY_AUDIO", {
-              audioKey,
-              live2dViewer,
-            });
-            if (!isEnded) {
-              break;
-            }
-          }
-        } finally {
-          commit("SET_ACTIVE_AUDIO_KEY", { audioKey: currentAudioKey });
-          commit("SET_AUDIO_PLAY_START_POINT", {
-            startPoint: currentAudioPlayStartPoint,
+        const player = new ContinuousPlayer(state.audioKeys.slice(index), {
+          generateAudio: ({ audioKey }) =>
+            dispatch("FETCH_AUDIO", { audioKey }).then((result) => result.blob),
+          playAudioBlob: ({ audioBlob, audioKey }) =>
+            dispatch("PLAY_AUDIO_BLOB", { audioBlob, audioKey, live2dViewer }),
+        });
+        player.addEventListener("playstart", (e) => {
+          commit("SET_ACTIVE_AUDIO_KEY", { audioKey: e.audioKey });
+        });
+        player.addEventListener("waitstart", (e) => {
+          dispatch("START_PROGRESS");
+          commit("SET_ACTIVE_AUDIO_KEY", { audioKey: e.audioKey });
+          commit("SET_AUDIO_NOW_GENERATING", {
+            audioKey: e.audioKey,
+            nowGenerating: true,
           });
-          commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: false });
-        }
+        });
+        player.addEventListener("waitend", (e) => {
+          dispatch("RESET_PROGRESS");
+          commit("SET_AUDIO_NOW_GENERATING", {
+            audioKey: e.audioKey,
+            nowGenerating: false,
+          });
+        });
+
+        commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: true });
+
+        await player.playUntilComplete();
+
+        commit("SET_ACTIVE_AUDIO_KEY", { audioKey: currentAudioKey });
+        commit("SET_AUDIO_PLAY_START_POINT", {
+          startPoint: currentAudioPlayStartPoint,
+        });
+        commit("SET_NOW_PLAYING_CONTINUOUSLY", { nowPlaying: false });
       }
     ),
   },
