@@ -166,6 +166,8 @@ const mousemove = (e: MouseEvent) => {
 };
 
 const changeLive2dModelIndex = () => {
+  if (!isLive2dInitialized.value) return;
+
   if (characterName.value.includes("ずんだもん")) {
     live2dViewer?.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
   }
@@ -184,7 +186,7 @@ const changeLive2dModelIndex = () => {
 };
 
 const showLive2d = () => {
-  if (!live2dViewer) return;
+  if (!live2dViewer || !isLive2dInitialized.value) return;
 
   changeLive2dModelIndex();
   if (isShowLive2d.value || !isLive2dPortrait.value) {
@@ -341,6 +343,8 @@ onUpdated(async () => {
       isLive2dInitialized.value = true;
     } else {
       live2dViewer.release();
+      isLive2dInitialized.value = false;
+      isLive2dPortrait.value = false;
       return;
     }
   }
