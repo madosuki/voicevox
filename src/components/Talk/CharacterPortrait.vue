@@ -126,14 +126,14 @@ const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
 
-const allocationMemory = 4096 * 4096 * 32;
+const allocationMemory = 1024 * 1024 * 32;
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
-  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
+  live2dViewer = new Live2dViewer(live2dCanvas, 1024, 1024);
   live2dViewer.initialize(allocationMemory);
   isLoadedLive2dCore.value = true;
 } catch (e) {
-  window.electron.logWarn(e);
+  window.electron.logError(e);
 }
 
 const getLive2dViewer = () => {

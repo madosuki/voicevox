@@ -1,4 +1,4 @@
-import { Live2dViewer } from "live2dmanager";
+import { Live2dModel, Live2dViewer } from "live2dmanager";
 
 export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
   const loop = () => {
@@ -30,7 +30,8 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
 
     const projection = live2dViewer.getNewMatrix44();
 
-    const model = live2dViewer._models[live2dViewer.targetCurrentModelKey];
+    const model: Live2dModel =
+      live2dViewer._models[live2dViewer.targetCurrentModelKey];
     const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
