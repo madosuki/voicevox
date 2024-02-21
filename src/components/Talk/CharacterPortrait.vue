@@ -336,7 +336,7 @@ onUpdated(async () => {
       lived2dAssetsLoadErrors.push({});
     }
 
-    if (lived2dAssetsLoadErrors.length < 4) {
+    if (lived2dAssetsLoadErrors.length === 0) {
       live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
       isLive2dInitialized.value = true;
     } else {
