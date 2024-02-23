@@ -125,11 +125,18 @@ const isLive2dInitialized = ref(false);
 const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
 const live2dCanvas = document.createElement("canvas");
+const availableLive2dModels = [
+  "ずんだもん",
+  "春日部つむぎ",
+  "九州そら",
+  "中国うさぎ",
+];
+const addedModels: Record<string, string> = {};
 
 const allocationMemory = 1024 * 1024 * 32;
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
-  live2dViewer = new Live2dViewer(live2dCanvas, 1024, 1024);
+  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
   live2dViewer.initialize(allocationMemory);
   isLoadedLive2dCore.value = true;
 } catch (e) {
@@ -165,23 +172,20 @@ const mousemove = (e: MouseEvent) => {
   }
 };
 
+const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
+  return availableLive2dModels.find((v) => name.includes(v));
+};
+
 const changeLive2dModelIndex = () => {
-  if (!isLive2dInitialized.value) return;
+  if (live2dViewer == undefined || !isLive2dInitialized.value) return;
 
-  if (characterName.value.includes("ずんだもん")) {
-    live2dViewer?.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
-  }
+  const targetName = getNameOfAvailableLive2dModel(characterName.value);
+  if (targetName == undefined) return;
 
-  if (characterName.value.includes("春日部つむぎ")) {
-    live2dViewer?.setCurrentModel("35b2c544-660e-401e-b503-0e14c635303a");
-  }
-
-  if (characterName.value.includes("九州そら")) {
-    live2dViewer?.setCurrentModel("481fb609-6446-4870-9f46-90c4dd623403");
-  }
-
-  if (characterName.value.includes("中国うさぎ")) {
-    live2dViewer?.setCurrentModel("1f18ffc3-47ea-4ce0-9829-0576d03a7ec8");
+  const v = addedModels[targetName];
+  console.log(`name: ${targetName}, val: ${v}`);
+  if (v != undefined) {
+    live2dViewer.setCurrentModel(v);
   }
 };
 
@@ -218,6 +222,8 @@ const disAppearLive2d = () => {
 const releaseLive2d = () => {
   if (live2dViewer != undefined) {
     live2dViewer.release();
+    isLive2dInitialized.value = false;
+    isLive2dPortrait.value = false;
   }
 };
 window.addEventListener("unload", releaseLive2d, { passive: true });
@@ -232,33 +238,25 @@ watch(characterName, (newVal: string) => {
     return;
   }
 
-  const isEnableLive2dPortrait =
-    newVal.includes("ずんだもん") ||
-    newVal.includes("春日部つむぎ") ||
-    newVal.includes("九州そら") ||
-    newVal.includes("中国うさぎ");
-  if (
-    !isEnableLive2dPortrait &&
-    isLive2dPortrait.value &&
-    live2dViewer != undefined
-  ) {
+  const name = getNameOfAvailableLive2dModel(newVal);
+  if (name == undefined) {
     disAppearLive2d();
     return;
   }
 
-  if (isEnableLive2dPortrait) {
-    isLive2dPortrait.value = true;
+  const v = addedModels[name];
+  if (v == undefined) {
+    disAppearLive2d();
+    return;
   }
+
+  isLive2dPortrait.value = true;
 });
 
 onUpdated(async () => {
   if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value && isShowLive2d.value) {
     disAppearLive2d();
-    return;
-  }
-
-  if (!isLive2dPortrait.value) {
     return;
   }
 
@@ -276,6 +274,7 @@ onUpdated(async () => {
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
+      addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
     } catch (e) {
       window.electron.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -295,6 +294,7 @@ onUpdated(async () => {
         "35b2c544-660e-401e-b503-0e14c635303a",
         kasukabeTsumugi
       );
+      addedModels["春日部つむぎ"] = "35b2c544-660e-401e-b503-0e14c635303a";
     } catch (e) {
       window.electron.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -314,6 +314,7 @@ onUpdated(async () => {
         "481fb609-6446-4870-9f46-90c4dd623403",
         kyuusyuuSora
       );
+      addedModels["九州そら"] = "481fb609-6446-4870-9f46-90c4dd623403";
     } catch (e) {
       window.electron.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -321,7 +322,7 @@ onUpdated(async () => {
 
     try {
       const chugokuUsagi = new Live2dModel(
-        live2dAssetsPath + "/Usagi_vts/",
+        live2dAssetsPath + "/Usagi_vt/",
         "usagi.model3.json",
         live2dViewer,
         false,
@@ -333,19 +334,27 @@ onUpdated(async () => {
         "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
         chugokuUsagi
       );
+      addedModels["中国うさぎ"] = "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8";
     } catch (e) {
       window.electron.logError(e);
       lived2dAssetsLoadErrors.push({});
     }
 
-    if (lived2dAssetsLoadErrors.length === 0) {
+    if (lived2dAssetsLoadErrors.length === 4) {
+      live2dViewer.release();
+      return;
+    } else {
       live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
       isLive2dInitialized.value = true;
-    } else {
-      live2dViewer.release();
-      isLive2dInitialized.value = false;
-      isLive2dPortrait.value = false;
-      return;
+    }
+  }
+
+  const name = getNameOfAvailableLive2dModel(characterName.value);
+  console.log(`name onUpdate: ${name}`);
+  if (name != undefined) {
+    const v = addedModels[name];
+    if (v != undefined) {
+      isLive2dPortrait.value = true;
     }
   }
 
