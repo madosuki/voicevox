@@ -322,7 +322,7 @@ onUpdated(async () => {
 
     try {
       const chugokuUsagi = new Live2dModel(
-        live2dAssetsPath + "/Usagi_vt/",
+        live2dAssetsPath + "/Usagi_vts/",
         "usagi.model3.json",
         live2dViewer,
         false,
@@ -350,7 +350,6 @@ onUpdated(async () => {
   }
 
   const name = getNameOfAvailableLive2dModel(characterName.value);
-  console.log(`name onUpdate: ${name}`);
   if (name != undefined) {
     const v = addedModels[name];
     if (v != undefined) {
