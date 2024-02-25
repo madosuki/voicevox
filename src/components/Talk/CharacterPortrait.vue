@@ -168,7 +168,6 @@ const mouseup = () => {
 };
 const mousemove = (e: MouseEvent) => {
   if (isClicked && live2dViewer) {
-    console.log("move");
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
