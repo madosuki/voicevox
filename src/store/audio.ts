@@ -1733,9 +1733,9 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
           const buf = await audioBlob.arrayBuffer();
           const currentLive2dModelsKey = live2dViewer.targetCurrentModelKey;
-          if (live2dViewer._models[currentLive2dModelsKey] != undefined) {
-            live2dViewer._models[currentLive2dModelsKey].startLipSync(buf);
-          }
+          live2dViewer._models
+            .getValue(currentLive2dModelsKey)
+            .startLipSync(buf);
         }
 
         return dispatch("PLAY_AUDIO_PLAYER", { offset, audioKey });

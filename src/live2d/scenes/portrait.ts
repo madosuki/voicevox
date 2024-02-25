@@ -24,14 +24,16 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
     gl.flush();
 
     const { width, height } = live2dViewer.canvas;
-    if (live2dViewer._models[live2dViewer.targetCurrentModelKey] == undefined) {
-      return;
-    }
 
     const projection = live2dViewer.getNewMatrix44();
 
-    const model: Live2dModel =
-      live2dViewer._models[live2dViewer.targetCurrentModelKey];
+    const model: Live2dModel | undefined = live2dViewer.getModelFromKey(
+      live2dViewer.targetCurrentModelKey
+    );
+    if (model == undefined) {
+      window.electron.logError("target Live2D Model is undefined");
+      return;
+    }
     const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
