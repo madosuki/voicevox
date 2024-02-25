@@ -183,7 +183,6 @@ const changeLive2dModelIndex = () => {
   if (targetName == undefined) return;
 
   const v = addedModels[targetName];
-  console.log(`name: ${targetName}, val: ${v}`);
   if (v != undefined) {
     live2dViewer.setCurrentModel(v);
   }
