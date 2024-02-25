@@ -153,21 +153,22 @@ defineExpose({
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
   isClicked = true;
-  if (!live2dViewer) return;
+  if (live2dViewer == undefined) return;
   live2dViewer.onTouchesBegin(e.pageX, e.pageY);
 };
 const mouseleave = () => {
   isClicked = false;
-  if (!live2dViewer) return;
+  if (live2dViewer == undefined) return;
   live2dViewer.onTouchesEnded();
 };
 const mouseup = () => {
   isClicked = false;
-  if (!live2dViewer) return;
+  if (live2dViewer == undefined) return;
   live2dViewer.onTouchesEnded();
 };
 const mousemove = (e: MouseEvent) => {
   if (isClicked && live2dViewer) {
+    console.log("move");
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
