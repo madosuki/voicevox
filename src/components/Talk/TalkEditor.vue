@@ -2,7 +2,7 @@
   <menu-bar />
 
   <q-layout reveal elevated container class="layout-container">
-    <tool-bar :getLive2dViewer="getLive2dViewer" />
+    <tool-bar :get-live2d-viewer="getLive2dViewer" />
 
     <q-page-container>
       <q-page class="main-row-panes">
@@ -111,7 +111,7 @@
             <audio-detail
               v-if="activeAudioKey != undefined"
               :active-audio-key="activeAudioKey"
-              :getLive2dViewer="getLive2dViewer"
+              :get-live2d-viewer="getLive2dViewer"
             />
           </template>
         </q-splitter>
