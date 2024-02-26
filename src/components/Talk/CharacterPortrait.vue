@@ -99,7 +99,7 @@ const isInitializingSpeaker = computed(() => {
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
 const readFileFunction = async (filePath: string) => {
-  const result = await window.electron.readFile({ filePath });
+  const result = await window.backend.readFile({ filePath });
   if (result.ok) {
     return result.value;
   }
@@ -111,7 +111,7 @@ const readFileFunction = async (filePath: string) => {
     const res = await fetch(filePath);
     return await res.arrayBuffer();
   } catch (e) {
-    window.electron.logError(e);
+    window.backend.logError(e);
     return new ArrayBuffer(0);
   }
   */
@@ -140,7 +140,7 @@ try {
   live2dViewer.initialize(allocationMemory);
   isLoadedLive2dCore.value = true;
 } catch (e) {
-  window.electron.logError(e);
+  window.backend.logError(e);
 }
 
 const getLive2dViewer = () => {
@@ -260,7 +260,7 @@ onUpdated(async () => {
   }
 
   if (!isLive2dInitialized.value && live2dViewer) {
-    const live2dAssetsPath = await window.electron.getLive2dAssetsPath();
+    const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
     const lived2dAssetsLoadErrors = [];
     try {
       const zundamon = new Live2dModel(
@@ -275,7 +275,7 @@ onUpdated(async () => {
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
       addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
     } catch (e) {
-      window.electron.logError(e);
+      window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
     }
 
@@ -295,7 +295,7 @@ onUpdated(async () => {
       );
       addedModels["春日部つむぎ"] = "35b2c544-660e-401e-b503-0e14c635303a";
     } catch (e) {
-      window.electron.logError(e);
+      window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
     }
 
@@ -315,7 +315,7 @@ onUpdated(async () => {
       );
       addedModels["九州そら"] = "481fb609-6446-4870-9f46-90c4dd623403";
     } catch (e) {
-      window.electron.logError(e);
+      window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
     }
 
@@ -335,7 +335,7 @@ onUpdated(async () => {
       );
       addedModels["中国うさぎ"] = "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8";
     } catch (e) {
-      window.electron.logError(e);
+      window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
     }
 
