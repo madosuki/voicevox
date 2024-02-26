@@ -31,7 +31,7 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
       live2dViewer.targetCurrentModelKey
     );
     if (model == undefined) {
-      window.electron.logError("target Live2D Model is undefined");
+      window.backend.logError("target Live2D Model is undefined");
       return;
     }
     const draw = () => {
