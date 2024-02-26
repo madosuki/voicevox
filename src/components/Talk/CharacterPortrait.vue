@@ -270,7 +270,7 @@ onUpdated(async () => {
         false,
         readFileFunction
       );
-      await zundamon.loadAssets();
+      zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
       addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
@@ -287,7 +287,7 @@ onUpdated(async () => {
         true,
         readFileFunction
       );
-      await kasukabeTsumugi.loadAssets();
+      kasukabeTsumugi.loadAssets();
       kasukabeTsumugi.setLipSyncWeight(20);
       live2dViewer.addModel(
         "35b2c544-660e-401e-b503-0e14c635303a",
@@ -307,7 +307,7 @@ onUpdated(async () => {
         false,
         readFileFunction
       );
-      await kyuusyuuSora.loadAssets();
+      kyuusyuuSora.loadAssets();
       kyuusyuuSora.setLipSyncWeight(20);
       live2dViewer.addModel(
         "481fb609-6446-4870-9f46-90c4dd623403",
@@ -327,7 +327,7 @@ onUpdated(async () => {
         false,
         readFileFunction
       );
-      await chugokuUsagi.loadAssets();
+      chugokuUsagi.loadAssets();
       chugokuUsagi.setLipSyncWeight(20);
       live2dViewer.addModel(
         "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
