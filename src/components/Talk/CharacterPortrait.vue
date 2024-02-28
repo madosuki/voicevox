@@ -12,7 +12,7 @@
     />
     <div v-else class="live2d character-portrait"></div>
     <div v-if="isInitializingSpeaker" class="loading">
-      <q-spinner color="primary" size="5rem" :thickness="4" />
+      <QSpinner color="primary" size="5rem" :thickness="4" />
     </div>
   </div>
 </template>
