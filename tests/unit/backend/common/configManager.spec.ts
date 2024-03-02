@@ -1,5 +1,5 @@
 import pastConfigs from "./pastConfigs";
-import { BaseConfigManager, Metadata } from "@/backend/common/ConfigManager";
+import { BaseConfigManager } from "@/backend/common/ConfigManager";
 import { configSchema } from "@/type/preload";
 
 const configBase = {
