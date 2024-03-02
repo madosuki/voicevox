@@ -91,6 +91,10 @@ class BrowserConfigManager extends BaseConfigManager {
       return false;
     }
   }
+  protected existsSync(): boolean {
+    throw new Error("Not implement for browser");
+  }
+
   protected async load(): Promise<Record<string, unknown> & Metadata> {
     const db = await openDB();
 
@@ -103,6 +107,9 @@ class BrowserConfigManager extends BaseConfigManager {
       throw new Error("設定ファイルが見つかりません");
     }
     return JSON.parse(result);
+  }
+  protected loadSync(): Record<string, unknown> & Metadata {
+    throw new Error("Not implement for browser");
   }
 
   protected async save(data: ConfigType & Metadata) {

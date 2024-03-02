@@ -147,7 +147,9 @@ export abstract class BaseConfigManager {
 
   private lock = new AsyncLock();
 
+  protected abstract existsSync(): boolean;
   protected abstract exists(): Promise<boolean>;
+  protected abstract loadSync(): Record<string, unknown> & Metadata;
   protected abstract load(): Promise<Record<string, unknown> & Metadata>;
   protected abstract save(config: ConfigType & Metadata): Promise<void>;
 
@@ -156,6 +158,25 @@ export abstract class BaseConfigManager {
   public reset() {
     this.config = this.getDefaultConfig();
     this._save();
+  }
+
+  // ensureSaved をどう実装するか
+  public initializeSync(): this {
+    if (this.existsSync()) {
+      const data = this.loadSync();
+      const version = data.__internal__.migrations.version;
+      for (const [versionRange, migration] of migrations) {
+        if (!semver.satisfies(version, versionRange)) {
+          migration(data);
+        }
+      }
+      this.config = this.migrateHotkeySettings(configSchema.parse(data));
+      this._save();
+    } else {
+      this.reset();
+    }
+
+    return this;
   }
 
   public async initialize(): Promise<this> {

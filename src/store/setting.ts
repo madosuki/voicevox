@@ -48,6 +48,7 @@ export const settingStoreState: SettingStoreState = {
     enableMorphing: false,
     enableMultiSelect: false,
     shouldKeepTuningOnTextChange: false,
+    hWAccelerationSwitch: true,
     enableLive2dPortrait: false,
     showPitchInSongEditor: false,
   },
