@@ -1,5 +1,5 @@
 import pastConfigs from "./pastConfigs";
-import { BaseConfigManager } from "@/backend/common/ConfigManager";
+import { BaseConfigManager, Metadata } from "@/backend/common/ConfigManager";
 import { configSchema } from "@/type/preload";
 
 const configBase = {
@@ -23,10 +23,22 @@ class TestConfigManager extends BaseConfigManager {
     return false;
   }
 
+  existsSync() {
+    throw new Error("mockで実装してください");
+
+    return false;
+  }
+
   async load() {
     throw new Error("mockで実装してください");
 
     return {} as ReturnType<BaseConfigManager["load"]>;
+  }
+
+  loadSync() {
+    throw new Error("mockで実装してください");
+
+    return {} as ReturnType<BaseConfigManager["loadSync"]>;
   }
 
   // VitestのmockFn.mock.callsの型のために引数を受け取るようにしている。
