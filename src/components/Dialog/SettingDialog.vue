@@ -927,7 +927,7 @@
               <QCardActions class="q-px-md q-py-none bg-surface">
                 <div>ハードウェアアクセラレーション</div>
                 <div
-                  aria-label="ハードウェアアクセラレーション機能の有効無効を切り替えます"
+                  aria-label="ハードウェアアクセラレーション機能の有効無効を切り替えます。設定が反映されるのはアプリケーションを再起動した後です。"
                 >
                   <QIcon name="help_outline" size="sm" class="help-hover-icon">
                     <QTooltip
@@ -936,7 +936,7 @@
                       self="center left"
                       transition-show="jump-right"
                       transition-hide="jump-left"
-                      >ハードウェアアクセラレーション機能の有効無効を切り替えます</QTooltip
+                      >ハードウェアアクセラレーション機能の有効無効を切り替えます。設定が反映されるのはアプリケーションを再起動した後です。</QTooltip
                     >
                   </QIcon>
                 </div>
