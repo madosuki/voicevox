@@ -215,7 +215,7 @@ const disAppearLive2d = () => {
   live2dCanvas.removeEventListener("mousedown", mousedown);
   live2dCanvas.removeEventListener("mouseup", mouseup);
   live2dCanvas.removeEventListener("mouseleave", mouseleave);
-  live2dCanvas.removeEventListener("mousedown", mousedown);
+  live2dCanvas.removeEventListener("mousemove", mousemove);
 };
 
 const releaseLive2d = () => {
