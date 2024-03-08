@@ -980,7 +980,7 @@ export type SingingStoreTypes = {
   };
 
   SING_PLAY_AUDIO: {
-    action(): void;
+    action(payload: { live2dViewer?: Live2dViewer }): void;
   };
 
   SING_STOP_AUDIO: {

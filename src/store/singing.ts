@@ -636,7 +636,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SING_PLAY_AUDIO: {
-    async action({ state, getters, commit }) {
+    async action({ state, getters, commit }, { live2dViewer }) {
       if (state.nowPlaying) {
         return;
       }
@@ -645,7 +645,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       }
       commit("SET_PLAYBACK_STATE", { nowPlaying: true });
 
-      transport.start();
+      transport.start(live2dViewer);
       animationTimer.start(() => {
         playheadPosition.value = getters.GET_PLAYHEAD_POSITION();
       });

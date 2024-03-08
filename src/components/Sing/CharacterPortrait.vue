@@ -5,7 +5,7 @@
       class="character-portrait"
       :src="portraitPath"
     />
-    <div v-else class="charcter-portrait live2d"></div>
+    <div v-else class="character-portrait live2d"></div>
   </div>
 </template>
 
@@ -159,18 +159,29 @@ watch(isEnableLive2dFeature, (newVal) => {
 });
 
 onUpdated(async () => {
+  console.log("updated!");
   if (!props.isLoadedLive2dCore) return;
-  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
+  if (
+    !isEnableLive2dFeature.value ||
+    isShowLive2d.value ||
+    characterName.value == undefined
+  ) {
     disAppearLive2d();
     return;
   }
 
-  if (name != undefined) {
-    const v = props.getAddedLive2dModelValue(name);
-    if (v != undefined) {
-      isLive2dPortrait.value = true;
-    }
+  const name = props.getNameOfAvailableLive2dModel(characterName.value);
+  if (name == undefined) return;
+
+  const v = props.getAddedLive2dModelValue(name);
+  if (v != undefined) {
+    isLive2dPortrait.value = true;
+  } else {
+    isLive2dPortrait.value = false;
   }
+
+  console.log(characterName.value);
+  console.log(`${isLive2dPortrait.value}`);
 
   if (isLive2dPortrait.value) {
     showLive2d();

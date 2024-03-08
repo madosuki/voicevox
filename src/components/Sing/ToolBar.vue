@@ -125,6 +125,7 @@
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import { computed, watch, ref, onMounted, onUnmounted } from "vue";
 import { useStore } from "@/store";
 import { isProduction } from "@/type/preload";
@@ -141,6 +142,10 @@ import CharacterMenuButton from "@/components/Sing/CharacterMenuButton/MenuButto
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 
 const store = useStore();
+const props =
+  defineProps<{
+    getLive2dViewer: () => Live2dViewer | undefined;
+  }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 const editor = "song";
@@ -306,7 +311,7 @@ const playHeadPositionMilliSecStr = computed(() => {
 const nowPlaying = computed(() => store.state.nowPlaying);
 
 const play = () => {
-  store.dispatch("SING_PLAY_AUDIO");
+  store.dispatch("SING_PLAY_AUDIO", { live2dViewer: props.getLive2dViewer() });
 };
 
 const stop = () => {

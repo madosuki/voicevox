@@ -1,6 +1,6 @@
 <template>
   <MenuBar />
-  <ToolBar />
+  <ToolBar :get-live2d-viewer="getLive2dViewer" />
   <div class="sing-main">
     <EngineStartupOverlay
       :is-completed-initial-startup="isCompletedInitialStartup"
