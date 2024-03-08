@@ -1,6 +1,12 @@
 <template>
   <MenuBar />
-  <ToolBar :get-live2d-viewer="getLive2dViewer" />
+  <ToolBar
+    :is-live2d-initialized="isLive2dInitialized"
+    :is-loaded-live2d-core="isLoadedLive2dCore"
+    :get-live2d-viewer="getLive2dViewer"
+    :get-added-live2d-model-value="getAddedLive2dModelValue"
+    :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
+  />
   <div class="sing-main">
     <EngineStartupOverlay
       :is-completed-initial-startup="isCompletedInitialStartup"

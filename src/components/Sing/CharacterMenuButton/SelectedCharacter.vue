@@ -41,7 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { Live2dViewer } from "live2dmanager";
+import { computed, watch } from "vue";
 import { Singer } from "@/store/type";
 import { CharacterInfo } from "@/type/preload";
 import { getStyleDescription } from "@/sing/viewHelper";
@@ -51,6 +52,11 @@ const props =
     showSkeleton: boolean;
     selectedCharacterInfo: CharacterInfo | undefined;
     selectedSinger: Singer | undefined;
+    getLive2dViewer: () => Live2dViewer | undefined;
+    getAddedLive2dModelValue: (name: string) => string | undefined;
+    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    isLive2dInitialized: boolean;
+    isLoadedLive2dCore: boolean;
   }>();
 
 const selectedCharacterName = computed(() => {
@@ -76,6 +82,26 @@ const selectedStyleIconPath = computed(() => {
       style.engineId === props.selectedSinger?.engineId
     );
   })?.iconPath;
+});
+
+watch(selectedCharacterName, (newVal) => {
+  if (
+    !props.isLoadedLive2dCore ||
+    !props.isLive2dInitialized ||
+    newVal == undefined
+  )
+    return;
+
+  const name = props.getNameOfAvailableLive2dModel(newVal);
+  if (name == undefined) return;
+
+  const added = props.getAddedLive2dModelValue(name);
+  if (added == undefined) return;
+
+  const viewer = props.getLive2dViewer();
+  if (viewer == undefined) return;
+
+  viewer.setCurrentModel(added);
 });
 </script>
 

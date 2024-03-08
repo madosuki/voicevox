@@ -7,7 +7,7 @@ import {
 import { Timer } from "@/sing/utility";
 
 const convertToWavFileData = (audioBuffer: AudioBuffer) => {
-  const bytesPerSample = 4; // Float32
+  const bytesPerSample = 4; // Int32
   const formatCode = 1; // WAVE_FORMAT_PCM
 
   const numberOfChannels = audioBuffer.numberOfChannels;
@@ -37,7 +37,7 @@ const convertToWavFileData = (audioBuffer: AudioBuffer) => {
   };
   const writeSample = (offset: number, value: number) => {
     // dataView.setFloat32(pos + offset * 4, value, true);
-    dataView.setInt32(pos + offset * 4, value, true);
+    dataView.setInt16(pos + offset * 2, value * 32767.0, true);
   };
 
   writeString("RIFF");

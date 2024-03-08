@@ -4,6 +4,11 @@
       :show-skeleton="showSkeleton"
       :selected-character-info="selectedCharacterInfo"
       :selected-singer="selectedSinger"
+      :is-live2d-initialized="isLive2dInitialized"
+      :is-loaded-live2d-core="isLoadedLive2dCore"
+      :get-live2d-viewer="getLive2dViewer"
+      :get-added-live2d-model-value="getAddedLive2dModelValue"
+      :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
     />
     <QMenu
       class="character-menu"
@@ -144,6 +149,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import { computed, ref } from "vue";
 import { debounce } from "quasar";
 import SelectedCharacter from "./SelectedCharacter.vue";
@@ -154,6 +160,14 @@ import { getStyleDescription } from "@/sing/viewHelper";
 
 const store = useStore();
 const uiLocked = computed(() => store.getters.UI_LOCKED);
+
+defineProps<{
+  getLive2dViewer: () => Live2dViewer | undefined;
+  getAddedLive2dModelValue: (name: string) => string | undefined;
+  getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+  isLive2dInitialized: boolean;
+  isLoadedLive2dCore: boolean;
+}>();
 
 const userOrderedCharacterInfos = computed(() => {
   return store.getters.USER_ORDERED_CHARACTER_INFOS("singerLike");
