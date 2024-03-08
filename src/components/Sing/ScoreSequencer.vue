@@ -29,7 +29,15 @@
       @scroll="onScroll"
     >
       <!-- キャラクター全身 -->
-      <CharacterPortrait />
+      <CharacterPortrait
+        :is-activated="isActivated"
+        :get-live2d-viewer="getLive2dViewer"
+        :get-added-live2d-model-value="getAddedLive2dModelValue"
+        :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
+        :is-live2d-initialized="isLive2dInitialized"
+        :is-loaded-live2d-core="isLoadedLive2dCore"
+        :live2d-canvas="live2dCanvas"
+      />
       <!-- グリッド -->
       <!-- NOTE: 現状オクターブごとの罫線なし -->
       <svg
@@ -200,6 +208,7 @@
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import {
   computed,
   ref,
@@ -242,7 +251,15 @@ import { isOnCommandOrCtrlKeyDown } from "@/store/utility";
 
 type PreviewMode = "ADD" | "MOVE" | "RESIZE_RIGHT" | "RESIZE_LEFT";
 
-defineProps<{ isActivated: boolean }>();
+defineProps<{
+  isActivated: boolean;
+  isLoadedLive2dCore: boolean;
+  getLive2dViewer: () => Live2dViewer | undefined;
+  getAddedLive2dModelValue: (name: string) => string | undefined;
+  getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+  isLive2dInitialized: boolean;
+  live2dCanvas: HTMLCanvasElement;
+}>();
 
 // 直接イベントが来ているかどうか
 const isSelfEventTarget = (event: UIEvent) => {

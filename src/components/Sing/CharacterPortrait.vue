@@ -1,12 +1,30 @@
 <template>
   <div class="character-portrait-wrap" :class="{ hide: !isShowSinger }">
-    <img class="character-portrait" :src="portraitPath" />
+    <img
+      v-if="!isEnableLive2dFeature || !isLive2dPortrait"
+      class="character-portrait"
+      :src="portraitPath"
+    />
+    <div v-else class="charcter-portrait live2d"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { Live2dViewer } from "live2dmanager";
+import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
+import { formatCharacterStyleName } from "@/store/utility";
+import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
+
+const props =
+  defineProps<{
+    getLive2dViewer: () => Live2dViewer | undefined;
+    getAddedLive2dModelValue: (name: string) => string | undefined;
+    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    isLive2dInitialized: boolean;
+    isLoadedLive2dCore: boolean;
+    live2dCanvas: HTMLCanvasElement;
+  }>();
 
 const store = useStore();
 const isShowSinger = computed(() => store.state.isShowSinger);
@@ -27,6 +45,137 @@ const portraitPath = computed(() => {
   );
   return styleInfo?.portraitPath || characterInfo?.portraitPath;
 });
+
+const singer = computed(() => store.getters.SELECTED_TRACK.singer);
+const characterName = computed(() => {
+  if (singer.value == undefined) return;
+  const characterInfo = store.getters.CHARACTER_INFO(
+    singer.value.engineId,
+    singer.value.styleId
+  );
+  // 初期化前・未選択時
+  if (characterInfo == undefined) {
+    return "（表示エラー）";
+  }
+
+  const speakerName = characterInfo.metas.speakerName;
+  const styleInfo = characterInfo.metas.styles.find(
+    (style) => style.styleId === singer.value?.styleId
+  );
+  const styleName = styleInfo?.styleName;
+  return styleName
+    ? formatCharacterStyleName(speakerName, styleName)
+    : speakerName;
+});
+
+const isEnableLive2dFeature = computed(
+  () => store.state.experimentalSetting.enableLive2dPortrait
+);
+const isLive2dPortrait = ref(false);
+const live2dViewer = computed(() => props.getLive2dViewer());
+const isShowLive2d = ref(false);
+
+const changeLive2dModelIndex = () => {
+  if (
+    live2dViewer.value == undefined ||
+    !props.isLive2dInitialized ||
+    characterName.value == undefined
+  )
+    return;
+
+  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
+  if (targetName == undefined) return;
+
+  const v = props.getAddedLive2dModelValue(targetName);
+  if (v != undefined) {
+    live2dViewer.value.setCurrentModel(v);
+  }
+};
+
+const showLive2d = () => {
+  if (!live2dViewer.value || !props.isLive2dInitialized) return;
+
+  changeLive2dModelIndex();
+  if (isShowLive2d.value || !isLive2dPortrait.value) {
+    return;
+  }
+
+  const place = document.getElementsByClassName("live2d");
+  if (place.length < 1) return;
+  place[0].appendChild(props.live2dCanvas);
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
+
+  /*
+  live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
+  live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
+  live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
+  live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
+  */
+
+  drawLive2dPortrait(live2dViewer.value);
+};
+
+const disAppearLive2d = () => {
+  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
+  isLive2dPortrait.value = false;
+  /*
+  live2dCanvas.removeEventListener("mousedown", mousedown);
+  live2dCanvas.removeEventListener("mouseup", mouseup);
+  live2dCanvas.removeEventListener("mouseleave", mouseleave);
+  live2dCanvas.removeEventListener("mousemove", mousemove);
+  */
+};
+
+watch(characterName, (newVal: string | undefined) => {
+  if (!props.isLoadedLive2dCore || newVal == undefined) return;
+
+  if (!isEnableLive2dFeature.value) {
+    if (isShowLive2d.value) {
+      disAppearLive2d();
+    }
+    return;
+  }
+
+  const name = props.getNameOfAvailableLive2dModel(newVal);
+  if (name == undefined) {
+    disAppearLive2d();
+    return;
+  }
+
+  const v = props.getAddedLive2dModelValue(name);
+  console.log(v);
+  if (v == undefined) {
+    disAppearLive2d();
+    return;
+  }
+
+  isLive2dPortrait.value = true;
+});
+
+watch(isEnableLive2dFeature, (newVal) => {
+  if (!newVal) {
+    isLive2dPortrait.value = false;
+  }
+});
+
+onUpdated(async () => {
+  if (!props.isLoadedLive2dCore) return;
+  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
+    disAppearLive2d();
+    return;
+  }
+
+  if (name != undefined) {
+    const v = props.getAddedLive2dModelValue(name);
+    if (v != undefined) {
+      isLive2dPortrait.value = true;
+    }
+  }
+
+  if (isLive2dPortrait.value) {
+    showLive2d();
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -45,7 +194,8 @@ const portraitPath = computed(() => {
   bottom: 0;
   right: 88px;
   min-width: 200px;
-  max-width: 20vw;
+  // max-width: 20vw;
+  max-width: 800px;
 }
 
 .character-portrait {

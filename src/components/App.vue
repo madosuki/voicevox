@@ -8,6 +8,12 @@
         :key="openedEditor"
         :is-engines-ready="isEnginesReady"
         :is-project-file-loaded="isProjectFileLoaded"
+        :get-live2d-viewer="getLive2dViewer"
+        :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
+        :get-added-live2d-model-value="getAddedive2dModelValue"
+        :is-live2d-initialized="isLive2dInitialized"
+        :is-loaded-live2d-core="isLoadedLive2dCore"
+        :live2d-canvas="live2dCanvas"
       />
     </KeepAlive>
     <AllDialog :is-engines-ready="isEnginesReady" />
@@ -15,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer, Live2dModel } from "live2dmanager";
 import { watch, onMounted, ref, computed, toRaw } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
@@ -63,6 +70,200 @@ watch(
     }
   }
 );
+
+// Live2D
+const readFileFunction = async (filePath: string) => {
+  const result = await window.backend.readFile({ filePath });
+  if (result.ok) {
+    return result.value;
+  }
+  return new ArrayBuffer(0);
+
+  // for browser mode
+  /*
+  try {
+    const res = await fetch(filePath);
+    return await res.arrayBuffer();
+  } catch (e) {
+    window.backend.logError(e);
+    return new ArrayBuffer(0);
+  }
+  */
+};
+const isLive2dInitialized = ref(false);
+const isLoadedLive2dCore = ref(false);
+const isEnableLive2dFeature = computed(
+  () => store.state.experimentalSetting.enableLive2dPortrait
+);
+const live2dCanvas = document.createElement("canvas");
+const availableLive2dModels = [
+  "ずんだもん",
+  "春日部つむぎ",
+  "九州そら",
+  "中国うさぎ",
+];
+const addedModels: Record<string, string> = {};
+const allocationMemory = 1024 * 1024 * 32;
+let live2dViewer: Live2dViewer | undefined = undefined;
+try {
+  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
+  live2dViewer.initialize(allocationMemory);
+  isLoadedLive2dCore.value = true;
+} catch (e) {
+  window.backend.logError(e);
+}
+const getLive2dViewer = () => {
+  return live2dViewer;
+};
+
+let isClicked = false;
+const mousedown = (e: MouseEvent) => {
+  isClicked = true;
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
+};
+const mouseleave = () => {
+  isClicked = false;
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesEnded();
+};
+const mouseup = () => {
+  isClicked = false;
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesEnded();
+};
+const mousemove = (e: MouseEvent) => {
+  if (isClicked && live2dViewer) {
+    live2dViewer.onTouchesMoved(e.pageX, e.pageY);
+  }
+};
+const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
+  return availableLive2dModels.find((v) => name.includes(v));
+};
+const changeLive2dModelIndex = (characterName: string) => {
+  if (live2dViewer == undefined || !isLive2dInitialized.value) return;
+
+  const targetName = getNameOfAvailableLive2dModel(characterName);
+  if (targetName == undefined) return;
+
+  const v = addedModels[targetName];
+  if (v != undefined) {
+    live2dViewer.setCurrentModel(v);
+  }
+};
+const releaseLive2d = () => {
+  if (live2dViewer != undefined) {
+    live2dViewer.release();
+    isLive2dInitialized.value = false;
+  }
+};
+window.addEventListener("unload", releaseLive2d, { passive: true });
+
+const getAddedive2dModelValue = (name: string): string | undefined => {
+  return addedModels[name];
+};
+
+const initializeLive2d = async () => {
+  if (!isLoadedLive2dCore.value) return;
+  if (!isEnableLive2dFeature.value) {
+    return;
+  }
+
+  if (!isLive2dInitialized.value && live2dViewer) {
+    const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
+    const lived2dAssetsLoadErrors = [];
+    try {
+      const zundamon = new Live2dModel(
+        live2dAssetsPath + "/Zundamon_vts/",
+        "zundamon.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      zundamon.loadAssets();
+      zundamon.setLipSyncWeight(20);
+      live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
+      addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
+    } catch (e) {
+      window.backend.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    try {
+      const kasukabeTsumugi = new Live2dModel(
+        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+        "春日部つむぎ公式live2Dモデル.model3.json",
+        live2dViewer,
+        true,
+        readFileFunction
+      );
+      kasukabeTsumugi.loadAssets();
+      kasukabeTsumugi.setLipSyncWeight(20);
+      live2dViewer.addModel(
+        "35b2c544-660e-401e-b503-0e14c635303a",
+        kasukabeTsumugi
+      );
+      addedModels["春日部つむぎ"] = "35b2c544-660e-401e-b503-0e14c635303a";
+    } catch (e) {
+      window.backend.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    try {
+      const kyuusyuuSora = new Live2dModel(
+        live2dAssetsPath + "/Sora_vts/",
+        "kyuusyuu_sora.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      kyuusyuuSora.loadAssets();
+      kyuusyuuSora.setLipSyncWeight(20);
+      live2dViewer.addModel(
+        "481fb609-6446-4870-9f46-90c4dd623403",
+        kyuusyuuSora
+      );
+      addedModels["九州そら"] = "481fb609-6446-4870-9f46-90c4dd623403";
+    } catch (e) {
+      window.backend.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    try {
+      const chugokuUsagi = new Live2dModel(
+        live2dAssetsPath + "/Usagi_vts/",
+        "usagi.model3.json",
+        live2dViewer,
+        false,
+        readFileFunction
+      );
+      chugokuUsagi.loadAssets();
+      chugokuUsagi.setLipSyncWeight(20);
+      live2dViewer.addModel(
+        "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+        chugokuUsagi
+      );
+      addedModels["中国うさぎ"] = "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8";
+    } catch (e) {
+      window.backend.logError(e);
+      lived2dAssetsLoadErrors.push({});
+    }
+
+    if (lived2dAssetsLoadErrors.length === 4) {
+      live2dViewer.release();
+      return;
+    } else {
+      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
+      isLive2dInitialized.value = true;
+    }
+  }
+};
+
+watch(isEnableLive2dFeature, async (newVal) => {
+  if (!newVal || isLive2dInitialized) return;
+
+  await initializeLive2d();
+});
 
 // ソフトウェアを初期化
 const { hotkeyManager } = useHotkeyManager();
@@ -138,6 +339,10 @@ onMounted(async () => {
     });
   } else {
     isProjectFileLoaded.value = false;
+  }
+
+  if (isEnableLive2dFeature.value) {
+    await initializeLive2d();
   }
 });
 </script>

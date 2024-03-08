@@ -22,11 +22,20 @@
         />
       </div>
     </div>
-    <ScoreSequencer :is-activated="isActivated" />
+    <ScoreSequencer
+      :is-activated="isActivated"
+      :is-loaded-live2d-core="isLoadedLive2dCore"
+      :get-live2d-viewer="getLive2dViewer"
+      :get-added-live2d-model-value="getAddedLive2dModelValue"
+      :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
+      :is-live2d-initialized="isLive2dInitialized"
+      :live2d-canvas="live2dCanvas"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { Live2dViewer } from "live2dmanager";
 import { computed, onActivated, onDeactivated, ref } from "vue";
 import MenuBar from "./MenuBar.vue";
 import ToolBar from "./ToolBar.vue";
@@ -45,6 +54,12 @@ const props =
   defineProps<{
     isEnginesReady: boolean;
     isProjectFileLoaded: boolean | "waiting";
+    isLoadedLive2dCore: boolean;
+    getLive2dViewer: () => Live2dViewer | undefined;
+    getAddedLive2dModelValue: (name: string) => string | undefined;
+    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    isLive2dInitialized: boolean;
+    live2dCanvas: HTMLCanvasElement;
   }>();
 
 const store = useStore();

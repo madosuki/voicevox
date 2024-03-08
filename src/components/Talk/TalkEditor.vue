@@ -35,7 +35,17 @@
               @update:model-value="updatePortraitPane"
             >
               <template #before>
-                <CharacterPortrait ref="characterPortrait" />
+                <CharacterPortrait
+                  ref="characterPortrait"
+                  :get-live2d-viewer="getLive2dViewer"
+                  :get-added-live2d-model-value="getAddedLive2dModelValue"
+                  :get-name-of-available-live2d-model="
+                    getNameOfAvailableLive2dModel
+                  "
+                  :is-live2d-initialized="isLive2dInitialized"
+                  :is-loaded-live2d-core="isLoadedLive2dCore"
+                  :live2d-canvas="live2dCanvas"
+                />
               </template>
               <template #after>
                 <QSplitter
@@ -155,6 +165,12 @@ const props =
   defineProps<{
     isEnginesReady: boolean;
     isProjectFileLoaded: boolean | "waiting";
+    getLive2dViewer: () => Live2dViewer | undefined;
+    getAddedLive2dModelValue: (name: string) => string | undefined;
+    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    isLive2dInitialized: boolean;
+    isLoadedLive2dCore: boolean;
+    live2dCanvas: HTMLCanvasElement;
   }>();
 
 const store = useStore();
@@ -562,11 +578,6 @@ const onAudioCellPaneClick = () => {
       audioKeys: [activeAudioKey.value],
     });
   }
-};
-
-const characterPortrait = ref<InstanceType<typeof CharacterPortrait> | null>();
-const getLive2dViewer = (): Live2dViewer | undefined => {
-  return characterPortrait.value?.getLive2dViewer();
 };
 </script>
 

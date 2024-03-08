@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer, Live2dModel } from "live2dmanager";
+import { Live2dViewer } from "live2dmanager";
 import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey } from "@/type/preload";
@@ -26,6 +26,16 @@ import { formatCharacterStyleName } from "@/store/utility";
 import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
 
 const store = useStore();
+
+const props =
+  defineProps<{
+    getLive2dViewer: () => Live2dViewer | undefined;
+    getAddedLive2dModelValue: (name: string) => string | undefined;
+    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    isLive2dInitialized: boolean;
+    isLoadedLive2dCore: boolean;
+    live2dCanvas: HTMLCanvasElement;
+  }>();
 
 const characterInfo = computed(() => {
   const activeAudioKey: AudioKey | undefined = store.getters.ACTIVE_AUDIO_KEY;
@@ -98,58 +108,14 @@ const isInitializingSpeaker = computed(() => {
 
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
-const readFileFunction = async (filePath: string) => {
-  const result = await window.backend.readFile({ filePath });
-  if (result.ok) {
-    return result.value;
-  }
-  return new ArrayBuffer(0);
-
-  // for browser mode
-  /*
-  try {
-    const res = await fetch(filePath);
-    return await res.arrayBuffer();
-  } catch (e) {
-    window.backend.logError(e);
-    return new ArrayBuffer(0);
-  }
-  */
-};
-
 const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
 const isLive2dPortrait = ref(false);
-const isLive2dInitialized = ref(false);
-const isLoadedLive2dCore = ref(false);
 const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
-const live2dCanvas = document.createElement("canvas");
-const availableLive2dModels = [
-  "ずんだもん",
-  "春日部つむぎ",
-  "九州そら",
-  "中国うさぎ",
-];
-const addedModels: Record<string, string> = {};
+const live2dViewer = computed(() => props.getLive2dViewer());
 
-const allocationMemory = 1024 * 1024 * 32;
-let live2dViewer: Live2dViewer | undefined = undefined;
-try {
-  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
-  live2dViewer.initialize(allocationMemory);
-  isLoadedLive2dCore.value = true;
-} catch (e) {
-  window.backend.logError(e);
-}
-
-const getLive2dViewer = () => {
-  return live2dViewer;
-};
-defineExpose({
-  getLive2dViewer,
-});
-
+/*
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
   isClicked = true;
@@ -171,25 +137,22 @@ const mousemove = (e: MouseEvent) => {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
-
-const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
-  return availableLive2dModels.find((v) => name.includes(v));
-};
+*/
 
 const changeLive2dModelIndex = () => {
-  if (live2dViewer == undefined || !isLive2dInitialized.value) return;
+  if (live2dViewer.value == undefined || !props.isLive2dInitialized) return;
 
-  const targetName = getNameOfAvailableLive2dModel(characterName.value);
+  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
   if (targetName == undefined) return;
 
-  const v = addedModels[targetName];
+  const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
-    live2dViewer.setCurrentModel(v);
+    live2dViewer.value.setCurrentModel(v);
   }
 };
 
 const showLive2d = () => {
-  if (!live2dViewer || !isLive2dInitialized.value) return;
+  if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
   changeLive2dModelIndex();
   if (isShowLive2d.value || !isLive2dPortrait.value) {
@@ -198,37 +161,32 @@ const showLive2d = () => {
 
   const place = document.getElementsByClassName("live2d");
   if (place.length < 1) return;
-  place[0].appendChild(live2dCanvas);
+  place[0].appendChild(props.live2dCanvas);
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
 
+  /*
   live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
   live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
   live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
+  */
 
-  drawLive2dPortrait(live2dViewer);
+  drawLive2dPortrait(live2dViewer.value);
 };
 
 const disAppearLive2d = () => {
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
   isLive2dPortrait.value = false;
+  /*
   live2dCanvas.removeEventListener("mousedown", mousedown);
   live2dCanvas.removeEventListener("mouseup", mouseup);
   live2dCanvas.removeEventListener("mouseleave", mouseleave);
   live2dCanvas.removeEventListener("mousemove", mousemove);
+  */
 };
-
-const releaseLive2d = () => {
-  if (live2dViewer != undefined) {
-    live2dViewer.release();
-    isLive2dInitialized.value = false;
-    isLive2dPortrait.value = false;
-  }
-};
-window.addEventListener("unload", releaseLive2d, { passive: true });
 
 watch(characterName, (newVal: string) => {
-  if (!isLoadedLive2dCore.value) return;
+  if (!props.isLoadedLive2dCore) return;
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
@@ -237,13 +195,14 @@ watch(characterName, (newVal: string) => {
     return;
   }
 
-  const name = getNameOfAvailableLive2dModel(newVal);
+  const name = props.getNameOfAvailableLive2dModel(newVal);
   if (name == undefined) {
     disAppearLive2d();
     return;
   }
 
-  const v = addedModels[name];
+  const v = props.getAddedLive2dModelValue(name);
+  console.log(v);
   if (v == undefined) {
     disAppearLive2d();
     return;
@@ -252,105 +211,21 @@ watch(characterName, (newVal: string) => {
   isLive2dPortrait.value = true;
 });
 
+watch(isEnableLive2dFeature, (newVal) => {
+  if (!newVal) {
+    isLive2dPortrait.value = false;
+  }
+});
+
 onUpdated(async () => {
-  if (!isLoadedLive2dCore.value) return;
+  if (!props.isLoadedLive2dCore) return;
   if (!isEnableLive2dFeature.value && isShowLive2d.value) {
     disAppearLive2d();
     return;
   }
 
-  if (!isLive2dInitialized.value && live2dViewer) {
-    const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
-    const lived2dAssetsLoadErrors = [];
-    try {
-      const zundamon = new Live2dModel(
-        live2dAssetsPath + "/Zundamon_vts/",
-        "zundamon.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      zundamon.loadAssets();
-      zundamon.setLipSyncWeight(20);
-      live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
-      addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
-
-    try {
-      const kasukabeTsumugi = new Live2dModel(
-        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
-        "春日部つむぎ公式live2Dモデル.model3.json",
-        live2dViewer,
-        true,
-        readFileFunction
-      );
-      kasukabeTsumugi.loadAssets();
-      kasukabeTsumugi.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "35b2c544-660e-401e-b503-0e14c635303a",
-        kasukabeTsumugi
-      );
-      addedModels["春日部つむぎ"] = "35b2c544-660e-401e-b503-0e14c635303a";
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
-
-    try {
-      const kyuusyuuSora = new Live2dModel(
-        live2dAssetsPath + "/Sora_vts/",
-        "kyuusyuu_sora.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      kyuusyuuSora.loadAssets();
-      kyuusyuuSora.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "481fb609-6446-4870-9f46-90c4dd623403",
-        kyuusyuuSora
-      );
-      addedModels["九州そら"] = "481fb609-6446-4870-9f46-90c4dd623403";
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
-
-    try {
-      const chugokuUsagi = new Live2dModel(
-        live2dAssetsPath + "/Usagi_vts/",
-        "usagi.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      chugokuUsagi.loadAssets();
-      chugokuUsagi.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-        chugokuUsagi
-      );
-      addedModels["中国うさぎ"] = "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8";
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
-
-    if (lived2dAssetsLoadErrors.length === 4) {
-      live2dViewer.release();
-      return;
-    } else {
-      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
-      isLive2dInitialized.value = true;
-    }
-  }
-
-  const name = getNameOfAvailableLive2dModel(characterName.value);
   if (name != undefined) {
-    const v = addedModels[name];
+    const v = props.getAddedLive2dModelValue(name);
     if (v != undefined) {
       isLive2dPortrait.value = true;
     }
