@@ -141,7 +141,6 @@
 import { Live2dViewer } from "live2dmanager";
 import { computed, watch, ref, onMounted, onUnmounted } from "vue";
 import { useStore } from "@/store";
-import { isProduction } from "@/type/preload";
 
 import {
   getSnapTypes,
