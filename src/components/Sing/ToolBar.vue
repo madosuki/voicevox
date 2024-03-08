@@ -9,19 +9,26 @@
         :get-added-live2d-model-value="getAddedLive2dModelValue"
         :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
       />
-      <!-- 開発時のみ機能 -->
-      <template v-if="!isProduction">
-        <QInput
-          type="number"
-          :model-value="keyRangeAdjustmentInputBuffer"
-          label="音域調整"
-          dense
-          hide-bottom-space
-          class="key-shift"
-          @update:model-value="setKeyRangeAdjustmentInputBuffer"
-          @change="setKeyRangeAdjustment"
-        />
-      </template>
+      <QInput
+        type="number"
+        :model-value="keyRangeAdjustmentInputBuffer"
+        label="音域調整"
+        dense
+        hide-bottom-space
+        class="key-range-adjustment"
+        @update:model-value="setKeyRangeAdjustmentInputBuffer"
+        @change="setKeyRangeAdjustment"
+      />
+      <QInput
+        type="number"
+        :model-value="volumeRangeAdjustmentInputBuffer"
+        label="音量域調整"
+        dense
+        hide-bottom-space
+        class="volume-range-adjustment"
+        @update:model-value="setVolumeRangeAdjustmentInputBuffer"
+        @change="setVolumeRangeAdjustment"
+      />
       <QInput
         type="number"
         :model-value="bpmInputBuffer"
@@ -143,6 +150,7 @@ import {
   isValidBeats,
   isValidBpm,
   isValidKeyRangeAdjustment,
+  isValidvolumeRangeAdjustment,
 } from "@/sing/domain";
 import CharacterMenuButton from "@/components/Sing/CharacterMenuButton/MenuButton.vue";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
@@ -206,11 +214,15 @@ const timeSignatures = computed(() => store.state.timeSignatures);
 const keyRangeAdjustment = computed(
   () => store.getters.SELECTED_TRACK.keyRangeAdjustment
 );
+const volumeRangeAdjustment = computed(
+  () => store.getters.SELECTED_TRACK.volumeRangeAdjustment
+);
 
 const bpmInputBuffer = ref(120);
 const beatsInputBuffer = ref(4);
 const beatTypeInputBuffer = ref(4);
 const keyRangeAdjustmentInputBuffer = ref(0);
+const volumeRangeAdjustmentInputBuffer = ref(0);
 
 watch(
   tempos,
@@ -231,6 +243,10 @@ watch(
 
 watch(keyRangeAdjustment, () => {
   keyRangeAdjustmentInputBuffer.value = keyRangeAdjustment.value;
+});
+
+watch(volumeRangeAdjustment, () => {
+  volumeRangeAdjustmentInputBuffer.value = volumeRangeAdjustment.value;
 });
 
 const setBpmInputBuffer = (bpmStr: string | number | null) => {
@@ -267,6 +283,16 @@ const setKeyRangeAdjustmentInputBuffer = (
   keyRangeAdjustmentInputBuffer.value = KeyRangeAdjustmentValue;
 };
 
+const setVolumeRangeAdjustmentInputBuffer = (
+  volumeRangeAdjustmentStr: string | number | null
+) => {
+  const volumeRangeAdjustmentValue = Number(volumeRangeAdjustmentStr);
+  if (!isValidvolumeRangeAdjustment(volumeRangeAdjustmentValue)) {
+    return;
+  }
+  volumeRangeAdjustmentInputBuffer.value = volumeRangeAdjustmentValue;
+};
+
 const setTempo = () => {
   const bpm = bpmInputBuffer.value;
   store.dispatch("COMMAND_SET_TEMPO", {
@@ -292,6 +318,13 @@ const setTimeSignature = () => {
 const setKeyRangeAdjustment = () => {
   const keyRangeAdjustment = keyRangeAdjustmentInputBuffer.value;
   store.dispatch("COMMAND_SET_KEY_RANGE_ADJUSTMENT", { keyRangeAdjustment });
+};
+
+const setVolumeRangeAdjustment = () => {
+  const volumeRangeAdjustment = volumeRangeAdjustmentInputBuffer.value;
+  store.dispatch("COMMAND_SET_VOLUME_RANGE_ADJUSTMENT", {
+    volumeRangeAdjustment,
+  });
 };
 
 const playheadTicks = ref(0);
@@ -431,10 +464,16 @@ onUnmounted(() => {
   flex: 1;
 }
 
-.key-shift {
+.key-range-adjustment {
   margin-left: 16px;
   margin-right: 4px;
-  width: 50px;
+  width: 55px;
+}
+
+.volume-range-adjustment {
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 55px;
 }
 
 .sing-tempo {
