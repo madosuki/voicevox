@@ -7,7 +7,7 @@ import {
 import { Timer } from "@/sing/utility";
 
 const convertToWavFileData = (audioBuffer: AudioBuffer) => {
-  const bytesPerSample = 4; // Int32
+  const bytesPerSample = 2; // Int16
   const formatCode = 1; // WAVE_FORMAT_PCM
 
   const numberOfChannels = audioBuffer.numberOfChannels;
