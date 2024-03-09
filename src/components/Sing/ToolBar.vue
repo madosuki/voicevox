@@ -22,7 +22,7 @@
       <QInput
         type="number"
         :model-value="volumeRangeAdjustmentInputBuffer"
-        label="音量域調整"
+        label="声量調整"
         dense
         hide-bottom-space
         class="volume-range-adjustment"
@@ -466,13 +466,13 @@ onUnmounted(() => {
 .key-range-adjustment {
   margin-left: 16px;
   margin-right: 4px;
-  width: 55px;
+  width: 50px;
 }
 
 .volume-range-adjustment {
   margin-left: 4px;
   margin-right: 4px;
-  width: 55px;
+  width: 50px;
 }
 
 .sing-tempo {
