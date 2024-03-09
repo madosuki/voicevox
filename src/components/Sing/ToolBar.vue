@@ -357,7 +357,7 @@ const play = () => {
 };
 
 const stop = () => {
-  store.dispatch("SING_STOP_AUDIO");
+  store.dispatch("SING_STOP_AUDIO", { live2dViewer: props.getLive2dViewer() });
 };
 
 const goToZero = () => {

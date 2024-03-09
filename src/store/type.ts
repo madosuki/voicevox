@@ -838,7 +838,7 @@ export type SingingStoreTypes = {
 
   SET_SCORE: {
     mutation: { score: Score };
-    action(payload: { score: Score }): void;
+    action(payload: { score: Score; live2dViewer?: Live2dViewer }): void;
   };
 
   SET_TEMPO: {
@@ -941,7 +941,10 @@ export type SingingStoreTypes = {
   };
 
   EXPORT_WAVE_FILE: {
-    action(payload: { filePath?: string }): SaveResultObject;
+    action(payload: {
+      filePath?: string;
+      live2dViewer?: Live2dViewer;
+    }): SaveResultObject;
   };
 
   CANCEL_AUDIO_EXPORT: {
@@ -991,7 +994,7 @@ export type SingingStoreTypes = {
   };
 
   SING_STOP_AUDIO: {
-    action(): void;
+    action(payload: { live2dViewer?: Live2dViewer }): void;
   };
 
   SET_VOLUME: {

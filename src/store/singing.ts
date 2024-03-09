@@ -1,4 +1,5 @@
 import path from "path";
+import { Live2dViewer } from "live2dmanager";
 import { Midi } from "@tonejs/midi";
 import { v4 as uuidv4 } from "uuid";
 import { createPartialStore } from "./vuex";
@@ -346,7 +347,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
     },
     async action(
       { state, getters, commit, dispatch },
-      { score }: { score: Score }
+      { score, live2dViewer }: { score: Score; live2dViewer?: Live2dViewer }
     ) {
       if (!isValidScore(score)) {
         throw new Error("The score is invalid.");
@@ -355,7 +356,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       if (state.nowPlaying) {
-        await dispatch("SING_STOP_AUDIO");
+        await dispatch("SING_STOP_AUDIO", { live2dViewer });
       }
       commit("SET_SCORE", { score });
       transport.time = getters.TICK_TO_SECOND(playheadPosition.value);
@@ -817,7 +818,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SING_STOP_AUDIO: {
-    async action({ state, getters, commit }) {
+    async action({ state, getters, commit }, { live2dViewer }) {
       if (!state.nowPlaying) {
         return;
       }
@@ -825,6 +826,15 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       commit("SET_PLAYBACK_STATE", { nowPlaying: false });
+
+      if (live2dViewer != undefined) {
+        const model = live2dViewer.getModelFromKey(
+          live2dViewer.targetCurrentModelKey
+        );
+        if (model != undefined) {
+          model.stopLipSync();
+        }
+      }
 
       transport.stop();
       animationTimer.stop();
@@ -1871,7 +1881,10 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
 
   EXPORT_WAVE_FILE: {
     action: createUILockAction(
-      async ({ state, getters, commit, dispatch }, { filePath }) => {
+      async (
+        { state, getters, commit, dispatch },
+        { filePath, live2dViewer }
+      ) => {
         const convertToWavFileData = (audioBuffer: AudioBuffer) => {
           const bytesPerSample = 4; // Float32
           const formatCode = 3; // WAVE_FORMAT_IEEE_FLOAT
@@ -1996,7 +2009,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           const renderDuration = calcRenderDuration();
 
           if (state.nowPlaying) {
-            await dispatch("SING_STOP_AUDIO");
+            await dispatch("SING_STOP_AUDIO", { live2dViewer });
           }
 
           if (state.savingSetting.fixedExportEnabled) {

@@ -403,7 +403,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
      * 保存がキャンセルされた場合は何もしない。
      */
     async action({ dispatch, getters }, obj) {
-      await dispatch("SING_STOP_AUDIO"); // FIXME: ON_BEFORE_QUITTINGなどを作成して移動すべき
+      await dispatch("SING_STOP_AUDIO", { live2dViewer: undefined }); // FIXME: ON_BEFORE_QUITTINGなどを作成して移動すべき
 
       if (getters.IS_EDITED) {
         const result = await dispatch("SAVE_OR_DISCARD_PROJECT_FILE", {});
