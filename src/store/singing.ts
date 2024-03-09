@@ -90,6 +90,64 @@ const generateNoteEvents = (notes: Note[], tempos: Tempo[], tpqn: number) => {
   });
 };
 
+const convertToInt16WavFileData = (audioBuffer: AudioBuffer) => {
+  const bytesPerSample = 2; // Int16
+  const formatCode = 1; // WAVE_FORMAT_PCM
+
+  const numberOfChannels = audioBuffer.numberOfChannels;
+  const numberOfSamples = audioBuffer.length;
+  const sampleRate = audioBuffer.sampleRate;
+  const byteRate = sampleRate * numberOfChannels * bytesPerSample;
+  const blockSize = numberOfChannels * bytesPerSample;
+  const dataSize = numberOfSamples * numberOfChannels * bytesPerSample;
+
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const dataView = new DataView(buffer);
+
+  let pos = 0;
+  const writeString = (value: string) => {
+    for (let i = 0; i < value.length; i++) {
+      dataView.setUint8(pos, value.charCodeAt(i));
+      pos += 1;
+    }
+  };
+  const writeUint32 = (value: number) => {
+    dataView.setUint32(pos, value, true);
+    pos += 4;
+  };
+  const writeUint16 = (value: number) => {
+    dataView.setUint16(pos, value, true);
+    pos += 2;
+  };
+  const writeSample = (offset: number, value: number) => {
+    // dataView.setFloat32(pos + offset * 4, value, true);
+    dataView.setInt16(pos + offset * 2, value * 32767.0, true);
+  };
+
+  writeString("RIFF");
+  writeUint32(36 + dataSize); // RIFFチャンクサイズ
+  writeString("WAVE");
+  writeString("fmt ");
+  writeUint32(16); // fmtチャンクサイズ
+  writeUint16(formatCode);
+  writeUint16(numberOfChannels);
+  writeUint32(sampleRate);
+  writeUint32(byteRate);
+  writeUint16(blockSize);
+  writeUint16(bytesPerSample * 8); // 1サンプルあたりのビット数
+  writeString("data");
+  writeUint32(dataSize);
+
+  for (let i = 0; i < numberOfChannels; i++) {
+    const channelData = audioBuffer.getChannelData(i);
+    for (let j = 0; j < numberOfSamples; j++) {
+      writeSample(j * numberOfChannels + i, channelData[j]);
+    }
+  }
+
+  return buffer;
+};
+
 let audioContext: AudioContext | undefined;
 let transport: Transport | undefined;
 let previewSynth: PolySynth | undefined;
@@ -668,9 +726,90 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       if (!transport) {
         throw new Error("transport is undefined.");
       }
+      const numberOfChannels = 2;
+      const sampleRate = 48000; // TODO: 設定できるようにする
+      const withLimiter = false; // TODO: 設定できるようにする
+
+      const calcRenderDuration = () => {
+        // TODO: マルチトラックに対応する
+        const notes = getters.SELECTED_TRACK.notes;
+        if (notes.length === 0) {
+          return 1;
+        }
+        const lastNote = notes[notes.length - 1];
+        const lastNoteEndPosition = lastNote.position + lastNote.duration;
+        const lastNoteEndTime = getters.TICK_TO_SECOND(lastNoteEndPosition);
+        return Math.max(1, lastNoteEndTime + 1);
+      };
+
+      const renderDuration = calcRenderDuration();
+
+      const offlineAudioContext = new OfflineAudioContext(
+        numberOfChannels,
+        sampleRate * renderDuration,
+        sampleRate
+      );
+      const offlineTransport = new OfflineTransport();
+      const channelStrip = new ChannelStrip(offlineAudioContext);
+      const limiter = withLimiter
+        ? new Limiter(offlineAudioContext)
+        : undefined;
+      const clipper = new Clipper(offlineAudioContext);
+
+      for (const [phraseKey, phrase] of state.phrases) {
+        const phraseData = phraseDataMap.get(phraseKey);
+        if (!phraseData) {
+          throw new Error("phraseData is undefined");
+        }
+        if (
+          !phraseData.blob ||
+          phrase.startTime == undefined ||
+          phrase.state !== "PLAYABLE"
+        ) {
+          continue;
+        }
+        // TODO: この辺りの処理を共通化する
+        const audioEvents = await generateAudioEvents(
+          offlineAudioContext,
+          phrase.startTime,
+          phraseData.blob
+        );
+        const audioPlayer = new AudioPlayer(offlineAudioContext);
+        audioPlayer.output.connect(channelStrip.input);
+        const audioSequence: AudioSequence = {
+          type: "audio",
+          audioPlayer,
+          audioEvents,
+        };
+        offlineTransport.addSequence(audioSequence);
+      }
+      channelStrip.volume = 1;
+      if (limiter) {
+        channelStrip.output.connect(limiter.input);
+        limiter.output.connect(clipper.input);
+      } else {
+        channelStrip.output.connect(clipper.input);
+      }
+      clipper.output.connect(offlineAudioContext.destination);
+
+      // スケジューリングを行い、オフラインレンダリングを実行
+      // TODO: オフラインレンダリング後にメモリーがきちんと開放されるか確認する
+      offlineTransport.schedule(0, renderDuration);
+      const audioBuffer = await offlineAudioContext.startRendering();
+      const wavData = convertToInt16WavFileData(audioBuffer);
+      if (live2dViewer != undefined) {
+        const model = live2dViewer.getModelFromKey(
+          live2dViewer.targetCurrentModelKey
+        );
+        if (model != undefined) {
+          console.log(model?._modelJsonFileName);
+          model.startLipSync(wavData);
+        }
+      }
+
       commit("SET_PLAYBACK_STATE", { nowPlaying: true });
 
-      transport.start(live2dViewer);
+      transport.start();
       animationTimer.start(() => {
         playheadPosition.value = getters.GET_PLAYHEAD_POSITION();
       });

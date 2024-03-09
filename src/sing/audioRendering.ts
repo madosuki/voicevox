@@ -1,68 +1,9 @@
-import { Live2dViewer } from "live2dmanager";
 import {
   noteNumberToFrequency,
   decibelToLinear,
   linearToDecibel,
 } from "@/sing/domain";
 import { Timer } from "@/sing/utility";
-
-const convertToWavFileData = (audioBuffer: AudioBuffer) => {
-  const bytesPerSample = 2; // Int16
-  const formatCode = 1; // WAVE_FORMAT_PCM
-
-  const numberOfChannels = audioBuffer.numberOfChannels;
-  const numberOfSamples = audioBuffer.length;
-  const sampleRate = audioBuffer.sampleRate;
-  const byteRate = sampleRate * numberOfChannels * bytesPerSample;
-  const blockSize = numberOfChannels * bytesPerSample;
-  const dataSize = numberOfSamples * numberOfChannels * bytesPerSample;
-
-  const buffer = new ArrayBuffer(44 + dataSize);
-  const dataView = new DataView(buffer);
-
-  let pos = 0;
-  const writeString = (value: string) => {
-    for (let i = 0; i < value.length; i++) {
-      dataView.setUint8(pos, value.charCodeAt(i));
-      pos += 1;
-    }
-  };
-  const writeUint32 = (value: number) => {
-    dataView.setUint32(pos, value, true);
-    pos += 4;
-  };
-  const writeUint16 = (value: number) => {
-    dataView.setUint16(pos, value, true);
-    pos += 2;
-  };
-  const writeSample = (offset: number, value: number) => {
-    // dataView.setFloat32(pos + offset * 4, value, true);
-    dataView.setInt16(pos + offset * 2, value * 32767.0, true);
-  };
-
-  writeString("RIFF");
-  writeUint32(36 + dataSize); // RIFFチャンクサイズ
-  writeString("WAVE");
-  writeString("fmt ");
-  writeUint32(16); // fmtチャンクサイズ
-  writeUint16(formatCode);
-  writeUint16(numberOfChannels);
-  writeUint32(sampleRate);
-  writeUint32(byteRate);
-  writeUint16(blockSize);
-  writeUint16(bytesPerSample * 8); // 1サンプルあたりのビット数
-  writeString("data");
-  writeUint32(dataSize);
-
-  for (let i = 0; i < numberOfChannels; i++) {
-    const channelData = audioBuffer.getChannelData(i);
-    for (let j = 0; j < numberOfSamples; j++) {
-      writeSample(j * numberOfChannels + i, channelData[j]);
-    }
-  }
-
-  return buffer;
-};
 
 const getEarliestSchedulableContextTime = (audioContext: BaseAudioContext) => {
   const renderQuantumSize = 128;
@@ -101,7 +42,7 @@ interface EventScheduler {
    * 指定された位置までスケジューリングを行います。
    * @param untilTime どこまでスケジューリングを行うかを表す位置
    */
-  schedule(untilTime: number, live2dViewer?: Live2dViewer): void;
+  schedule(untilTime: number): void;
 
   /**
    * スケジューリングを停止します。
@@ -200,7 +141,7 @@ export class Transport {
    * スケジューリングを行います。
    * @param contextTime スケジューリングを行う時刻（コンテキスト時刻）
    */
-  private schedule(contextTime: number, live2dViewer?: Live2dViewer) {
+  private schedule(contextTime: number) {
     // 再生位置を計算
     const elapsedTime = contextTime - this.startContextTime;
     const time = this.startTime + elapsedTime;
@@ -227,7 +168,7 @@ export class Transport {
     });
 
     this.schedulers.forEach((scheduler) => {
-      scheduler.schedule(time + this.scheduleAheadTime, live2dViewer);
+      scheduler.schedule(time + this.scheduleAheadTime);
     });
   }
 
@@ -256,7 +197,7 @@ export class Transport {
   /**
    * 再生を開始します。すでに再生中の場合は何も行いません。
    */
-  start(live2dViewer?: Live2dViewer) {
+  start() {
     if (this._state === "started") return;
     const contextTime = this.audioContext.currentTime;
 
@@ -265,7 +206,7 @@ export class Transport {
     this.startContextTime = contextTime;
     this.startTime = this._time;
 
-    this.schedule(contextTime, live2dViewer);
+    this.schedule(contextTime);
   }
 
   /**
@@ -415,7 +356,7 @@ class AudioEventScheduler implements EventScheduler {
    * 指定された位置までスケジューリングを行います。
    * @param untilTime どこまでスケジューリングを行うかを表す位置
    */
-  schedule(untilTime: number, live2dViewr?: Live2dViewer) {
+  schedule(untilTime: number) {
     if (!this.isStarted) {
       throw new Error("Not started.");
     }
@@ -427,20 +368,6 @@ class AudioEventScheduler implements EventScheduler {
         this.startContextTime + (event.time + offset - this.startTime);
 
       if (event.time < untilTime) {
-        if (live2dViewr != undefined) {
-          const model = live2dViewr.getModelFromKey(
-            live2dViewr.targetCurrentModelKey
-          );
-          if (model != undefined) {
-            console.log(model?._modelJsonFileName);
-            const audioBuffer = event.buffer;
-            const buf = convertToWavFileData(audioBuffer);
-            model.startLipSync(buf);
-            console.log("lip sync start");
-            console.log(`buf size: ${buf.byteLength}`);
-          }
-        }
-
         this.player.play(contextTime, offset, event.buffer);
         this.index++;
       } else break;
