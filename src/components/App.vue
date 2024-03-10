@@ -198,7 +198,7 @@ const initializeLive2d = async () => {
         readFileFunction
       );
       kasukabeTsumugi.loadAssets();
-      kasukabeTsumugi.setLipSyncWeight(20);
+      kasukabeTsumugi.setLipSyncWeight(15);
       live2dViewer.addModel(
         "35b2c544-660e-401e-b503-0e14c635303a",
         kasukabeTsumugi

@@ -727,6 +727,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       if (!transport) {
         throw new Error("transport is undefined.");
       }
+
       const numberOfChannels = 2;
       const sampleRate = 48000; // TODO: 設定できるようにする
       const withLimiter = false; // TODO: 設定できるようにする
@@ -803,7 +804,6 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           live2dViewer.targetCurrentModelKey
         );
         if (model != undefined) {
-          console.log(model?._modelJsonFileName);
           model.startLipSync(wavData);
         }
       }
