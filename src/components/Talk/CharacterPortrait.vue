@@ -32,6 +32,8 @@ const props =
     getLive2dViewer: () => Live2dViewer | undefined;
     getAddedLive2dModelValue: (name: string) => string | undefined;
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
+    addMouseEventToLive2dCanvas: () => void;
+    removeMouseEventAtLive2dCanvas: () => void;
     isLive2dInitialized: boolean;
     isLoadedLive2dCore: boolean;
     live2dCanvas: HTMLCanvasElement;
@@ -164,12 +166,7 @@ const showLive2d = () => {
   place[0].appendChild(props.live2dCanvas);
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
 
-  /*
-  live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
-  live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
-  live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
-  live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
-  */
+  props.addMouseEventToLive2dCanvas();
 
   drawLive2dPortrait(live2dViewer.value);
 };
@@ -177,12 +174,8 @@ const showLive2d = () => {
 const disAppearLive2d = () => {
   store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
   isLive2dPortrait.value = false;
-  /*
-  live2dCanvas.removeEventListener("mousedown", mousedown);
-  live2dCanvas.removeEventListener("mouseup", mouseup);
-  live2dCanvas.removeEventListener("mouseleave", mouseleave);
-  live2dCanvas.removeEventListener("mousemove", mousemove);
-  */
+
+  props.removeMouseEventAtLive2dCanvas();
 };
 
 watch(characterName, (newVal: string) => {

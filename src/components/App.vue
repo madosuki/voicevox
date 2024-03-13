@@ -11,6 +11,8 @@
         :get-live2d-viewer="getLive2dViewer"
         :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
         :get-added-live2d-model-value="getAddedive2dModelValue"
+        :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
+        :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
         :is-live2d-initialized="isLive2dInitialized"
         :is-loaded-live2d-core="isLoadedLive2dCore"
         :live2d-canvas="live2dCanvas"
@@ -137,6 +139,21 @@ const mousemove = (e: MouseEvent) => {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
+
+const addMouseEventToLive2dCanvas = () => {
+  live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
+  live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
+  live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
+  live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
+};
+
+const removeMouseEventAtLive2dCanvas = () => {
+  live2dCanvas.removeEventListener("mousedown", mousedown);
+  live2dCanvas.removeEventListener("mouseup", mouseup);
+  live2dCanvas.removeEventListener("mouseleave", mouseleave);
+  live2dCanvas.removeEventListener("mousemove", mousemove);
+};
+
 const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
   return availableLive2dModels.find((v) => name.includes(v));
 };
