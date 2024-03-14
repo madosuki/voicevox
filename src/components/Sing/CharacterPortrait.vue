@@ -148,7 +148,7 @@ watch(isEnableLive2dFeature, (newVal) => {
 });
 
 onUpdated(async () => {
-  console.log("updated!");
+  console.log("onUpdated in CharacterPortrait on Sing Editor");
   if (!props.isLoadedLive2dCore) return;
   if (
     !isEnableLive2dFeature.value ||
@@ -168,9 +168,6 @@ onUpdated(async () => {
   } else {
     isLive2dPortrait.value = false;
   }
-
-  console.log(characterName.value);
-  console.log(`${isLive2dPortrait.value}`);
 
   if (isLive2dPortrait.value) {
     props.removeMouseEventAtLive2dCanvas();

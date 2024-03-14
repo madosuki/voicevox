@@ -217,10 +217,19 @@ onUpdated(async () => {
     return;
   }
 
+  const name = props.getNameOfAvailableLive2dModel(characterName.value);
+  if (name == undefined) {
+    disAppearLive2d();
+    return;
+  }
+
   if (name != undefined) {
     const v = props.getAddedLive2dModelValue(name);
     if (v != undefined) {
       isLive2dPortrait.value = true;
+    } else {
+      disAppearLive2d();
+      return;
     }
   }
 
