@@ -1732,7 +1732,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           }
 
           const buf = await audioBlob.arrayBuffer();
-          const currentLive2dModelsKey = live2dViewer.targetCurrentModelKey;
+          const currentLive2dModelsKey = live2dViewer.getCurrentModelKey();
           live2dViewer._models
             .getValue(currentLive2dModelsKey)
             .startLipSync(buf);

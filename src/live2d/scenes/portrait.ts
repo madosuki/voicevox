@@ -28,12 +28,13 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
     const projection = live2dViewer.getNewMatrix44();
 
     const model: Live2dModel | undefined = live2dViewer.getModelFromKey(
-      live2dViewer.targetCurrentModelKey
+      live2dViewer.getCurrentModelKey()
     );
     if (model == undefined) {
       window.backend.logError("target Live2D Model is undefined");
       return;
     }
+    // console.log(`in draw: ${live2dViewer.getCurrentModelKey()}`);
     const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {

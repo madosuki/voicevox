@@ -141,6 +141,7 @@ const mousemove = (e: MouseEvent) => {
 };
 
 const addMouseEventToLive2dCanvas = () => {
+  console.log("addMouseEvnet");
   live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
   live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });

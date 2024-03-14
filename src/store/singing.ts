@@ -801,7 +801,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       const wavData = convertToInt16WavFileData(audioBuffer);
       if (live2dViewer != undefined) {
         const model = live2dViewer.getModelFromKey(
-          live2dViewer.targetCurrentModelKey
+          live2dViewer.getCurrentModelKey()
         );
         if (model != undefined) {
           model.startLipSync(wavData);
@@ -829,7 +829,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
 
       if (live2dViewer != undefined) {
         const model = live2dViewer.getModelFromKey(
-          live2dViewer.targetCurrentModelKey
+          live2dViewer.getCurrentModelKey()
         );
         if (model != undefined) {
           model.stopLipSync();

@@ -36,6 +36,9 @@
       :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
       :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
       :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
+      :check-and-do-show-live2d-model-in-talk-character-portrait="
+        checkAndDoShowLive2dModelInTalkCharacterPortrait
+      "
       :is-live2d-initialized="isLive2dInitialized"
       :live2d-canvas="live2dCanvas"
     />
@@ -68,6 +71,7 @@ const props =
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
+    checkAndDoShowLive2dModelInTalkCharacterPortrait: () => void;
     isLive2dInitialized: boolean;
     live2dCanvas: HTMLCanvasElement;
   }>();

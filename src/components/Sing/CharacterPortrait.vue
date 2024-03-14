@@ -147,8 +147,15 @@ watch(isEnableLive2dFeature, (newVal) => {
   }
 });
 
+const editorMode = computed(() => store.state.openedEditor);
+
 onUpdated(async () => {
   console.log("onUpdated in CharacterPortrait on Sing Editor");
+  if (editorMode.value === "talk") {
+    disAppearLive2d();
+    return;
+  }
+
   if (!props.isLoadedLive2dCore) return;
   if (
     !isEnableLive2dFeature.value ||
@@ -166,11 +173,11 @@ onUpdated(async () => {
   if (v != undefined) {
     isLive2dPortrait.value = true;
   } else {
-    isLive2dPortrait.value = false;
+    disAppearLive2d();
   }
 
   if (isLive2dPortrait.value) {
-    props.removeMouseEventAtLive2dCanvas();
+    // props.removeMouseEventAtLive2dCanvas();
     showLive2d();
   }
 });

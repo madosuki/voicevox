@@ -21,7 +21,7 @@
 import { Live2dViewer } from "live2dmanager";
 import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
-import { AudioKey } from "@/type/preload";
+import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
 import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
 
@@ -151,13 +151,14 @@ const changeLive2dModelIndex = () => {
   if (v != undefined) {
     live2dViewer.value.setCurrentModel(v);
   }
+  console.log(live2dViewer.value.getCurrentModelKey());
 };
 
-const showLive2d = () => {
+const showLive2d = (isDoEditorSwitch?: boolean) => {
   if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
   changeLive2dModelIndex();
-  if (isShowLive2d.value || !isLive2dPortrait.value) {
+  if ((isShowLive2d.value || !isLive2dPortrait.value) && !isDoEditorSwitch) {
     return;
   }
 
@@ -210,8 +211,9 @@ watch(isEnableLive2dFeature, (newVal) => {
   }
 });
 
-onUpdated(async () => {
+const checkAndDoShowLive2dModelInTalkCharacterPortrait = () => {
   if (!props.isLoadedLive2dCore) return;
+  console.log(`${characterName.value}`);
   if (!isEnableLive2dFeature.value && isShowLive2d.value) {
     disAppearLive2d();
     return;
@@ -222,6 +224,7 @@ onUpdated(async () => {
     disAppearLive2d();
     return;
   }
+  console.log(`name on checkAndDoShowLive2dModel: ${name}`);
 
   if (name != undefined) {
     const v = props.getAddedLive2dModelValue(name);
@@ -236,6 +239,21 @@ onUpdated(async () => {
   if (isLive2dPortrait.value) {
     showLive2d();
   }
+};
+
+const editorMode = computed(() => store.state.openedEditor);
+watch(editorMode, (newVal) => {
+  console.log(`editorMode: ${newVal}`);
+  console.log(`isShowLiv2d: ${isShowLive2d.value}`);
+  if (newVal === ("song" as EditorType)) return;
+
+  props.addMouseEventToLive2dCanvas();
+  showLive2d(true);
+});
+
+onUpdated(async () => {
+  console.log("onUpdated in CharacterPortrait on talk");
+  checkAndDoShowLive2dModelInTalkCharacterPortrait();
 });
 </script>
 
