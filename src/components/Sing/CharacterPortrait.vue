@@ -86,7 +86,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
     return;
 
   if (isMoveToTalk) {
-    const key = store.getters.LATEST_USE_CHARACTER_KEY;
+    const key = store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK;
     live2dViewer.value.setCurrentModel(key);
     return;
   }

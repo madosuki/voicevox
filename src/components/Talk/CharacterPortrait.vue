@@ -153,12 +153,12 @@ const changeLive2dModelIndex = () => {
   const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
     live2dViewer.value.setCurrentModel(v);
-    store.dispatch("LATEST_USE_CHARACTER_KEY", { key: v });
+    store.dispatch("LATEST_USE_CHARACTER_KEY_IN_TALK", { key: v });
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
   } else {
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
   }
-  console.log(live2dViewer.value.getCurrentModelKey());
+  console.log("changeLive2dModelIndex in talk");
 };
 
 const showLive2d = (isDoEditorSwitch?: boolean) => {

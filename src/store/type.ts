@@ -1863,12 +1863,12 @@ export type ProxyStoreTypes = {
 
 // Live2d Store Types
 export type Live2dStoreState = {
-  latestUseCharacterKey: string;
+  latestUseCharacterKeyInTalk: string;
   isCurrentShowInTalk: boolean;
 };
 
 export type Live2dStoreTypes = {
-  LATEST_USE_CHARACTER_KEY: {
+  LATEST_USE_CHARACTER_KEY_IN_TALK: {
     mutation: { key: string };
     action(payload: { key: string }): void;
     getter: string;
