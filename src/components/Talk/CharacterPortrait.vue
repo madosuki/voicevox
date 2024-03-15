@@ -117,6 +117,17 @@ const isLive2dPortrait = ref(false);
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_TALK);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
+const getLive2dModelKey = (): string | undefined => {
+  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
+  if (targetName == undefined) {
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
+    return;
+  }
+
+  const v = props.getAddedLive2dModelValue(targetName);
+  return v;
+};
+
 const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !props.isLive2dInitialized) return;
   if (isMoveToTalk) {
@@ -126,7 +137,6 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
     live2dViewer.value.setCurrentModel(
       store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK
     );
-    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
     return;
   }
 
@@ -138,6 +148,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 
   const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
+    if (v === store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) return;
     live2dViewer.value.setCurrentModel(v);
     store.dispatch("LATEST_USE_CHARACTER_KEY_IN_TALK", { key: v });
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
@@ -148,20 +159,25 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 };
 
 const showLive2d = (isDoEditorSwitch?: boolean) => {
+  console.log("show");
   if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
   const place = document.getElementsByClassName("live2d");
   if (place == undefined || place.length < 1) {
-    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
     return;
   }
-  if (place.length === 1) {
+  console.log(
+    `place length: ${place.length}, place[0].childElementCount: ${place[0].childElementCount}`
+  );
+  if (place.length === 1 && place[0].childElementCount === 0) {
     place[0].appendChild(props.live2dCanvas);
   }
 
   changeLive2dModelIndex(isDoEditorSwitch);
-
+  // if (!store.getters.CURRENT_SHOW_IN_TALK) return;
   props.addMouseEventToLive2dCanvas();
+
+  console.log("draw");
   drawLive2dPortrait(live2dViewer.value);
 };
 
@@ -204,36 +220,6 @@ watch(isEnableLive2dFeature, (newVal) => {
   }
 });
 
-const checkAndDoShowLive2dModelInTalkCharacterPortrait = () => {
-  if (!props.isLoadedLive2dCore) return;
-  console.log(`${characterName.value}`);
-  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
-    disAppearLive2d();
-    return;
-  }
-
-  const name = props.getNameOfAvailableLive2dModel(characterName.value);
-  if (name == undefined) {
-    disAppearLive2d();
-    return;
-  }
-  console.log(`name on checkAndDoShowLive2dModel: ${name}`);
-
-  if (name != undefined) {
-    const v = props.getAddedLive2dModelValue(name);
-    if (v != undefined) {
-      isLive2dPortrait.value = true;
-    } else {
-      disAppearLive2d();
-      return;
-    }
-  }
-
-  if (isLive2dPortrait.value) {
-    showLive2d();
-  }
-};
-
 const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, (newVal) => {
   console.log(`editorMode: ${newVal}`);
@@ -246,9 +232,29 @@ watch(editorMode, (newVal) => {
   }
 });
 
-onUpdated(async () => {
-  console.log("onUpdated in CharacterPortrait on talk");
-  checkAndDoShowLive2dModelInTalkCharacterPortrait();
+onUpdated(() => {
+  if (!props.isLoadedLive2dCore) return;
+  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
+    disAppearLive2d();
+    return;
+  }
+
+  const v = getLive2dModelKey();
+  if (v != undefined) {
+    if (
+      v != store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK &&
+      !isLive2dPortrait.value
+    ) {
+      isLive2dPortrait.value = true;
+    }
+  } else {
+    disAppearLive2d();
+    return;
+  }
+
+  if (isLive2dPortrait.value) {
+    showLive2d();
+  }
 });
 </script>
 

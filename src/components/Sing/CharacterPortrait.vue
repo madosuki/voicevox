@@ -166,6 +166,7 @@ onUpdated(async () => {
   if (editorMode.value === "talk") {
     // トークの遷移後にトーク側からcanvasを追加してもソング側の後処理なのか追加したcanvasが消されてしまうので改めて追加する
     if (store.getters.CURRENT_SHOW_IN_TALK) {
+      console.log("do workaround in song for talk");
       const place = document.getElementsByClassName("live2d");
       if (place.length < 1) return;
       if (place.length === 1) {
