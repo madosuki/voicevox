@@ -48,8 +48,6 @@
                   :remove-mouse-event-at-live2d-canvas="
                     removeMouseEventAtLive2dCanvas
                   "
-                  :is-live2d-initialized="isLive2dInitialized"
-                  :is-loaded-live2d-core="isLoadedLive2dCore"
                   :live2d-canvas="live2dCanvas"
                 />
               </template>
@@ -176,8 +174,6 @@ const props =
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
-    isLive2dInitialized: boolean;
-    isLoadedLive2dCore: boolean;
     live2dCanvas: HTMLCanvasElement;
   }>();
 

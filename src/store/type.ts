@@ -1861,6 +1861,8 @@ export type Live2dStoreState = {
   isDidDraw: boolean;
   isCurrentShowInTalk: boolean;
   isCurrentShowInSong: boolean;
+  isLive2dInitialized: boolean;
+  isLive2dCoreLoaded: boolean;
 };
 
 export type Live2dStoreTypes = {
@@ -1885,6 +1887,18 @@ export type Live2dStoreTypes = {
   DID_DRAW: {
     mutation: { isDid: boolean };
     action(payload: { isDid: boolean }): void;
+    getter: boolean;
+  };
+
+  LIVE2D_INITIALIZED: {
+    mutation: { isLive2dInitialized: boolean };
+    action(payload: { isLive2dInitialized: boolean }): void;
+    getter: boolean;
+  };
+
+  LIVE2D_CORE_LOADED: {
+    mutation: { isLive2dLoaded: boolean };
+    action(payload: { isLive2dLoaded: boolean }): void;
     getter: boolean;
   };
 };

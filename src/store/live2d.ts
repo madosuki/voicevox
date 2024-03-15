@@ -6,6 +6,8 @@ export const live2dStoreState: Live2dStoreState = {
   isCurrentShowInTalk: false,
   isCurrentShowInSong: false,
   isDidDraw: false,
+  isLive2dInitialized: false,
+  isLive2dCoreLoaded: false,
 };
 
 export const live2dStore = createPartialStore<Live2dStoreTypes>({
@@ -54,6 +56,33 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
     getter(state) {
       return state.isDidDraw;
+    },
+  },
+
+  LIVE2D_INITIALIZED: {
+    mutation(state, { isLive2dInitialized }: { isLive2dInitialized: boolean }) {
+      state.isLive2dInitialized = isLive2dInitialized;
+    },
+    action(
+      { commit },
+      { isLive2dInitialized }: { isLive2dInitialized: boolean }
+    ) {
+      commit("LIVE2D_INITIALIZED", { isLive2dInitialized });
+    },
+    getter(state) {
+      return state.isLive2dInitialized;
+    },
+  },
+
+  LIVE2D_CORE_LOADED: {
+    mutation(state, { isLive2dLoaded }: { isLive2dLoaded: boolean }) {
+      state.isLive2dCoreLoaded = isLive2dLoaded;
+    },
+    action({ commit }, { isLive2dLoaded }: { isLive2dLoaded: boolean }) {
+      commit("LIVE2D_CORE_LOADED", { isLive2dLoaded });
+    },
+    getter(state) {
+      return state.isLive2dCoreLoaded;
     },
   },
 });

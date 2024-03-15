@@ -34,8 +34,6 @@ const props =
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
-    isLive2dInitialized: boolean;
-    isLoadedLive2dCore: boolean;
     live2dCanvas: HTMLCanvasElement;
   }>();
 
@@ -114,6 +112,8 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
 const isLive2dPortrait = ref(false);
+const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
+const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_TALK);
 const isDidDraw = computed(() => store.getters.DID_DRAW);
 const live2dViewer = computed(() => props.getLive2dViewer());
@@ -130,7 +130,7 @@ const getLive2dModelKey = (): string | undefined => {
 };
 
 const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
-  if (live2dViewer.value == undefined || !props.isLive2dInitialized) return;
+  if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
   if (isMoveToTalk) {
     console.log(
       `change live2d model index when is move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`
@@ -162,7 +162,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 
 const showLive2d = (isDoEditorSwitch?: boolean) => {
   console.log("show");
-  if (!live2dViewer.value || !props.isLive2dInitialized) return;
+  if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
   const place = document.getElementsByClassName("live2d");
   if (place == undefined || place.length < 1) {
@@ -194,7 +194,7 @@ const disAppearLive2d = () => {
 };
 
 watch(characterName, (newVal: string) => {
-  if (!props.isLoadedLive2dCore) return;
+  if (!isLoadedLive2dCore.value) return;
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
@@ -238,7 +238,7 @@ watch(editorMode, (newVal) => {
 });
 
 onUpdated(() => {
-  if (!props.isLoadedLive2dCore) return;
+  if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value && isShowLive2d.value) {
     disAppearLive2d();
     return;

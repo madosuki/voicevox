@@ -13,8 +13,6 @@
         :get-added-live2d-model-value="getAddedive2dModelValue"
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
-        :is-live2d-initialized="isLive2dInitialized"
-        :is-loaded-live2d-core="isLoadedLive2dCore"
         :live2d-canvas="live2dCanvas"
       />
     </KeepAlive>
@@ -92,8 +90,9 @@ const readFileFunction = async (filePath: string) => {
   }
   */
 };
-const isLive2dInitialized = ref(false);
-const isLoadedLive2dCore = ref(false);
+
+const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
+const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
@@ -110,7 +109,7 @@ let live2dViewer: Live2dViewer | undefined = undefined;
 try {
   live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
   live2dViewer.initialize(allocationMemory);
-  isLoadedLive2dCore.value = true;
+  store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
 } catch (e) {
   window.backend.logError(e);
 }
@@ -157,21 +156,11 @@ const removeMouseEventAtLive2dCanvas = () => {
 const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
   return availableLive2dModels.find((v) => name.includes(v));
 };
-const changeLive2dModelIndex = (characterName: string) => {
-  if (live2dViewer == undefined || !isLive2dInitialized.value) return;
 
-  const targetName = getNameOfAvailableLive2dModel(characterName);
-  if (targetName == undefined) return;
-
-  const v = addedModels[targetName];
-  if (v != undefined) {
-    live2dViewer.setCurrentModel(v);
-  }
-};
 const releaseLive2d = () => {
   if (live2dViewer != undefined) {
     live2dViewer.release();
-    isLive2dInitialized.value = false;
+    store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: false });
   }
 };
 window.addEventListener("unload", releaseLive2d, { passive: true });
@@ -271,7 +260,7 @@ const initializeLive2d = async () => {
       return;
     } else {
       live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
-      isLive2dInitialized.value = true;
+      store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
     }
   }
 };

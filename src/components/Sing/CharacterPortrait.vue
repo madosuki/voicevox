@@ -1,7 +1,7 @@
 <template>
   <div class="character-portrait-wrap" :class="{ hide: !isShowSinger }">
     <img
-      v-if="!isEnableLive2dFeature || !isLive2dPortrait"
+      v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
       class="character-portrait"
       :src="portraitPath"
     />
@@ -23,8 +23,6 @@ const props =
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
-    isLive2dInitialized: boolean;
-    isLoadedLive2dCore: boolean;
     live2dCanvas: HTMLCanvasElement;
   }>();
 
@@ -77,11 +75,13 @@ const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_SONG);
 const isDidDraw = computed(() => store.getters.DID_DRAW);
+const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
+const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
 const changeLive2dModelIndex = () => {
   if (
     live2dViewer.value == undefined ||
-    !props.isLive2dInitialized ||
+    !isLive2dInitialized.value ||
     characterName.value == undefined
   )
     return;
@@ -96,7 +96,7 @@ const changeLive2dModelIndex = () => {
 };
 
 const showLive2d = () => {
-  if (!live2dViewer.value || !props.isLive2dInitialized) return;
+  if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
   changeLive2dModelIndex();
   if (isShowLive2d.value || !isLive2dPortrait.value) {
@@ -121,7 +121,7 @@ const disAppearLive2d = () => {
 };
 
 watch(characterName, (newVal: string | undefined) => {
-  if (!props.isLoadedLive2dCore || newVal == undefined) return;
+  if (!isLoadedLive2dCore.value || newVal == undefined) return;
 
   if (!isEnableLive2dFeature.value) {
     if (isShowLive2d.value) {
@@ -156,7 +156,7 @@ const editorMode = computed(() => store.state.openedEditor);
 
 onUpdated(async () => {
   console.log("onUpdated in CharacterPortrait on Sing Editor");
-  if (!props.isLoadedLive2dCore) return;
+  if (!isLoadedLive2dCore.value) return;
   if (
     !isEnableLive2dFeature.value ||
     isShowLive2d.value ||
