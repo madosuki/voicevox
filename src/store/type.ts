@@ -1266,7 +1266,6 @@ export type IndexStoreState = {
   defaultStyleIds: DefaultStyleId[];
   userCharacterOrder: SpeakerId[];
   isMultiEngineOffMode: boolean;
-  isShowLive2dViewer: boolean;
 };
 
 export type IndexStoreTypes = {
@@ -1355,11 +1354,6 @@ export type IndexStoreTypes = {
   SET_IS_MULTI_ENGINE_OFF_MODE: {
     mutation: { isMultiEngineOffMode: boolean };
     action(payload: boolean): void;
-  };
-
-  SET_IS_SHOW_LIVE2D_VIEWER: {
-    mutation: { isShowLive2dViewer: boolean };
-    action(payload: { isShowLive2dViewer: boolean }): void;
   };
 };
 
@@ -1865,6 +1859,7 @@ export type ProxyStoreTypes = {
 export type Live2dStoreState = {
   latestUseCharacterKeyInTalk: string;
   isCurrentShowInTalk: boolean;
+  isCurrentShowInSong: boolean;
 };
 
 export type Live2dStoreTypes = {
@@ -1875,6 +1870,12 @@ export type Live2dStoreTypes = {
   };
 
   CURRENT_SHOW_IN_TALK: {
+    mutation: { isShow: boolean };
+    action(payload: { isShow: boolean }): void;
+    getter: boolean;
+  };
+
+  CURRENT_SHOW_IN_SONG: {
     mutation: { isShow: boolean };
     action(payload: { isShow: boolean }): void;
     getter: boolean;

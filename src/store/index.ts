@@ -49,7 +49,6 @@ export const indexStoreState: IndexStoreState = {
   defaultStyleIds: [],
   userCharacterOrder: [],
   isMultiEngineOffMode: false,
-  isShowLive2dViewer: false,
 };
 
 export const indexStore = createPartialStore<IndexStoreTypes>({
@@ -347,15 +346,6 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
     },
     action({ commit }, isMultiEngineOffMode) {
       commit("SET_IS_MULTI_ENGINE_OFF_MODE", { isMultiEngineOffMode });
-    },
-  },
-
-  SET_IS_SHOW_LIVE2D_VIEWER: {
-    mutation(state, { isShowLive2dViewer }) {
-      state.isShowLive2dViewer = isShowLive2dViewer;
-    },
-    action({ commit }, { isShowLive2dViewer }) {
-      commit("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer });
     },
   },
 });

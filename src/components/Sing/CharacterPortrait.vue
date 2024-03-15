@@ -77,19 +77,13 @@ const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isShowLive2d = ref(false);
 
-const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
+const changeLive2dModelIndex = () => {
   if (
     live2dViewer.value == undefined ||
     !props.isLive2dInitialized ||
     characterName.value == undefined
   )
     return;
-
-  if (isMoveToTalk) {
-    const key = store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK;
-    live2dViewer.value.setCurrentModel(key);
-    return;
-  }
 
   const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
   if (targetName == undefined) return;
@@ -100,11 +94,11 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   }
 };
 
-const showLive2d = (isMoveToTalk?: boolean) => {
+const showLive2d = () => {
   if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
-  changeLive2dModelIndex(isMoveToTalk);
-  if ((isShowLive2d.value || !isLive2dPortrait.value) && !isMoveToTalk) {
+  changeLive2dModelIndex();
+  if (isShowLive2d.value || !isLive2dPortrait.value) {
     return;
   }
   console.log(isLive2dPortrait.value);
@@ -112,13 +106,13 @@ const showLive2d = (isMoveToTalk?: boolean) => {
   const place = document.getElementsByClassName("live2d");
   if (place.length < 1) return;
   place[0].appendChild(props.live2dCanvas);
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
+  store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
 
   drawLive2dPortrait(live2dViewer.value);
 };
 
 const disAppearLive2d = () => {
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
+  store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: false });
   isLive2dPortrait.value = false;
 };
 
@@ -170,10 +164,14 @@ onUpdated(async () => {
 
   // WORKAROUND: トークとソングの切り替え時に何故かTalkのCharacterPortraitではなくSongのCharacterPortraitのonUpdatedが発火してしまう．
   if (editorMode.value === "talk") {
-    const isShowInTalk = store.getters.CURRENT_SHOW_IN_TALK;
-    if (!isShowInTalk) return;
-
-    showLive2d(true);
+    // トークの遷移後にトーク側からcanvasを追加してもソング側の後処理なのか追加したcanvasが消されてしまうので改めて追加する
+    if (store.getters.CURRENT_SHOW_IN_TALK) {
+      const place = document.getElementsByClassName("live2d");
+      if (place.length < 1) return;
+      if (place.length === 1) {
+        place[0].appendChild(props.live2dCanvas);
+      }
+    }
     return;
   }
 

@@ -4,12 +4,13 @@ import { createPartialStore } from "./vuex";
 export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",
   isCurrentShowInTalk: false,
+  isCurrentShowInSong: false,
 };
 
 export const live2dStore = createPartialStore<Live2dStoreTypes>({
   LATEST_USE_CHARACTER_KEY_IN_TALK: {
     mutation(state, { key }: { key: string }) {
-      state.latestUseCharacterKey = key;
+      state.latestUseCharacterKeyInTalk = key;
     },
     action({ commit }, { key }: { key: string }) {
       commit("LATEST_USE_CHARACTER_KEY_IN_TALK", { key });
@@ -28,6 +29,18 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
     getter(state) {
       return state.isCurrentShowInTalk;
+    },
+  },
+
+  CURRENT_SHOW_IN_SONG: {
+    mutation(state, { isShow }: { isShow: boolean }) {
+      state.isCurrentShowInSong = isShow;
+    },
+    action({ commit }, { isShow }: { isShow: boolean }) {
+      commit("CURRENT_SHOW_IN_SONG", { isShow });
+    },
+    getter(state) {
+      return state.isCurrentShowInSong;
     },
   },
 });

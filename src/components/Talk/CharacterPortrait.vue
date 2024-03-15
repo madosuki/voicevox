@@ -114,35 +114,21 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
 const isLive2dPortrait = ref(false);
-const isShowLive2d = computed(() => store.state.isShowLive2dViewer);
+const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_TALK);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
-/*
-let isClicked = false;
-const mousedown = (e: MouseEvent) => {
-  isClicked = true;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
-};
-const mouseleave = () => {
-  isClicked = false;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesEnded();
-};
-const mouseup = () => {
-  isClicked = false;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesEnded();
-};
-const mousemove = (e: MouseEvent) => {
-  if (isClicked && live2dViewer) {
-    live2dViewer.onTouchesMoved(e.pageX, e.pageY);
-  }
-};
-*/
-
-const changeLive2dModelIndex = () => {
+const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !props.isLive2dInitialized) return;
+  if (isMoveToTalk) {
+    console.log(
+      `change live2d model index when is move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`
+    );
+    live2dViewer.value.setCurrentModel(
+      store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK
+    );
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
+    return;
+  }
 
   const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
   if (targetName == undefined) {
@@ -164,23 +150,23 @@ const changeLive2dModelIndex = () => {
 const showLive2d = (isDoEditorSwitch?: boolean) => {
   if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
-  changeLive2dModelIndex();
-  if ((isShowLive2d.value || !isLive2dPortrait.value) && !isDoEditorSwitch) {
+  const place = document.getElementsByClassName("live2d");
+  if (place == undefined || place.length < 1) {
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
     return;
   }
+  if (place.length === 1) {
+    place[0].appendChild(props.live2dCanvas);
+  }
 
-  const place = document.getElementsByClassName("live2d");
-  if (place.length < 1) return;
-  place[0].appendChild(props.live2dCanvas);
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: true });
+  changeLive2dModelIndex(isDoEditorSwitch);
 
   props.addMouseEventToLive2dCanvas();
-
   drawLive2dPortrait(live2dViewer.value);
 };
 
 const disAppearLive2d = () => {
-  store.dispatch("SET_IS_SHOW_LIVE2D_VIEWER", { isShowLive2dViewer: false });
+  store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
   isLive2dPortrait.value = false;
 
   props.removeMouseEventAtLive2dCanvas();
@@ -255,8 +241,9 @@ watch(editorMode, (newVal) => {
   console.log("in talk");
   if (newVal === ("song" as EditorType)) return;
 
-  props.addMouseEventToLive2dCanvas();
-  showLive2d(true);
+  if (store.getters.CURRENT_SHOW_IN_TALK) {
+    showLive2d(true);
+  }
 });
 
 onUpdated(async () => {
