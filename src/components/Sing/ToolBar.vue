@@ -3,8 +3,6 @@
     <!-- configs for entire song -->
     <div class="sing-configs">
       <CharacterMenuButton
-        :is-live2d-initialized="isLive2dInitialized"
-        :is-loaded-live2d-core="isLoadedLive2dCore"
         :get-live2d-viewer="getLive2dViewer"
         :get-added-live2d-model-value="getAddedLive2dModelValue"
         :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
@@ -160,8 +158,6 @@ const props =
     getLive2dViewer: () => Live2dViewer | undefined;
     getAddedLive2dModelValue: (name: string) => string | undefined;
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
-    isLive2dInitialized: boolean;
-    isLoadedLive2dCore: boolean;
   }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);

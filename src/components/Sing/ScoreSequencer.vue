@@ -37,8 +37,6 @@
         :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
-        :is-live2d-initialized="isLive2dInitialized"
-        :is-loaded-live2d-core="isLoadedLive2dCore"
         :live2d-canvas="live2dCanvas"
       />
       <!-- グリッド -->
@@ -268,13 +266,11 @@ type PreviewMode = "ADD" | "MOVE" | "RESIZE_RIGHT" | "RESIZE_LEFT";
 
 defineProps<{
   isActivated: boolean;
-  isLoadedLive2dCore: boolean;
   getLive2dViewer: () => Live2dViewer | undefined;
   getAddedLive2dModelValue: (name: string) => string | undefined;
   getNameOfAvailableLive2dModel: (name: string) => string | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
-  isLive2dInitialized: boolean;
   live2dCanvas: HTMLCanvasElement;
 }>();
 

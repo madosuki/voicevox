@@ -46,6 +46,9 @@ import { computed, watch } from "vue";
 import { Singer } from "@/store/type";
 import { CharacterInfo } from "@/type/preload";
 import { getStyleDescription } from "@/sing/viewHelper";
+import { useStore } from "@/store";
+
+const store = useStore();
 
 const props =
   defineProps<{
@@ -55,8 +58,6 @@ const props =
     getLive2dViewer: () => Live2dViewer | undefined;
     getAddedLive2dModelValue: (name: string) => string | undefined;
     getNameOfAvailableLive2dModel: (name: string) => string | undefined;
-    isLive2dInitialized: boolean;
-    isLoadedLive2dCore: boolean;
   }>();
 
 const selectedCharacterName = computed(() => {
@@ -84,10 +85,12 @@ const selectedStyleIconPath = computed(() => {
   })?.iconPath;
 });
 
+const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
+const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 watch(selectedCharacterName, (newVal) => {
   if (
-    !props.isLoadedLive2dCore ||
-    !props.isLive2dInitialized ||
+    !isLoadedLive2dCore.value ||
+    !isLive2dInitialized.value ||
     newVal == undefined
   )
     return;

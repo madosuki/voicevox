@@ -4,8 +4,6 @@
       :show-skeleton="showSkeleton"
       :selected-character-info="selectedCharacterInfo"
       :selected-singer="selectedSinger"
-      :is-live2d-initialized="isLive2dInitialized"
-      :is-loaded-live2d-core="isLoadedLive2dCore"
       :get-live2d-viewer="getLive2dViewer"
       :get-added-live2d-model-value="getAddedLive2dModelValue"
       :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
@@ -165,8 +163,6 @@ defineProps<{
   getLive2dViewer: () => Live2dViewer | undefined;
   getAddedLive2dModelValue: (name: string) => string | undefined;
   getNameOfAvailableLive2dModel: (name: string) => string | undefined;
-  isLive2dInitialized: boolean;
-  isLoadedLive2dCore: boolean;
 }>();
 
 const userOrderedCharacterInfos = computed(() => {
