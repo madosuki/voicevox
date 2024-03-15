@@ -174,7 +174,7 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
   }
 
   changeLive2dModelIndex(isDoEditorSwitch);
-  // if (!store.getters.CURRENT_SHOW_IN_TALK) return;
+  if (!store.getters.CURRENT_SHOW_IN_TALK) return;
   props.addMouseEventToLive2dCanvas();
 
   console.log("draw");
