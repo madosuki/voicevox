@@ -149,8 +149,9 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 
   const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
-    // if (v === store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) return;
-    live2dViewer.value.setCurrentModel(v);
+    if (v !== store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) {
+      live2dViewer.value.setCurrentModel(v);
+    }
     store.dispatch("LATEST_USE_CHARACTER_KEY_IN_TALK", { key: v });
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
   } else {
