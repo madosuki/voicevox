@@ -75,7 +75,8 @@ const isEnableLive2dFeature = computed(
 );
 const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
-const isShowLive2d = ref(false);
+const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_SONG);
+const isDidDraw = computed(() => store.getters.DID_DRAW);
 
 const changeLive2dModelIndex = () => {
   if (
@@ -108,7 +109,10 @@ const showLive2d = () => {
   place[0].appendChild(props.live2dCanvas);
   store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
 
-  drawLive2dPortrait(live2dViewer.value);
+  if (!isDidDraw.value) {
+    drawLive2dPortrait(live2dViewer.value);
+    store.dispatch("DID_DRAW", { isDid: true });
+  }
 };
 
 const disAppearLive2d = () => {

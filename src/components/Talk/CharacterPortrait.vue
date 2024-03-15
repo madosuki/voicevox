@@ -115,6 +115,7 @@ const isEnableLive2dFeature = computed(
 );
 const isLive2dPortrait = ref(false);
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_TALK);
+const isDidDraw = computed(() => store.getters.DID_DRAW);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
 const getLive2dModelKey = (): string | undefined => {
@@ -177,8 +178,11 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
   if (!store.getters.CURRENT_SHOW_IN_TALK) return;
   props.addMouseEventToLive2dCanvas();
 
-  console.log("draw");
-  drawLive2dPortrait(live2dViewer.value);
+  if (!isDidDraw.value) {
+    console.log("draw");
+    drawLive2dPortrait(live2dViewer.value);
+    store.dispatch("DID_DRAW", { isDid: true });
+  }
 };
 
 const disAppearLive2d = () => {
