@@ -149,7 +149,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 
   const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
-    if (v === store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) return;
+    // if (v === store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) return;
     live2dViewer.value.setCurrentModel(v);
     store.dispatch("LATEST_USE_CHARACTER_KEY_IN_TALK", { key: v });
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
@@ -175,7 +175,7 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
   }
 
   changeLive2dModelIndex(isDoEditorSwitch);
-  if (!store.getters.CURRENT_SHOW_IN_TALK) return;
+  if (!isShowLive2d.value) return;
   props.addMouseEventToLive2dCanvas();
 
   if (!isDidDraw.value) {
@@ -255,6 +255,9 @@ onUpdated(() => {
     disAppearLive2d();
     return;
   }
+
+  console.log("onUpdated in talk");
+  console.log(store.getters.CURRENT_SHOW_IN_TALK);
 
   if (isLive2dPortrait.value) {
     showLive2d();
