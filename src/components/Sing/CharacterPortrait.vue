@@ -102,7 +102,7 @@ const showLive2d = () => {
   if (isShowLive2d.value || !isLive2dPortrait.value) {
     return;
   }
-  console.log(isLive2dPortrait.value);
+  console.log(`isLive2dPortrait in song: ${isLive2dPortrait.value}`);
 
   const place = document.getElementsByClassName("live2d");
   if (place.length < 1) return;
@@ -137,7 +137,6 @@ watch(characterName, (newVal: string | undefined) => {
   }
 
   const v = props.getAddedLive2dModelValue(name);
-  console.log(v);
   if (v == undefined) {
     disAppearLive2d();
     return;

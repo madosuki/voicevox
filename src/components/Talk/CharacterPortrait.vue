@@ -258,7 +258,6 @@ onUpdated(() => {
   }
 
   console.log("onUpdated in talk");
-  console.log(store.getters.CURRENT_SHOW_IN_TALK);
 
   if (isLive2dPortrait.value) {
     showLive2d();
