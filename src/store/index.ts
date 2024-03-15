@@ -32,6 +32,7 @@ import { dictionaryStoreState, dictionaryStore } from "./dictionary";
 import { proxyStore, proxyStoreState } from "./proxy";
 import { createPartialStore } from "./vuex";
 import { engineStoreState, engineStore } from "./engine";
+import { live2dStore, live2dStoreState } from "./live2d";
 import {
   DefaultStyleId,
   EngineId,
@@ -376,6 +377,7 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...proxyStoreState,
     ...singingStoreState,
     ...singingCommandStoreState,
+    ...live2dStoreState,
   },
 
   getters: {
@@ -393,6 +395,7 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...proxyStore.getters,
     ...singingStore.getters,
     ...singingCommandStore.getters,
+    ...live2dStore.getters,
   },
 
   mutations: {
@@ -410,6 +413,7 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...proxyStore.mutations,
     ...singingStore.mutations,
     ...singingCommandStore.mutations,
+    ...live2dStore.mutations,
   },
 
   actions: {
@@ -427,6 +431,7 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...proxyStore.actions,
     ...singingStore.actions,
     ...singingCommandStore.actions,
+    ...live2dStore.actions,
   },
   strict: process.env.NODE_ENV !== "production",
 });

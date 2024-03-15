@@ -77,13 +77,19 @@ const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isShowLive2d = ref(false);
 
-const changeLive2dModelIndex = () => {
+const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (
     live2dViewer.value == undefined ||
     !props.isLive2dInitialized ||
     characterName.value == undefined
   )
     return;
+
+  if (isMoveToTalk) {
+    const key = store.getters.LATEST_USE_CHARACTER_KEY;
+    live2dViewer.value.setCurrentModel(key);
+    return;
+  }
 
   const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
   if (targetName == undefined) return;
@@ -94,13 +100,14 @@ const changeLive2dModelIndex = () => {
   }
 };
 
-const showLive2d = () => {
+const showLive2d = (isMoveToTalk?: boolean) => {
   if (!live2dViewer.value || !props.isLive2dInitialized) return;
 
-  changeLive2dModelIndex();
-  if (isShowLive2d.value || !isLive2dPortrait.value) {
+  changeLive2dModelIndex(isMoveToTalk);
+  if ((isShowLive2d.value || !isLive2dPortrait.value) && !isMoveToTalk) {
     return;
   }
+  console.log(isLive2dPortrait.value);
 
   const place = document.getElementsByClassName("live2d");
   if (place.length < 1) return;
@@ -151,11 +158,6 @@ const editorMode = computed(() => store.state.openedEditor);
 
 onUpdated(async () => {
   console.log("onUpdated in CharacterPortrait on Sing Editor");
-  if (editorMode.value === "talk") {
-    disAppearLive2d();
-    return;
-  }
-
   if (!props.isLoadedLive2dCore) return;
   if (
     !isEnableLive2dFeature.value ||
@@ -163,6 +165,15 @@ onUpdated(async () => {
     characterName.value == undefined
   ) {
     disAppearLive2d();
+    return;
+  }
+
+  // WORKAROUND: トークとソングの切り替え時に何故かTalkのCharacterPortraitではなくSongのCharacterPortraitのonUpdatedが発火してしまう．
+  if (editorMode.value === "talk") {
+    const isShowInTalk = store.getters.CURRENT_SHOW_IN_TALK;
+    if (!isShowInTalk) return;
+
+    showLive2d(true);
     return;
   }
 
@@ -177,7 +188,6 @@ onUpdated(async () => {
   }
 
   if (isLive2dPortrait.value) {
-    // props.removeMouseEventAtLive2dCanvas();
     showLive2d();
   }
 });

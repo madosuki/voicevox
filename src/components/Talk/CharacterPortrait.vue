@@ -145,11 +145,18 @@ const changeLive2dModelIndex = () => {
   if (live2dViewer.value == undefined || !props.isLive2dInitialized) return;
 
   const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
-  if (targetName == undefined) return;
+  if (targetName == undefined) {
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
+    return;
+  }
 
   const v = props.getAddedLive2dModelValue(targetName);
   if (v != undefined) {
     live2dViewer.value.setCurrentModel(v);
+    store.dispatch("LATEST_USE_CHARACTER_KEY", { key: v });
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
+  } else {
+    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
   }
   console.log(live2dViewer.value.getCurrentModelKey());
 };
@@ -245,6 +252,7 @@ const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, (newVal) => {
   console.log(`editorMode: ${newVal}`);
   console.log(`isShowLiv2d: ${isShowLive2d.value}`);
+  console.log("in talk");
   if (newVal === ("song" as EditorType)) return;
 
   props.addMouseEventToLive2dCanvas();

@@ -1861,6 +1861,26 @@ export type ProxyStoreTypes = {
   };
 };
 
+// Live2d Store Types
+export type Live2dStoreState = {
+  latestUseCharacterKey: string;
+  isCurrentShowInTalk: boolean;
+};
+
+export type Live2dStoreTypes = {
+  LATEST_USE_CHARACTER_KEY: {
+    mutation: { key: string };
+    action(payload: { key: string }): void;
+    getter: string;
+  };
+
+  CURRENT_SHOW_IN_TALK: {
+    mutation: { isShow: boolean };
+    action(payload: { isShow: boolean }): void;
+    getter: boolean;
+  };
+};
+
 /*
  * All Store Types
  */
@@ -1879,7 +1899,8 @@ export type State = AudioStoreState &
   DictionaryStoreState &
   ProxyStoreState &
   SingingStoreState &
-  SingingCommandStoreState;
+  SingingCommandStoreState &
+  Live2dStoreState;
 
 type AllStoreTypes = AudioStoreTypes &
   AudioPlayerStoreTypes &
@@ -1894,7 +1915,8 @@ type AllStoreTypes = AudioStoreTypes &
   DictionaryStoreTypes &
   ProxyStoreTypes &
   SingingStoreTypes &
-  SingingCommandStoreTypes;
+  SingingCommandStoreTypes &
+  Live2dStoreTypes;
 
 export type AllGetters = StoreType<AllStoreTypes, "getter">;
 export type AllMutations = StoreType<AllStoreTypes, "mutation">;
