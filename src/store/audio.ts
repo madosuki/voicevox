@@ -1649,7 +1649,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
   PLAY_AUDIO: {
     action: createUILockAction(
       async (
-        { commit, dispatch, state },
+        { commit, dispatch },
         {
           audioKey,
           live2dViewer,
@@ -1713,7 +1713,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           offset = startTime + 10e-6;
         }
 
-        if (live2dViewer && state.isShowLive2dViewer && audioKey) {
+        if (live2dViewer && state.isCurrentShowInTalk && audioKey) {
           if (state.nowPlayingContinuously) {
             const audioItem = state.audioItems[audioKey];
             const speakerId = audioItem.voice.speakerId.toString();
@@ -1725,6 +1725,12 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
               live2dModelsKey = speakerId;
             }
+            if (speakerId === "481fb609-6446-4870-9f46-90c4dd62340") {
+              live2dModelsKey = speakerId;
+            }
+            if (speakerId === "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8") {
+              live2dModelsKey = speakerId;
+            }
 
             if (live2dModelsKey !== "") {
               live2dViewer.setCurrentModel(live2dModelsKey);
@@ -1733,9 +1739,12 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
           const buf = await audioBlob.arrayBuffer();
           const currentLive2dModelsKey = live2dViewer.getCurrentModelKey();
-          live2dViewer._models
-            .getValue(currentLive2dModelsKey)
-            .startLipSync(buf);
+          console.log(currentLive2dModelsKey);
+          console.log("generate audio");
+          const model = live2dViewer.getModelFromKey(currentLive2dModelsKey);
+          if (model) {
+            model.startLipSync(buf);
+          }
         }
 
         return dispatch("PLAY_AUDIO_PLAYER", { offset, audioKey });
