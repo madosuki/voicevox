@@ -122,12 +122,6 @@ const mousedown = (e: MouseEvent) => {
   isClicked = true;
   if (live2dViewer == undefined) return;
   live2dViewer.onTouchesBegin(e.pageX, e.pageY);
-  const key = live2dViewer.getCurrentModelKey();
-  const model = live2dViewer.getModelFromKey(key);
-  if (model == undefined) return;
-
-  model.closeEyelids();
-  setTimeout(() => model.openEyelids(), 100);
 };
 const mouseleave = () => {
   isClicked = false;
