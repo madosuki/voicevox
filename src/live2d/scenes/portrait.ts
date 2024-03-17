@@ -1,10 +1,11 @@
 import { Live2dModel, Live2dViewer } from "live2dmanager";
 
-export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
-  const loop = () => {
+// that return value is handle of requestAnimationFrame. That is for cancelAnimationFrame function.
+export function drawLive2dPortrait(live2dViewer: Live2dViewer): number {
+  const loop = (): number => {
     const gl = live2dViewer.gl;
     if (gl == undefined) {
-      return;
+      return 0;
     }
 
     live2dViewer.updateTime();
@@ -32,7 +33,7 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
     );
     if (model == undefined) {
       window.backend.logError("target Live2D Model is undefined");
-      return;
+      return 0;
     }
     // console.log(`in draw: ${live2dViewer.getCurrentModelKey()}`);
     const draw = () => {
@@ -55,8 +56,8 @@ export function drawLive2dPortrait(live2dViewer: Live2dViewer): void {
       draw();
     }
 
-    requestAnimationFrame(loop);
+    return requestAnimationFrame(loop);
   };
 
-  loop();
+  return loop();
 }

@@ -181,7 +181,10 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
 
   if (!isDidDraw.value) {
     console.log("draw");
-    drawLive2dPortrait(live2dViewer.value);
+    const handle = drawLive2dPortrait(live2dViewer.value);
+    console.log(
+      `requestAnimationFrame handle in CharacterPortrait at Talk: ${handle}`
+    );
     store.dispatch("DID_DRAW", { isDid: true });
   }
 };
