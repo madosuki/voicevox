@@ -5,7 +5,7 @@ export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",
   isCurrentShowInTalk: false,
   isCurrentShowInSong: false,
-  isDidDraw: false,
+  isDrawing: false,
   isLive2dInitialized: false,
   isLive2dCoreLoaded: false,
   canUseLive2dModelArray: [
@@ -54,15 +54,15 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
   },
 
-  DID_DRAW: {
+  IS_DRAWING: {
     mutation(state, { isDid }: { isDid: boolean }) {
       state.isDidDraw = isDid;
     },
     action({ commit }, { isDid }: { isDid: boolean }) {
-      commit("DID_DRAW", { isDid });
+      commit("IS_DRAWING", { isDid });
     },
     getter(state) {
-      return state.isDidDraw;
+      return state.isDrawing;
     },
   },
 

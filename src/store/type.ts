@@ -1858,7 +1858,7 @@ export type ProxyStoreTypes = {
 // Live2d Store Types
 export type Live2dStoreState = {
   latestUseCharacterKeyInTalk: string;
-  isDidDraw: boolean;
+  isDrawing: boolean;
   isCurrentShowInTalk: boolean;
   isCurrentShowInSong: boolean;
   isLive2dInitialized: boolean;
@@ -1886,7 +1886,7 @@ export type Live2dStoreTypes = {
     getter: boolean;
   };
 
-  DID_DRAW: {
+  IS_DRAWING: {
     mutation: { isDid: boolean };
     action(payload: { isDid: boolean }): void;
     getter: boolean;

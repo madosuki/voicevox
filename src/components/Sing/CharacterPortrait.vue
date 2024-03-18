@@ -72,7 +72,7 @@ const isEnableLive2dFeature = computed(
 const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_SONG);
-const isDidDraw = computed(() => store.getters.DID_DRAW);
+const isDidDraw = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
@@ -111,7 +111,7 @@ const showLive2d = () => {
 
   if (!isDidDraw.value) {
     drawLive2dPortrait(live2dViewer.value);
-    store.dispatch("DID_DRAW", { isDid: true });
+    store.dispatch("IS_DRAWING", { isDid: true });
   }
 };
 
