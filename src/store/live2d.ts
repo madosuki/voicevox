@@ -8,7 +8,7 @@ export const live2dStoreState: Live2dStoreState = {
   isDidDraw: false,
   isLive2dInitialized: false,
   isLive2dCoreLoaded: false,
-  preparableLive2dModelArray: [
+  canUseLive2dModelArray: [
     "ずんだもん",
     "春日部つむぎ",
     "九州そら",
@@ -93,9 +93,9 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
   },
 
-  NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY: {
+  NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY: {
     getter: (state) => (name) => {
-      return state.preparableLive2dModelArray.find((v) => name.includes(v));
+      return state.canUseLive2dModelArray.find((v) => name.includes(v));
     },
   },
 

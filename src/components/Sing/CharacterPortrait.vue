@@ -84,7 +84,7 @@ const changeLive2dModelIndex = () => {
   )
     return;
 
-  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+  const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value
   );
   if (targetName == undefined) return;
@@ -130,7 +130,7 @@ watch(characterName, (newVal: string | undefined) => {
     return;
   }
 
-  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) {
     disAppearLive2d();
     return;
@@ -179,7 +179,7 @@ onUpdated(async () => {
     return;
   }
 
-  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value
   );
   if (name == undefined) return;

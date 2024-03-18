@@ -117,7 +117,7 @@ const isDidDraw = computed(() => store.getters.DID_DRAW);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
 const getLive2dModelKey = (): string | undefined => {
-  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+  const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value
   );
   if (targetName == undefined) {
@@ -141,7 +141,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
     return;
   }
 
-  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+  const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value
   );
   if (targetName == undefined) {
@@ -208,7 +208,7 @@ watch(characterName, (newVal: string) => {
     return;
   }
 
-  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) {
     disAppearLive2d();
     return;
