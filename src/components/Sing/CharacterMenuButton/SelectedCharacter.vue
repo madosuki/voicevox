@@ -93,7 +93,7 @@ watch(selectedCharacterName, (newVal) => {
   )
     return;
 
-  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) return;
 
   const added = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
