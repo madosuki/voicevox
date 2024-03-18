@@ -56,8 +56,6 @@ const props =
     selectedCharacterInfo: CharacterInfo | undefined;
     selectedSinger: Singer | undefined;
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
   }>();
 
 const selectedCharacterName = computed(() => {
@@ -95,10 +93,10 @@ watch(selectedCharacterName, (newVal) => {
   )
     return;
 
-  const name = props.getNameOfAvailableLive2dModel(newVal);
+  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) return;
 
-  const added = props.getAddedLive2dModelValue(name);
+  const added = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
   if (added == undefined) return;
 
   const viewer = props.getLive2dViewer();

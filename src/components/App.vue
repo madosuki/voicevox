@@ -9,8 +9,6 @@
         :is-engines-ready="isEnginesReady"
         :is-project-file-loaded="isProjectFileLoaded"
         :get-live2d-viewer="getLive2dViewer"
-        :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
-        :get-added-live2d-model-value="getAddedive2dModelValue"
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
         :live2d-canvas="live2dCanvas"
@@ -97,13 +95,6 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait
 );
 const live2dCanvas = document.createElement("canvas");
-const availableLive2dModels = [
-  "ずんだもん",
-  "春日部つむぎ",
-  "九州そら",
-  "中国うさぎ",
-];
-const addedModels: Record<string, string> = {};
 const allocationMemory = 1024 * 1024 * 32;
 let live2dViewer: Live2dViewer | undefined = undefined;
 try {
@@ -160,10 +151,6 @@ const removeMouseEventAtLive2dCanvas = () => {
   live2dCanvas.removeEventListener("mousemove", mousemove);
 };
 
-const getNameOfAvailableLive2dModel = (name: string): string | undefined => {
-  return availableLive2dModels.find((v) => name.includes(v));
-};
-
 const releaseLive2d = () => {
   if (live2dViewer != undefined) {
     live2dViewer.release();
@@ -171,10 +158,6 @@ const releaseLive2d = () => {
   }
 };
 window.addEventListener("unload", releaseLive2d, { passive: true });
-
-const getAddedive2dModelValue = (name: string): string | undefined => {
-  return addedModels[name];
-};
 
 const initializeLive2d = async () => {
   if (!isLoadedLive2dCore.value) return;
@@ -196,7 +179,10 @@ const initializeLive2d = async () => {
       await zundamon.loadAssets();
       zundamon.setLipSyncWeight(20);
       live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
-      addedModels["ずんだもん"] = "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9";
+      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        name: "ずんだもん",
+        key: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
+      });
     } catch (e) {
       window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -216,7 +202,10 @@ const initializeLive2d = async () => {
         "35b2c544-660e-401e-b503-0e14c635303a",
         kasukabeTsumugi
       );
-      addedModels["春日部つむぎ"] = "35b2c544-660e-401e-b503-0e14c635303a";
+      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        name: "春日部つむぎ",
+        key: "35b2c544-660e-401e-b503-0e14c635303a",
+      });
     } catch (e) {
       window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -236,7 +225,10 @@ const initializeLive2d = async () => {
         "481fb609-6446-4870-9f46-90c4dd623403",
         kyuusyuuSora
       );
-      addedModels["九州そら"] = "481fb609-6446-4870-9f46-90c4dd623403";
+      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        name: "九州そら",
+        key: "481fb609-6446-4870-9f46-90c4dd623403",
+      });
     } catch (e) {
       window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});
@@ -256,7 +248,10 @@ const initializeLive2d = async () => {
         "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
         chugokuUsagi
       );
-      addedModels["中国うさぎ"] = "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8";
+      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        name: "中国うさぎ",
+        key: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+      });
     } catch (e) {
       window.backend.logError(e);
       lived2dAssetsLoadErrors.push({});

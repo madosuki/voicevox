@@ -19,8 +19,6 @@ import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
 const props =
   defineProps<{
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
@@ -86,10 +84,12 @@ const changeLive2dModelIndex = () => {
   )
     return;
 
-  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
+  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+    characterName.value
+  );
   if (targetName == undefined) return;
 
-  const v = props.getAddedLive2dModelValue(targetName);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
     live2dViewer.value.setCurrentModel(v);
   }
@@ -130,13 +130,13 @@ watch(characterName, (newVal: string | undefined) => {
     return;
   }
 
-  const name = props.getNameOfAvailableLive2dModel(newVal);
+  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) {
     disAppearLive2d();
     return;
   }
 
-  const v = props.getAddedLive2dModelValue(name);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
   if (v == undefined) {
     disAppearLive2d();
     return;
@@ -179,10 +179,12 @@ onUpdated(async () => {
     return;
   }
 
-  const name = props.getNameOfAvailableLive2dModel(characterName.value);
+  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+    characterName.value
+  );
   if (name == undefined) return;
 
-  const v = props.getAddedLive2dModelValue(name);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
   if (v != undefined) {
     isLive2dPortrait.value = true;
   } else {

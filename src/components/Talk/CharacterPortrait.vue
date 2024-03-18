@@ -30,8 +30,6 @@ const store = useStore();
 const props =
   defineProps<{
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
@@ -119,13 +117,15 @@ const isDidDraw = computed(() => store.getters.DID_DRAW);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
 const getLive2dModelKey = (): string | undefined => {
-  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
+  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+    characterName.value
+  );
   if (targetName == undefined) {
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
     return;
   }
 
-  const v = props.getAddedLive2dModelValue(targetName);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   return v;
 };
 
@@ -141,13 +141,15 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
     return;
   }
 
-  const targetName = props.getNameOfAvailableLive2dModel(characterName.value);
+  const targetName = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(
+    characterName.value
+  );
   if (targetName == undefined) {
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
     return;
   }
 
-  const v = props.getAddedLive2dModelValue(targetName);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
     if (v !== store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) {
       live2dViewer.value.setCurrentModel(v);
@@ -206,13 +208,13 @@ watch(characterName, (newVal: string) => {
     return;
   }
 
-  const name = props.getNameOfAvailableLive2dModel(newVal);
+  const name = store.getters.NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) {
     disAppearLive2d();
     return;
   }
 
-  const v = props.getAddedLive2dModelValue(name);
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
   console.log(v);
   if (v == undefined) {
     disAppearLive2d();

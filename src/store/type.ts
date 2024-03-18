@@ -1863,6 +1863,8 @@ export type Live2dStoreState = {
   isCurrentShowInSong: boolean;
   isLive2dInitialized: boolean;
   isLive2dCoreLoaded: boolean;
+  preparableLive2dModelArray: string[];
+  addedLive2dModelNameRecord: Record<string, string>;
 };
 
 export type Live2dStoreTypes = {
@@ -1900,6 +1902,19 @@ export type Live2dStoreTypes = {
     mutation: { isLive2dLoaded: boolean };
     action(payload: { isLive2dLoaded: boolean }): void;
     getter: boolean;
+  };
+
+  NAME_FROM_PREPARABLE_LIVE2D_MODEL_ARRAY: {
+    getter(name: string): string | undefined;
+  };
+
+  ADDED_LIVE2D_MODEL_RECORD: {
+    mutation: { name: string; key: string };
+    action(payload: { name: string; key: string }): void;
+  };
+
+  KEY_FROM_ADDED_LIVE2D_MODEL_RECORD: {
+    getter(name: string): string | undefined;
   };
 };
 

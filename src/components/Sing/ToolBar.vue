@@ -2,11 +2,7 @@
   <QToolbar class="sing-toolbar">
     <!-- configs for entire song -->
     <div class="sing-configs">
-      <CharacterMenuButton
-        :get-live2d-viewer="getLive2dViewer"
-        :get-added-live2d-model-value="getAddedLive2dModelValue"
-        :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
-      />
+      <CharacterMenuButton :get-live2d-viewer="getLive2dViewer" />
       <QInput
         type="number"
         :model-value="keyRangeAdjustmentInputBuffer"
@@ -156,8 +152,6 @@ const store = useStore();
 const props =
   defineProps<{
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
   }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);

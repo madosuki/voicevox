@@ -1,10 +1,6 @@
 <template>
   <MenuBar />
-  <ToolBar
-    :get-live2d-viewer="getLive2dViewer"
-    :get-added-live2d-model-value="getAddedLive2dModelValue"
-    :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
-  />
+  <ToolBar :get-live2d-viewer="getLive2dViewer" />
   <div class="sing-main">
     <EngineStartupOverlay
       :is-completed-initial-startup="isCompletedInitialStartup"
@@ -29,8 +25,6 @@
     <ScoreSequencer
       :is-activated="isActivated"
       :get-live2d-viewer="getLive2dViewer"
-      :get-added-live2d-model-value="getAddedLive2dModelValue"
-      :get-name-of-available-live2d-model="getNameOfAvailableLive2dModel"
       :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
       :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
       :live2d-canvas="live2dCanvas"
@@ -59,8 +53,6 @@ const props =
     isEnginesReady: boolean;
     isProjectFileLoaded: boolean | "waiting";
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;

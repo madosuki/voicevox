@@ -38,10 +38,6 @@
                 <CharacterPortrait
                   ref="characterPortrait"
                   :get-live2d-viewer="getLive2dViewer"
-                  :get-added-live2d-model-value="getAddedLive2dModelValue"
-                  :get-name-of-available-live2d-model="
-                    getNameOfAvailableLive2dModel
-                  "
                   :add-mouse-event-to-live2d-canvas="
                     addMouseEventToLive2dCanvas
                   "
@@ -170,8 +166,6 @@ const props =
     isEnginesReady: boolean;
     isProjectFileLoaded: boolean | "waiting";
     getLive2dViewer: () => Live2dViewer | undefined;
-    getAddedLive2dModelValue: (name: string) => string | undefined;
-    getNameOfAvailableLive2dModel: (name: string) => string | undefined;
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
