@@ -157,6 +157,7 @@ const removeMouseEventAtLive2dCanvas = () => {
 
 const releaseLive2d = () => {
   if (live2dViewer != undefined) {
+    live2dSceneRenderer.cancelRender();
     live2dViewer.release();
     store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: false });
   }
