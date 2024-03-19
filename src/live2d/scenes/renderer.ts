@@ -37,8 +37,7 @@ export class Live2dSceneRenderer {
     };
 
     if (this.requestAnimationFrameHandler !== 0) {
-      window.backend.logError("still alive requestAnimationFrame handle");
-      return;
+      this.cancelRender();
     }
 
     loop();
