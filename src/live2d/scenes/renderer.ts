@@ -33,6 +33,7 @@ export class Live2dSceneRenderer {
       gl.flush();
 
       scene(live2dViewer);
+      // requestAnimationFrameはlong型な0以外の値なrequest idを返す． ref: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame#return_value
       this.requestAnimationFrameHandler = requestAnimationFrame(loop);
     };
 
