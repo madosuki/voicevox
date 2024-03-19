@@ -28,6 +28,7 @@
       :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
       :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
       :live2d-canvas="live2dCanvas"
+      :live2d-scene-renderer="live2dSceneRenderer"
     />
   </div>
 </template>
@@ -47,6 +48,7 @@ import {
   DEFAULT_BPM,
   DEFAULT_TPQN,
 } from "@/sing/storeHelper";
+import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 
 const props =
   defineProps<{
@@ -56,6 +58,7 @@ const props =
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
+    live2dSceneRenderer: Live2dSceneRenderer;
   }>();
 
 const store = useStore();

@@ -36,6 +36,7 @@
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
         :live2d-canvas="live2dCanvas"
+        :live2d-scene-renderer="live2dSceneRenderer"
       />
       <!-- グリッド -->
       <!-- NOTE: 現状オクターブごとの罫線なし -->
@@ -259,6 +260,7 @@ import CharacterPortrait from "@/components/Sing/CharacterPortrait.vue";
 import SequencerPitch from "@/components/Sing/SequencerPitch.vue";
 import { isOnCommandOrCtrlKeyDown } from "@/store/utility";
 import { useShiftKey } from "@/composables/useModifierKey";
+import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 
 type PreviewMode = "ADD" | "MOVE" | "RESIZE_RIGHT" | "RESIZE_LEFT";
 
@@ -268,6 +270,7 @@ defineProps<{
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
+  live2dSceneRenderer: Live2dSceneRenderer;
 }>();
 
 // 直接イベントが来ているかどうか

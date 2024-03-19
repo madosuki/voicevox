@@ -45,6 +45,7 @@
                     removeMouseEventAtLive2dCanvas
                   "
                   :live2d-canvas="live2dCanvas"
+                  :live2d-scene-renderer="live2dSceneRenderer"
                 />
               </template>
               <template #after>
@@ -160,6 +161,7 @@ import {
 } from "@/type/preload";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
+import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 
 const props =
   defineProps<{
@@ -169,6 +171,7 @@ const props =
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
+    live2dSceneRenderer: Live2dSceneRenderer;
   }>();
 
 const store = useStore();

@@ -14,7 +14,8 @@ import { Live2dViewer } from "live2dmanager";
 import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
-import { drawLive2dPortrait } from "@/live2d/scenes/portrait";
+import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 
 const props =
   defineProps<{
@@ -22,6 +23,7 @@ const props =
     addMouseEventToLive2dCanvas: () => void;
     removeMouseEventAtLive2dCanvas: () => void;
     live2dCanvas: HTMLCanvasElement;
+    live2dSceneRenderer: Live2dSceneRenderer;
   }>();
 
 const store = useStore();
@@ -72,7 +74,7 @@ const isEnableLive2dFeature = computed(
 const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_SONG);
-const isDidDraw = computed(() => store.getters.IS_DRAWING);
+const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
@@ -109,9 +111,9 @@ const showLive2d = () => {
   place[0].appendChild(props.live2dCanvas);
   store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
 
-  if (!isDidDraw.value) {
-    drawLive2dPortrait(live2dViewer.value);
-    store.dispatch("IS_DRAWING", { isDid: true });
+  if (!isDrawing.value) {
+    props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
+    store.dispatch("IS_DRAWING", { isDrawing: true });
   }
 };
 

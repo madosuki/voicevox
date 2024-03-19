@@ -55,11 +55,11 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
   },
 
   IS_DRAWING: {
-    mutation(state, { isDid }: { isDid: boolean }) {
-      state.isDidDraw = isDid;
+    mutation(state, { isDrawing }: { isDrawing: boolean }) {
+      state.isDrawing = isDrawing;
     },
-    action({ commit }, { isDid }: { isDid: boolean }) {
-      commit("IS_DRAWING", { isDid });
+    action({ commit }, { isDrawing }: { isDrawing: boolean }) {
+      commit("IS_DRAWING", { isDrawing });
     },
     getter(state) {
       return state.isDrawing;

@@ -1887,8 +1887,8 @@ export type Live2dStoreTypes = {
   };
 
   IS_DRAWING: {
-    mutation: { isDid: boolean };
-    action(payload: { isDid: boolean }): void;
+    mutation: { isDrawing: boolean };
+    action(payload: { isDrawing: boolean }): void;
     getter: boolean;
   };
 

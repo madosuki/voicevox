@@ -12,6 +12,7 @@
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
         :live2d-canvas="live2dCanvas"
+        :live2d-scene-renderer="live2dSceneRenderer"
       />
     </KeepAlive>
     <AllDialog :is-engines-ready="isEnginesReady" />
@@ -29,6 +30,7 @@ import ErrorBoundary from "@/components/ErrorBoundary.vue";
 import { useStore } from "@/store";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import AllDialog from "@/components/Dialog/AllDialog.vue";
+import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 
 const store = useStore();
 
@@ -107,6 +109,8 @@ try {
 const getLive2dViewer = () => {
   return live2dViewer;
 };
+
+const live2dSceneRenderer = new Live2dSceneRenderer();
 
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
