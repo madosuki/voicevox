@@ -10,9 +10,9 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
   );
   if (model == undefined) {
     window.backend.logError("target Live2D Model is undefined");
-    return 0;
+    return;
   }
-  // console.log(`in draw: ${live2dViewer.getCurrentModelKey()}`);
+
   const draw = () => {
     if (model.getModel()) {
       if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
