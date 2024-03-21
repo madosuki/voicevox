@@ -925,31 +925,6 @@
                 </QToggle>
               </QCardActions>
               <QCardActions class="q-px-md q-py-none bg-surface">
-                <div>ハードウェアアクセラレーション</div>
-                <div
-                  aria-label="ハードウェアアクセラレーション機能の有効無効を切り替えます。設定が反映されるのはアプリケーションを再起動した後です。"
-                >
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                      >ハードウェアアクセラレーション機能の有効無効を切り替えます。設定が反映されるのはアプリケーションを再起動した後です。</QTooltip
-                    >
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QToggle
-                  :model-value="experimentalSetting.hWAccelerationSwitch"
-                  @update:model-value="
-                    changeExperimentalSetting('hWAccelerationSwitch', $event)
-                  "
-                >
-                </QToggle>
-              </QCardActions>
-              <QCardActions class="q-px-md q-py-none bg-surface">
                 <div>Live2D立ち絵</div>
                 <div
                   aria-label="Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします"

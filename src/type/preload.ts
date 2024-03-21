@@ -511,7 +511,6 @@ export const experimentalSettingSchema = z.object({
   enableMorphing: z.boolean().default(false),
   enableMultiSelect: z.boolean().default(false),
   shouldKeepTuningOnTextChange: z.boolean().default(false),
-  hWAccelerationSwitch: z.boolean().default(true),
   enableLive2dPortrait: z.boolean().default(false),
   showPitchInSongEditor: z.boolean().default(false),
 });
