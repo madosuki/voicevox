@@ -194,6 +194,7 @@ const initializeLive2d = async () => {
         window.backend.logError(
           `Error when load zundamon live2d model assets: ${e}`
         );
+        zundamon.release();
       });
 
     const kasukabeTsumugi = new Live2dModel(
@@ -221,6 +222,7 @@ const initializeLive2d = async () => {
         window.backend.logError(
           `Error when load kasukabe tsumugi live2d model assets: ${e}`
         );
+        kasukabeTsumugi.release();
       });
 
     const kyuusyuuSora = new Live2dModel(
@@ -248,6 +250,7 @@ const initializeLive2d = async () => {
         window.backend.logError(
           `Error when load kyuusyuu sora live2d model assets: ${e}`
         );
+        kyuusyuuSora.release();
       });
 
     const chugokuUsagi = new Live2dModel(
@@ -275,6 +278,7 @@ const initializeLive2d = async () => {
         window.backend.logError(
           `Error when load chudoku usagi live2d model assets: ${e}`
         );
+        chugokuUsagi.release();
       });
 
     live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
