@@ -172,103 +172,113 @@ const initializeLive2d = async () => {
 
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
-    const lived2dAssetsLoadErrors = [];
-    try {
-      const zundamon = new Live2dModel(
-        live2dAssetsPath + "/Zundamon_vts/",
-        "zundamon.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      await zundamon.loadAssets();
-      zundamon.setLipSyncWeight(20);
-      live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
-      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "ずんだもん",
-        key: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
+    const zundamon = new Live2dModel(
+      live2dAssetsPath + "/Zundamon_vts/",
+      "zundamon.model3.json",
+      live2dViewer,
+      false,
+      readFileFunction
+    );
+    zundamon
+      .loadAssets()
+      .then(() => {
+        if (live2dViewer == undefined) return;
+        zundamon.setLipSyncWeight(20);
+        live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
+        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "ずんだもん",
+          key: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load zundamon live2d model assets: ${e}`
+        );
       });
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
 
-    try {
-      const kasukabeTsumugi = new Live2dModel(
-        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
-        "春日部つむぎ公式live2Dモデル.model3.json",
-        live2dViewer,
-        true,
-        readFileFunction
-      );
-      await kasukabeTsumugi.loadAssets();
-      kasukabeTsumugi.setLipSyncWeight(15);
-      live2dViewer.addModel(
-        "35b2c544-660e-401e-b503-0e14c635303a",
-        kasukabeTsumugi
-      );
-      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "春日部つむぎ",
-        key: "35b2c544-660e-401e-b503-0e14c635303a",
+    const kasukabeTsumugi = new Live2dModel(
+      live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+      "春日部つむぎ公式live2Dモデル.model3.json",
+      live2dViewer,
+      true,
+      readFileFunction
+    );
+    kasukabeTsumugi
+      .loadAssets()
+      .then(() => {
+        if (live2dViewer == undefined) return;
+        kasukabeTsumugi.setLipSyncWeight(15);
+        live2dViewer.addModel(
+          "35b2c544-660e-401e-b503-0e14c635303a",
+          kasukabeTsumugi
+        );
+        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "春日部つむぎ",
+          key: "35b2c544-660e-401e-b503-0e14c635303a",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load kasukabe tsumugi live2d model assets: ${e}`
+        );
       });
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
 
-    try {
-      const kyuusyuuSora = new Live2dModel(
-        live2dAssetsPath + "/Sora_vts/",
-        "kyuusyuu_sora.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      await kyuusyuuSora.loadAssets();
-      kyuusyuuSora.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "481fb609-6446-4870-9f46-90c4dd623403",
-        kyuusyuuSora
-      );
-      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "九州そら",
-        key: "481fb609-6446-4870-9f46-90c4dd623403",
+    const kyuusyuuSora = new Live2dModel(
+      live2dAssetsPath + "/Sora_vts/",
+      "kyuusyuu_sora.model3.json",
+      live2dViewer,
+      false,
+      readFileFunction
+    );
+    kyuusyuuSora
+      .loadAssets()
+      .then(() => {
+        if (live2dViewer == undefined) return;
+        kyuusyuuSora.setLipSyncWeight(20);
+        live2dViewer.addModel(
+          "481fb609-6446-4870-9f46-90c4dd623403",
+          kyuusyuuSora
+        );
+        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "九州そら",
+          key: "481fb609-6446-4870-9f46-90c4dd623403",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load kyuusyuu sora live2d model assets: ${e}`
+        );
       });
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
 
-    try {
-      const chugokuUsagi = new Live2dModel(
-        live2dAssetsPath + "/Usagi_vts/",
-        "usagi.model3.json",
-        live2dViewer,
-        false,
-        readFileFunction
-      );
-      await chugokuUsagi.loadAssets();
-      chugokuUsagi.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-        chugokuUsagi
-      );
-      store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "中国うさぎ",
-        key: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+    const chugokuUsagi = new Live2dModel(
+      live2dAssetsPath + "/Usagi_vts/",
+      "usagi.model3.json",
+      live2dViewer,
+      false,
+      readFileFunction
+    );
+    chugokuUsagi
+      .loadAssets()
+      .then(() => {
+        if (live2dViewer == undefined) return;
+        chugokuUsagi.setLipSyncWeight(20);
+        live2dViewer.addModel(
+          "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+          chugokuUsagi
+        );
+        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "中国うさぎ",
+          key: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load chudoku usagi live2d model assets: ${e}`
+        );
       });
-    } catch (e) {
-      window.backend.logError(e);
-      lived2dAssetsLoadErrors.push({});
-    }
 
-    if (lived2dAssetsLoadErrors.length === 4) {
-      live2dViewer.release();
-      return;
-    } else {
-      live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
-      store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
-    }
+    live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
+    store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
   }
 };
 
