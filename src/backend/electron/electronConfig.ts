@@ -16,21 +16,8 @@ export class ElectronConfigManager extends BaseConfigManager {
       .catch(() => false);
   }
 
-  protected existsSync(): boolean {
-    try {
-      fs.statSync(this.configPath);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
   protected async load(): Promise<Record<string, unknown> & Metadata> {
     return JSON.parse(await fs.promises.readFile(this.configPath, "utf-8"));
-  }
-
-  protected loadSync(): Record<string, unknown> & Metadata {
-    return JSON.parse(fs.readFileSync(this.configPath, "utf-8"));
   }
 
   protected async save(config: ConfigType & Metadata) {
