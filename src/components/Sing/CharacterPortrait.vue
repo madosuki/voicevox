@@ -150,7 +150,21 @@ watch(characterName, (newVal: string | undefined) => {
 watch(isEnableLive2dFeature, (newVal) => {
   if (!newVal) {
     isLive2dPortrait.value = false;
+    return;
   }
+
+  const targetName = characterName.value || "";
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
+  if (name == undefined) {
+    return;
+  }
+
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
+  if (v == undefined) {
+    return;
+  }
+
+  isLive2dPortrait.value = true;
 });
 
 const editorMode = computed(() => store.state.openedEditor);
