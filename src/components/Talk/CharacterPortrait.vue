@@ -214,7 +214,6 @@ watch(characterName, (newVal: string) => {
   }
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  console.log(v);
   if (v == undefined) {
     disAppearLive2d();
     return;
@@ -227,6 +226,20 @@ watch(isEnableLive2dFeature, (newVal) => {
   if (!newVal) {
     isLive2dPortrait.value = false;
   }
+
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
+    characterName.value
+  );
+  if (name == undefined) {
+    return;
+  }
+
+  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
+  if (v == undefined) {
+    return;
+  }
+
+  isLive2dPortrait.value = true;
 });
 
 const editorMode = computed(() => store.state.openedEditor);
