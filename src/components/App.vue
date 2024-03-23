@@ -78,15 +78,22 @@ const readFileFunction = async (filePath: string) => {
     return result.value;
   }
   return new ArrayBuffer(0);
-
-  // for browser mode
   /*
-  try {
-    const res = await fetch(filePath);
-    return await res.arrayBuffer();
-  } catch (e) {
-    window.backend.logError(e);
+  if (import.meta.env.VITE_TARGET === "electron") {
+    const result = await window.backend.readFile({ filePath });
+    if (result.ok) {
+      return result.value;
+    }
     return new ArrayBuffer(0);
+  } else {
+    // for browser mode
+    try {
+      const res = await fetch(filePath);
+      return await res.arrayBuffer();
+    } catch (e) {
+      window.backend.logError(e);
+      return new ArrayBuffer(0);
+    }
   }
   */
 };
@@ -287,7 +294,10 @@ const initializeLive2d = async () => {
 };
 
 watch(isEnableLive2dFeature, async (newVal) => {
-  if (!newVal || isLive2dInitialized) return;
+  console.log(
+    `isEnableLive2dFeature: ${newVal}, isLive2dInitialize: ${isLive2dInitialized.value}`
+  );
+  if (!newVal || isLive2dInitialized.value) return;
 
   await initializeLive2d();
 });
