@@ -73,12 +73,6 @@ watch(
 
 // Live2D
 const readFileFunction = async (filePath: string) => {
-  const result = await window.backend.readFile({ filePath });
-  if (result.ok) {
-    return result.value;
-  }
-  return new ArrayBuffer(0);
-  /*
   if (import.meta.env.VITE_TARGET === "electron") {
     const result = await window.backend.readFile({ filePath });
     if (result.ok) {
@@ -95,7 +89,6 @@ const readFileFunction = async (filePath: string) => {
       return new ArrayBuffer(0);
     }
   }
-  */
 };
 
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
