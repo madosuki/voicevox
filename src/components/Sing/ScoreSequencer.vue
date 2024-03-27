@@ -32,7 +32,6 @@
     >
       <!-- キャラクター全身 -->
       <CharacterPortrait
-        :is-activated="isActivated"
         :get-live2d-viewer="getLive2dViewer"
         :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
         :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
@@ -145,7 +144,6 @@
         marginRight: `${scrollBarWidth}px`,
         marginBottom: `${scrollBarWidth}px`,
       }"
-      :is-activated="isActivated"
       :offset-x="scrollX"
       :offset-y="scrollY"
     />
@@ -272,7 +270,6 @@ import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 type PreviewMode = "ADD" | "MOVE" | "RESIZE_RIGHT" | "RESIZE_LEFT";
 
 defineProps<{
-  isActivated: boolean;
   getLive2dViewer: () => Live2dViewer | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;

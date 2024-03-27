@@ -23,7 +23,6 @@
       </div>
     </div>
     <ScoreSequencer
-      :is-activated="isActivated"
       :get-live2d-viewer="getLive2dViewer"
       :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
       :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
@@ -35,7 +34,7 @@
 
 <script setup lang="ts">
 import { Live2dViewer } from "live2dmanager";
-import { computed, onActivated, onDeactivated, ref } from "vue";
+import { computed, ref } from "vue";
 import MenuBar from "./MenuBar.vue";
 import ToolBar from "./ToolBar.vue";
 import ScoreSequencer from "./ScoreSequencer.vue";
@@ -123,16 +122,6 @@ onetimeWatch(
     immediate: true,
   }
 );
-
-const isActivated = ref(false);
-
-onActivated(() => {
-  isActivated.value = true;
-});
-
-onDeactivated(() => {
-  isActivated.value = false;
-});
 </script>
 
 <style scoped lang="scss">
