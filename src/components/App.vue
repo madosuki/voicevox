@@ -176,7 +176,6 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Zundamon_vts/",
       "zundamon.model3.json",
       live2dViewer,
-      false,
       readFileFunction
     );
     zundamon
@@ -201,8 +200,8 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
       "春日部つむぎ公式live2Dモデル.model3.json",
       live2dViewer,
-      true,
-      readFileFunction
+      readFileFunction,
+      true
     );
     kasukabeTsumugi
       .loadAssets()
@@ -229,7 +228,6 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Sora_vts/",
       "kyuusyuu_sora.model3.json",
       live2dViewer,
-      false,
       readFileFunction
     );
     kyuusyuuSora
@@ -257,7 +255,6 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Usagi_vts/",
       "usagi.model3.json",
       live2dViewer,
-      false,
       readFileFunction
     );
     chugokuUsagi
