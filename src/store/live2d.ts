@@ -72,7 +72,7 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
     action(
       { commit },
-      { isLive2dInitialized }: { isLive2dInitialized: boolean }
+      { isLive2dInitialized }: { isLive2dInitialized: boolean },
     ) {
       commit("LIVE2D_INITIALIZED", { isLive2dInitialized });
     },

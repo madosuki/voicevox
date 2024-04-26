@@ -94,6 +94,15 @@
     <!-- settings for edit controls -->
     <div class="sing-controls">
       <QBtn
+        v-if="showEditTargetSwitchButton"
+        dense
+        icon="show_chart"
+        :color="editTarget === 'PITCH' ? 'primary' : undefined"
+        :text-color="editTarget === 'PITCH' ? 'white' : undefined"
+        class="edit-target-switch-button"
+        @click="switchEditTarget"
+      />
+      <QBtn
         flat
         dense
         round
@@ -147,12 +156,12 @@ import {
 } from "@/sing/domain";
 import CharacterMenuButton from "@/components/Sing/CharacterMenuButton/MenuButton.vue";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
+import { ExhaustiveError } from "@/type/utility";
 
 const store = useStore();
-const props =
-  defineProps<{
-    getLive2dViewer: () => Live2dViewer | undefined;
-  }>();
+const props = defineProps<{
+  getLive2dViewer: () => Live2dViewer | undefined;
+}>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 const editor = "song";
@@ -198,13 +207,29 @@ const redo = () => {
   store.dispatch("REDO", { editor });
 };
 
+const showEditTargetSwitchButton = computed(() => {
+  return store.state.experimentalSetting.enablePitchEditInSongEditor;
+});
+
+const editTarget = computed(() => store.state.sequencerEditTarget);
+
+const switchEditTarget = () => {
+  if (editTarget.value === "NOTE") {
+    store.dispatch("SET_EDIT_TARGET", { editTarget: "PITCH" });
+  } else if (editTarget.value === "PITCH") {
+    store.dispatch("SET_EDIT_TARGET", { editTarget: "NOTE" });
+  } else {
+    throw new ExhaustiveError(editTarget.value);
+  }
+};
+
 const tempos = computed(() => store.state.tempos);
 const timeSignatures = computed(() => store.state.timeSignatures);
 const keyRangeAdjustment = computed(
-  () => store.getters.SELECTED_TRACK.keyRangeAdjustment
+  () => store.getters.SELECTED_TRACK.keyRangeAdjustment,
 );
 const volumeRangeAdjustment = computed(
-  () => store.getters.SELECTED_TRACK.volumeRangeAdjustment
+  () => store.getters.SELECTED_TRACK.volumeRangeAdjustment,
 );
 
 const bpmInputBuffer = ref(120);
@@ -218,7 +243,7 @@ watch(
   () => {
     bpmInputBuffer.value = tempos.value[0].bpm;
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 );
 
 watch(
@@ -227,7 +252,7 @@ watch(
     beatsInputBuffer.value = timeSignatures.value[0].beats;
     beatTypeInputBuffer.value = timeSignatures.value[0].beatType;
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 );
 
 watch(
@@ -235,7 +260,7 @@ watch(
   () => {
     keyRangeAdjustmentInputBuffer.value = keyRangeAdjustment.value;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -243,7 +268,7 @@ watch(
   () => {
     volumeRangeAdjustmentInputBuffer.value = volumeRangeAdjustment.value;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const setBpmInputBuffer = (bpmStr: string | number | null) => {
@@ -271,7 +296,7 @@ const setBeatTypeInputBuffer = (beatTypeStr: string | number | null) => {
 };
 
 const setKeyRangeAdjustmentInputBuffer = (
-  KeyRangeAdjustmentStr: string | number | null
+  KeyRangeAdjustmentStr: string | number | null,
 ) => {
   const KeyRangeAdjustmentValue = Number(KeyRangeAdjustmentStr);
   if (!isValidKeyRangeAdjustment(KeyRangeAdjustmentValue)) {
@@ -281,7 +306,7 @@ const setKeyRangeAdjustmentInputBuffer = (
 };
 
 const setVolumeRangeAdjustmentInputBuffer = (
-  volumeRangeAdjustmentStr: string | number | null
+  volumeRangeAdjustmentStr: string | number | null,
 ) => {
   const volumeRangeAdjustmentValue = Number(volumeRangeAdjustmentStr);
   if (!isValidvolumeRangeAdjustment(volumeRangeAdjustmentValue)) {
@@ -423,8 +448,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/variables' as vars;
-@use '@/styles/colors' as colors;
+@use "@/styles/variables" as vars;
+@use "@/styles/colors" as colors;
 
 .q-input {
   :deep(.q-field__control::before) {
@@ -528,6 +553,10 @@ onUnmounted(() => {
   justify-content: flex-end;
   display: flex;
   flex: 1;
+}
+
+.edit-target-switch-button {
+  margin-right: 6px;
 }
 
 .sing-undo-button,

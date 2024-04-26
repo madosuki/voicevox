@@ -8,7 +8,7 @@ export class Live2dSceneRenderer {
 
   public render(
     live2dViewer: Live2dViewer,
-    scene: (live2dViewer: Live2dViewer) => void
+    scene: (live2dViewer: Live2dViewer) => void,
   ): void {
     const loop = () => {
       const gl = live2dViewer.gl;

@@ -44,10 +44,9 @@ type SpacerContent = {
 
 const store = useStore();
 
-const props =
-  defineProps<{
-    getLive2dViewer: () => Live2dViewer | undefined;
-  }>();
+const props = defineProps<{
+  getLive2dViewer: () => Live2dViewer | undefined;
+}>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 const editor = "talk";
@@ -55,7 +54,7 @@ const canUndo = computed(() => store.getters.CAN_UNDO(editor));
 const canRedo = computed(() => store.getters.CAN_REDO(editor));
 const activeAudioKey = computed(() => store.getters.ACTIVE_AUDIO_KEY);
 const nowPlayingContinuously = computed(
-  () => store.state.nowPlayingContinuously
+  () => store.state.nowPlayingContinuously,
 );
 
 const { registerHotkeyWithCleanup } = useHotkeyManager();
@@ -212,6 +211,6 @@ const buttons = computed(() =>
         text: null,
       };
     }
-  })
+  }),
 );
 </script>

@@ -1,5 +1,4 @@
 <template>
-  <MenuBar />
   <ToolBar :get-live2d-viewer="getLive2dViewer" />
   <div class="sing-main">
     <EngineStartupOverlay
@@ -34,8 +33,7 @@
 
 <script setup lang="ts">
 import { Live2dViewer } from "live2dmanager";
-import { computed, ref } from "vue";
-import MenuBar from "./MenuBar.vue";
+import { computed, ref, watch } from "vue";
 import ToolBar from "./ToolBar.vue";
 import ScoreSequencer from "./ScoreSequencer.vue";
 import EngineStartupOverlay from "@/components/EngineStartupOverlay.vue";
@@ -49,16 +47,15 @@ import {
 } from "@/sing/storeHelper";
 import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 
-const props =
-  defineProps<{
-    isEnginesReady: boolean;
-    isProjectFileLoaded: boolean | "waiting";
-    getLive2dViewer: () => Live2dViewer | undefined;
-    addMouseEventToLive2dCanvas: () => void;
-    removeMouseEventAtLive2dCanvas: () => void;
-    live2dCanvas: HTMLCanvasElement;
-    live2dSceneRenderer: Live2dSceneRenderer;
-  }>();
+const props = defineProps<{
+  isEnginesReady: boolean;
+  isProjectFileLoaded: boolean | "waiting";
+  getLive2dViewer: () => Live2dViewer | undefined;
+  addMouseEventToLive2dCanvas: () => void;
+  removeMouseEventAtLive2dCanvas: () => void;
+  live2dCanvas: HTMLCanvasElement;
+  live2dSceneRenderer: Live2dSceneRenderer;
+}>();
 
 const store = useStore();
 //const $q = useQuasar();
@@ -69,10 +66,21 @@ const nowRendering = computed(() => {
 const nowAudioExporting = computed(() => {
   return store.state.nowAudioExporting;
 });
+const enablePitchEditInSongEditor = computed(() => {
+  return store.state.experimentalSetting.enablePitchEditInSongEditor;
+});
 
 const cancelExport = () => {
   store.dispatch("CANCEL_AUDIO_EXPORT");
 };
+
+watch(enablePitchEditInSongEditor, (value) => {
+  if (value === false && store.state.sequencerEditTarget === "PITCH") {
+    // ピッチ編集機能が無効になったとき編集ターゲットがピッチだったら、
+    // 編集ターゲットをノートに切り替える
+    store.dispatch("SET_EDIT_TARGET", { editTarget: "NOTE" });
+  }
+});
 
 const isCompletedInitialStartup = ref(false);
 // TODO: Vueっぽくないので解体する
@@ -120,13 +128,13 @@ onetimeWatch(
   },
   {
     immediate: true,
-  }
+  },
 );
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/variables' as vars;
-@use '@/styles/colors' as colors;
+@use "@/styles/variables" as vars;
+@use "@/styles/colors" as colors;
 
 .layout-container {
   min-height: calc(100vh - #{vars.$menubar-height});

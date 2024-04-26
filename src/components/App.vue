@@ -1,6 +1,11 @@
 <template>
   <ErrorBoundary>
-    <!-- TODO: メニューバーをEditorHomeから移動する -->
+    <MenuBar
+      v-if="openedEditor != undefined"
+      :file-sub-menu-data="subMenuData.fileSubMenuData.value"
+      :edit-sub-menu-data="subMenuData.editSubMenuData.value"
+      :editor="openedEditor"
+    />
     <KeepAlive>
       <Component
         :is="openedEditor == 'talk' ? TalkEditor : SingEditor"
@@ -31,8 +36,24 @@ import { useStore } from "@/store";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import AllDialog from "@/components/Dialog/AllDialog.vue";
 import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import MenuBar from "@/components/Menu/MenuBar/MenuBar.vue";
+import { useMenuBarData as useTalkMenuBarData } from "@/components/Talk/menuBarData";
+import { useMenuBarData as useSingMenuBarData } from "@/components/Sing/menuBarData";
 
 const store = useStore();
+
+const talkMenuBarData = useTalkMenuBarData();
+const singMenuBarData = useSingMenuBarData();
+
+const subMenuData = computed(() => {
+  if (openedEditor.value === "talk" || openedEditor.value == undefined) {
+    return talkMenuBarData;
+  } else if (openedEditor.value === "song") {
+    return singMenuBarData;
+  }
+
+  throw new Error(`Invalid openedEditor: ${openedEditor.value}`);
+});
 
 const openedEditor = computed(() => store.state.openedEditor);
 
@@ -43,7 +64,7 @@ watch(
   (acceptRetrieveTelemetry) => {
     gtm?.enable(acceptRetrieveTelemetry === "Accepted");
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // フォントの制御用パラメータを変更する
@@ -52,7 +73,7 @@ watch(
   (editorFont) => {
     document.body.setAttribute("data-editor-font", editorFont);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // エディタの切り替えを監視してショートカットキーの設定を変更する
@@ -62,7 +83,7 @@ watch(
     if (openedEditor != undefined) {
       hotkeyManager.onEditorChange(openedEditor);
     }
-  }
+  },
 );
 
 // Live2D
@@ -88,7 +109,7 @@ const readFileFunction = async (filePath: string) => {
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isEnableLive2dFeature = computed(
-  () => store.state.experimentalSetting.enableLive2dPortrait
+  () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const live2dCanvas = document.createElement("canvas");
 const allocationMemory = 1024 * 1024 * 32;
@@ -170,7 +191,7 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Zundamon_vts/",
       "zundamon.model3.json",
       live2dViewer,
-      readFileFunction
+      readFileFunction,
     );
     zundamon
       .loadAssets()
@@ -185,7 +206,7 @@ const initializeLive2d = async () => {
       })
       .catch((e) => {
         window.backend.logError(
-          `Error when load zundamon live2d model assets: ${e}`
+          `Error when load zundamon live2d model assets: ${e}`,
         );
         zundamon.release();
       });
@@ -195,7 +216,7 @@ const initializeLive2d = async () => {
       "春日部つむぎ公式live2Dモデル.model3.json",
       live2dViewer,
       readFileFunction,
-      true
+      true,
     );
     kasukabeTsumugi
       .loadAssets()
@@ -204,7 +225,7 @@ const initializeLive2d = async () => {
         kasukabeTsumugi.setLipSyncWeight(15);
         live2dViewer.addModel(
           "35b2c544-660e-401e-b503-0e14c635303a",
-          kasukabeTsumugi
+          kasukabeTsumugi,
         );
         store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "春日部つむぎ",
@@ -213,7 +234,7 @@ const initializeLive2d = async () => {
       })
       .catch((e) => {
         window.backend.logError(
-          `Error when load kasukabe tsumugi live2d model assets: ${e}`
+          `Error when load kasukabe tsumugi live2d model assets: ${e}`,
         );
         kasukabeTsumugi.release();
       });
@@ -222,7 +243,7 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Sora_vts/",
       "kyuusyuu_sora.model3.json",
       live2dViewer,
-      readFileFunction
+      readFileFunction,
     );
     kyuusyuuSora
       .loadAssets()
@@ -231,7 +252,7 @@ const initializeLive2d = async () => {
         kyuusyuuSora.setLipSyncWeight(20);
         live2dViewer.addModel(
           "481fb609-6446-4870-9f46-90c4dd623403",
-          kyuusyuuSora
+          kyuusyuuSora,
         );
         store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "九州そら",
@@ -240,7 +261,7 @@ const initializeLive2d = async () => {
       })
       .catch((e) => {
         window.backend.logError(
-          `Error when load kyuusyuu sora live2d model assets: ${e}`
+          `Error when load kyuusyuu sora live2d model assets: ${e}`,
         );
         kyuusyuuSora.release();
       });
@@ -249,7 +270,7 @@ const initializeLive2d = async () => {
       live2dAssetsPath + "/Usagi_vts/",
       "usagi.model3.json",
       live2dViewer,
-      readFileFunction
+      readFileFunction,
     );
     chugokuUsagi
       .loadAssets()
@@ -258,7 +279,7 @@ const initializeLive2d = async () => {
         chugokuUsagi.setLipSyncWeight(20);
         live2dViewer.addModel(
           "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-          chugokuUsagi
+          chugokuUsagi,
         );
         store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "中国うさぎ",
@@ -267,7 +288,7 @@ const initializeLive2d = async () => {
       })
       .catch((e) => {
         window.backend.logError(
-          `Error when load chudoku usagi live2d model assets: ${e}`
+          `Error when load chudoku usagi live2d model assets: ${e}`,
         );
         chugokuUsagi.release();
       });
@@ -279,7 +300,7 @@ const initializeLive2d = async () => {
 
 watch(isEnableLive2dFeature, async (newVal) => {
   console.log(
-    `isEnableLive2dFeature: ${newVal}, isLive2dInitialize: ${isLive2dInitialized.value}`
+    `isEnableLive2dFeature: ${newVal}, isLive2dInitialize: ${isLive2dInitialized.value}`,
   );
   if (!newVal || isLive2dInitialized.value) return;
 
@@ -319,7 +340,7 @@ onMounted(async () => {
   let engineIds: EngineId[];
   if (isMultiEngineOffMode) {
     const main = Object.values(store.state.engineInfos).find(
-      (engine) => engine.type === "default"
+      (engine) => engine.type === "default",
     );
     if (!main) {
       throw new Error("No main engine found");

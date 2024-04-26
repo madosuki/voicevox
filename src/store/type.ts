@@ -544,7 +544,7 @@ export type AudioCommandStoreTypes = {
       payload: { audioKey: AudioKey; accentPhraseIndex: number } & (
         | { isPause: false; moraIndex: number }
         | { isPause: true }
-      )
+      ),
     ): void;
   };
 
@@ -807,11 +807,14 @@ export type Phrase = {
   singingVoiceKey?: SingingVoiceSourceHash;
 };
 
+export type SequencerEditTarget = "NOTE" | "PITCH";
+
 export type SingingStoreState = {
   tpqn: number;
   tempos: Tempo[];
   timeSignatures: TimeSignature[];
   tracks: Track[];
+  editFrameRate: number;
   phrases: Map<string, Phrase>;
   singingGuides: Map<SingingGuideSourceHash, SingingGuide>;
   // NOTE: UIの状態などは分割・統合した方がよさそうだが、ボイス側と混在させないためいったん局所化する
@@ -819,6 +822,7 @@ export type SingingStoreState = {
   sequencerZoomX: number;
   sequencerZoomY: number;
   sequencerSnapType: number;
+  sequencerEditTarget: SequencerEditTarget;
   selectedNoteIds: Set<string>;
   overlappingNoteIds: Set<string>;
   overlappingNoteInfos: OverlappingNoteInfos;
@@ -914,6 +918,14 @@ export type SingingStoreTypes = {
     action(payload: { noteId?: string }): void;
   };
 
+  SET_PITCH_EDIT_DATA: {
+    mutation: { data: number[]; startFrame: number };
+  };
+
+  ERASE_PITCH_EDIT_DATA: {
+    mutation: { startFrame: number; frameLength: number };
+  };
+
   SET_PHRASES: {
     mutation: { phrases: Map<string, Phrase> };
   };
@@ -964,6 +976,11 @@ export type SingingStoreTypes = {
   SET_ZOOM_Y: {
     mutation: { zoomY: number };
     action(payload: { zoomY: number }): void;
+  };
+
+  SET_EDIT_TARGET: {
+    mutation: { editTarget: SequencerEditTarget };
+    action(payload: { editTarget: SequencerEditTarget }): void;
   };
 
   SET_IS_DRAG: {
@@ -1145,6 +1162,16 @@ export type SingingCommandStoreTypes = {
 
   COMMAND_REMOVE_SELECTED_NOTES: {
     action(): void;
+  };
+
+  COMMAND_SET_PITCH_EDIT_DATA: {
+    mutation: { data: number[]; startFrame: number };
+    action(payload: { data: number[]; startFrame: number }): void;
+  };
+
+  COMMAND_ERASE_PITCH_EDIT_DATA: {
+    mutation: { startFrame: number; frameLength: number };
+    action(payload: { startFrame: number; frameLength: number }): void;
   };
 };
 
@@ -1759,7 +1786,7 @@ export type UiStoreTypes = {
         | {
             closeOrReload: "reload";
             isMultiEngineOffMode?: boolean;
-          }
+          },
     ): Promise<void>;
   };
 
@@ -1781,6 +1808,22 @@ export type UiStoreTypes = {
   };
 
   RESET_PROGRESS: {
+    action(): void;
+  };
+
+  SHOW_GENERATE_AND_SAVE_ALL_AUDIO_DIALOG: {
+    action(): void;
+  };
+
+  SHOW_GENERATE_AND_CONNECT_ALL_AUDIO_DIALOG: {
+    action(): void;
+  };
+
+  SHOW_GENERATE_AND_SAVE_SELECTED_AUDIO_DIALOG: {
+    action(): void;
+  };
+
+  SHOW_CONNECT_AND_EXPORT_TEXT_DIALOG: {
     action(): void;
   };
 };
@@ -1892,11 +1935,11 @@ export type IEngineConnectorFactoryActions = ReturnType<
 >;
 
 export type IEngineConnectorFactoryActionsMapper = <
-  K extends keyof IEngineConnectorFactoryActions
+  K extends keyof IEngineConnectorFactoryActions,
 >(
-  action: K
+  action: K,
 ) => (
-  _: Parameters<IEngineConnectorFactoryActions[K]>[0]
+  _: Parameters<IEngineConnectorFactoryActions[K]>[0],
 ) => ReturnType<IEngineConnectorFactoryActions[K]>;
 
 export type ProxyStoreTypes = {
@@ -2013,22 +2056,22 @@ export type AllActions = StoreType<AllStoreTypes, "action">;
 
 export const commandMutationsCreator = <S, M extends MutationsBase>(
   arg: PayloadRecipeTree<S, M>,
-  editor: EditorType
+  editor: EditorType,
 ): MutationTree<S, M> => createCommandMutationTree<S, M>(arg, editor);
 
 export const transformCommandStore = <
   S,
   G extends GettersBase,
   A extends ActionsBase,
-  M extends MutationsBase
+  M extends MutationsBase,
 >(
   options: StoreOptions<S, G, A, M, AllGetters, AllActions, AllMutations>,
-  editor: EditorType
+  editor: EditorType,
 ): StoreOptions<S, G, A, M, AllGetters, AllActions, AllMutations> => {
   if (options.mutations)
     options.mutations = commandMutationsCreator<S, M>(
       options.mutations as PayloadRecipeTree<S, M>,
-      editor
+      editor,
     );
   return options;
 };

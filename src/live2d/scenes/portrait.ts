@@ -6,7 +6,7 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
   const projection = live2dViewer.getNewMatrix44();
 
   const model: Live2dModel | undefined = live2dViewer.getModelFromKey(
-    live2dViewer.getCurrentModelKey()
+    live2dViewer.getCurrentModelKey(),
   );
   if (model == undefined) {
     window.backend.logError("target Live2D Model is undefined");

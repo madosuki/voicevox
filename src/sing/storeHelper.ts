@@ -5,6 +5,9 @@ export const DEFAULT_BPM = 120;
 export const DEFAULT_BEATS = 4;
 export const DEFAULT_BEAT_TYPE = 4;
 
+// マルチエンジン対応のために将来的に廃止予定で、利用は非推奨
+export const DEPRECATED_DEFAULT_EDIT_FRAME_RATE = 93.75;
+
 /**
  * 頻繁に変更される値を保持します。
  * 値変更時に実行する関数を登録できます。
@@ -52,7 +55,7 @@ export type OverlappingNoteInfos = Map<string, NoteInfo>;
 
 export function addNotesToOverlappingNoteInfos(
   overlappingNoteInfos: OverlappingNoteInfos,
-  notes: Note[]
+  notes: Note[],
 ): void {
   for (const note of notes) {
     overlappingNoteInfos.set(note.id, {
@@ -95,7 +98,7 @@ export function addNotesToOverlappingNoteInfos(
 
 export function removeNotesFromOverlappingNoteInfos(
   overlappingNoteInfos: OverlappingNoteInfos,
-  notes: Note[]
+  notes: Note[],
 ): void {
   for (const note of notes) {
     const noteId1 = note.id;
@@ -119,14 +122,14 @@ export function removeNotesFromOverlappingNoteInfos(
 
 export function updateNotesOfOverlappingNoteInfos(
   overlappingNoteInfos: OverlappingNoteInfos,
-  notes: Note[]
+  notes: Note[],
 ): void {
   removeNotesFromOverlappingNoteInfos(overlappingNoteInfos, notes);
   addNotesToOverlappingNoteInfos(overlappingNoteInfos, notes);
 }
 
 export function getOverlappingNoteIds(
-  currentNoteInfos: OverlappingNoteInfos
+  currentNoteInfos: OverlappingNoteInfos,
 ): Set<string> {
   const overlappingNoteIds = new Set<string>();
   for (const [noteId, noteInfo] of currentNoteInfos) {

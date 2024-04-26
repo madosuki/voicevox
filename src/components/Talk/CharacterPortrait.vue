@@ -28,14 +28,13 @@ import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 
 const store = useStore();
 
-const props =
-  defineProps<{
-    getLive2dViewer: () => Live2dViewer | undefined;
-    addMouseEventToLive2dCanvas: () => void;
-    removeMouseEventAtLive2dCanvas: () => void;
-    live2dCanvas: HTMLCanvasElement;
-    live2dSceneRenderer: Live2dSceneRenderer;
-  }>();
+const props = defineProps<{
+  getLive2dViewer: () => Live2dViewer | undefined;
+  addMouseEventToLive2dCanvas: () => void;
+  removeMouseEventAtLive2dCanvas: () => void;
+  live2dCanvas: HTMLCanvasElement;
+  live2dSceneRenderer: Live2dSceneRenderer;
+}>();
 
 const characterInfo = computed(() => {
   const activeAudioKey: AudioKey | undefined = store.getters.ACTIVE_AUDIO_KEY;
@@ -65,7 +64,7 @@ const styleInfo = computed(() => {
 
   const styleId = audioItem?.voice.styleId;
   const style = characterInfo.value?.metas.styles.find(
-    (style) => style.styleId === styleId
+    (style) => style.styleId === styleId,
   );
   return style;
 });
@@ -95,7 +94,7 @@ const engineName = computed(() => {
 });
 
 const portraitPath = computed(
-  () => styleInfo.value?.portraitPath || characterInfo.value?.portraitPath
+  () => styleInfo.value?.portraitPath || characterInfo.value?.portraitPath,
 );
 
 const isInitializingSpeaker = computed(() => {
@@ -109,7 +108,7 @@ const isInitializingSpeaker = computed(() => {
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
 const isEnableLive2dFeature = computed(
-  () => store.state.experimentalSetting.enableLive2dPortrait
+  () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const isLive2dPortrait = ref(false);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
@@ -120,7 +119,7 @@ const live2dViewer = computed(() => props.getLive2dViewer());
 
 const getLive2dModelKey = (): string | undefined => {
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value
+    characterName.value,
   );
   if (targetName == undefined) {
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
@@ -135,16 +134,16 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
   if (isMoveToTalk) {
     console.log(
-      `change live2d model index when is move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`
+      `change live2d model index when is move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`,
     );
     live2dViewer.value.setCurrentModel(
-      store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK
+      store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK,
     );
     return;
   }
 
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value
+    characterName.value,
   );
   if (targetName == undefined) {
     store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
@@ -173,7 +172,7 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
     return;
   }
   console.log(
-    `place length: ${place.length}, place[0].childElementCount: ${place[0].childElementCount}`
+    `place length: ${place.length}, place[0].childElementCount: ${place[0].childElementCount}`,
   );
   if (place.length === 1 && place[0].childElementCount === 0) {
     place[0].appendChild(props.live2dCanvas);
@@ -228,7 +227,7 @@ watch(isEnableLive2dFeature, (newVal) => {
   }
 
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value
+    characterName.value,
   );
   if (name == undefined) {
     return;
@@ -283,7 +282,7 @@ onUpdated(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/colors' as colors;
+@use "@/styles/colors" as colors;
 
 .character-name {
   position: absolute;

@@ -49,7 +49,7 @@ export const settingStoreState: SettingStoreState = {
     enableMultiSelect: false,
     shouldKeepTuningOnTextChange: false,
     enableLive2dPortrait: false,
-    showPitchInSongEditor: false,
+    enablePitchEditInSongEditor: false,
   },
   splitTextWhenPaste: "PERIOD_AND_NEW_LINE",
   splitterPosition: {
@@ -92,7 +92,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
 
       dispatch("SET_ACCEPT_RETRIEVE_TELEMETRY", {
         acceptRetrieveTelemetry: await window.backend.getSetting(
-          "acceptRetrieveTelemetry"
+          "acceptRetrieveTelemetry",
         ),
       });
 
@@ -110,7 +110,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
 
       commit("SET_EXPERIMENTAL_SETTING", {
         experimentalSetting: await window.backend.getSetting(
-          "experimentalSetting"
+          "experimentalSetting",
         ),
       });
 
@@ -120,11 +120,11 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
 
       // FIXME: engineSettingsをMapにする
       for (const [engineIdStr, engineSetting] of Object.entries(
-        await window.backend.getSetting("engineSettings")
+        await window.backend.getSetting("engineSettings"),
       )) {
         if (engineSetting == undefined)
           throw new Error(
-            `engineSetting is undefined. engineIdStr: ${engineIdStr}`
+            `engineSetting is undefined. engineIdStr: ${engineIdStr}`,
           );
         commit("SET_ENGINE_SETTING", {
           engineId: EngineId(engineIdStr),
@@ -148,7 +148,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _: IsEqual<
         keyof RootMiscSettingType,
-        typeof rootMiscSettingKeys[number]
+        (typeof rootMiscSettingKeys)[number]
       > = true;
 
       for (const key of rootMiscSettingKeys) {
@@ -196,7 +196,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
   SET_TOOLBAR_SETTING: {
     mutation(
       state,
-      { toolbarSetting }: { toolbarSetting: ToolbarSettingType }
+      { toolbarSetting }: { toolbarSetting: ToolbarSettingType },
     ) {
       state.toolbarSetting = toolbarSetting;
     },
@@ -225,7 +225,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
   SET_THEME_SETTING: {
     mutation(
       state,
-      { currentTheme, themes }: { currentTheme: string; themes?: ThemeConf[] }
+      { currentTheme, themes }: { currentTheme: string; themes?: ThemeConf[] },
     ) {
       if (themes) {
         state.themeSetting.availableThemes = themes;
@@ -248,7 +248,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
         document.documentElement.style.setProperty(`--color-${key}`, color);
         document.documentElement.style.setProperty(
           `--color-${key}-rgb`,
-          `${r}, ${g}, ${b}`
+          `${r}, ${g}, ${b}`,
         );
       }
       const mixColors: ThemeColorType[][] = [
@@ -271,7 +271,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
 
       document.documentElement.setAttribute(
         "is-dark-theme",
-        theme.isDark ? "true" : "false"
+        theme.isDark ? "true" : "false",
       );
 
       window.backend.setNativeTheme(theme.isDark ? "dark" : "light");
@@ -293,7 +293,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
       });
       window.backend.setSetting(
         "acceptRetrieveTelemetry",
-        acceptRetrieveTelemetry
+        acceptRetrieveTelemetry,
       );
       commit("SET_ACCEPT_RETRIEVE_TELEMETRY", { acceptRetrieveTelemetry });
     },
@@ -316,7 +316,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
   SET_EXPERIMENTAL_SETTING: {
     mutation(
       state,
-      { experimentalSetting }: { experimentalSetting: ExperimentalSettingType }
+      { experimentalSetting }: { experimentalSetting: ExperimentalSettingType },
     ) {
       state.experimentalSetting = experimentalSetting;
     },
@@ -421,7 +421,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
           await dispatch("CHANGE_USE_GPU", { useGpu: false, engineId });
           return;
         }
-      }
+      },
     ),
   },
 
@@ -440,7 +440,7 @@ export const settingStore = createPartialStore<SettingStoreTypes>({
       ].slice(0, 10);
       await window.backend.setSetting(
         "recentlyUsedProjects",
-        newRecentlyUsedProjects
+        newRecentlyUsedProjects,
       );
     },
   },

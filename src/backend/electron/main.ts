@@ -163,7 +163,7 @@ const onEngineProcessError = (engineInfo: EngineInfo, error: Error) => {
 
 const runtimeInfoManager = new RuntimeInfoManager(
   path.join(app.getPath("userData"), "runtime-info.json"),
-  app.getVersion()
+  app.getVersion(),
 );
 
 const configManager = getConfigManager();
@@ -195,7 +195,7 @@ async function installVvppEngine(vvppPath: string) {
   } catch (e) {
     dialog.showErrorBox(
       "インストールエラー",
-      `${vvppPath} をインストールできませんでした。`
+      `${vvppPath} をインストールできませんでした。`,
     );
     log.error(`Failed to install ${vvppPath}, ${e}`);
     return false;
@@ -290,7 +290,7 @@ async function uninstallVvppEngine(engineId: EngineId) {
     const engineName = engineInfo?.name ?? engineId;
     dialog.showErrorBox(
       "アンインストールエラー",
-      `${engineName} をアンインストールできませんでした。`
+      `${engineName} をアンインストールできませんでした。`,
     );
     log.error(`Failed to uninstall ${engineId}, ${e}`);
     return false;
@@ -312,50 +312,50 @@ function readThemeFiles() {
 // 使い方テキストの読み込み
 const howToUseText = fs.readFileSync(
   path.join(__static, HowToUseTextFileName),
-  "utf-8"
+  "utf-8",
 );
 
 // OSSコミュニティ情報の読み込み
 const ossCommunityInfos = fs.readFileSync(
   path.join(__static, OssCommunityInfosFileName),
-  "utf-8"
+  "utf-8",
 );
 
 // 利用規約テキストの読み込み
 const policyText = fs.readFileSync(
   path.join(__static, PolicyTextFileName),
-  "utf-8"
+  "utf-8",
 );
 
 // OSSライセンス情報の読み込み
 const ossLicenses = JSON.parse(
   fs.readFileSync(path.join(__static, OssLicensesJsonFileName), {
     encoding: "utf-8",
-  })
+  }),
 );
 
 // 問い合わせの読み込み
 const contactText = fs.readFileSync(
   path.join(__static, ContactTextFileName),
-  "utf-8"
+  "utf-8",
 );
 
 // Q&Aの読み込み
 const qAndAText = fs.readFileSync(
   path.join(__static, QAndATextFileName),
-  "utf-8"
+  "utf-8",
 );
 
 // アップデート情報の読み込み
 const updateInfos = JSON.parse(
   fs.readFileSync(path.join(__static, UpdateInfosJsonFileName), {
     encoding: "utf-8",
-  })
+  }),
 );
 
 const privacyPolicyText = fs.readFileSync(
   path.join(__static, PrivacyPolicyTextFileName),
-  "utf-8"
+  "utf-8",
 );
 
 const appState = {
@@ -429,14 +429,14 @@ async function createWindow() {
   win.on("maximize", () => win.webContents.send("DETECT_MAXIMIZED"));
   win.on("unmaximize", () => win.webContents.send("DETECT_UNMAXIMIZED"));
   win.on("enter-full-screen", () =>
-    win.webContents.send("DETECT_ENTER_FULLSCREEN")
+    win.webContents.send("DETECT_ENTER_FULLSCREEN"),
   );
   win.on("leave-full-screen", () =>
-    win.webContents.send("DETECT_LEAVE_FULLSCREEN")
+    win.webContents.send("DETECT_LEAVE_FULLSCREEN"),
   );
   win.on("always-on-top-changed", () => {
     win.webContents.send(
-      win.isAlwaysOnTop() ? "DETECT_PINNED" : "DETECT_UNPINNED"
+      win.isAlwaysOnTop() ? "DETECT_PINNED" : "DETECT_UNPINNED",
     );
   });
   win.on("close", (event) => {
@@ -473,7 +473,7 @@ async function loadUrl(obj: {
   const url = new URL(firstUrl);
   url.searchParams.append(
     "isMultiEngineOffMode",
-    (obj?.isMultiEngineOffMode ?? false).toString()
+    (obj?.isMultiEngineOffMode ?? false).toString(),
   );
   url.searchParams.append("projectFilePath", obj?.projectFilePath ?? "");
   return win.loadURL(url.toString());
@@ -524,7 +524,7 @@ function cleanupEngines(): Promise<void> | "alreadyCompleted" {
 
   // 非同期的にすべてのエンジンプロセスをキル
   const waitingKilledPromises: Promise<void>[] = Object.entries(
-    killingProcessPromises
+    killingProcessPromises,
   ).map(([engineId, promise]) => {
     return promise
       .catch((error) => {
@@ -535,7 +535,7 @@ function cleanupEngines(): Promise<void> | "alreadyCompleted" {
       .finally(() => {
         numEngineProcessKilled++;
         log.info(
-          `ENGINE ${engineId}: Process killed. ${numEngineProcessKilled} / ${numLivingEngineProcess} processes killed`
+          `ENGINE ${engineId}: Process killed. ${numEngineProcessKilled} / ${numLivingEngineProcess} processes killed`,
         );
       });
   });
@@ -544,7 +544,7 @@ function cleanupEngines(): Promise<void> | "alreadyCompleted" {
   return Promise.all(waitingKilledPromises).then(() => {
     // エンジン終了後の処理を実行
     log.info(
-      "All ENGINE process kill operations done. Running post engine kill process"
+      "All ENGINE process kill operations done. Running post engine kill process",
     );
     return vvppManager.handleMarkedEngineDirs();
   });
@@ -630,9 +630,9 @@ ipcMainHandle("GET_ALT_PORT_INFOS", () => {
  * @param showDialogFunction ダイアログを表示する関数
  */
 const retryShowSaveDialogWhileSafeDir = async <
-  T extends Electron.OpenDialogReturnValue | Electron.SaveDialogReturnValue
+  T extends Electron.OpenDialogReturnValue | Electron.SaveDialogReturnValue,
 >(
-  showDialogFunction: () => Promise<T>
+  showDialogFunction: () => Promise<T>,
 ): Promise<T> => {
   /**
    * 指定されたパスが安全でないかどうかを判断する
@@ -677,7 +677,7 @@ const retryShowSaveDialogWhileSafeDir = async <
     // filePathが未定義の場合、エラーを返す
     if (filePath == undefined) {
       throw new Error(
-        `canseld == ${result.canceled} but filePath == ${filePath}`
+        `canseld == ${result.canceled} but filePath == ${filePath}`,
       );
     }
 
@@ -697,7 +697,7 @@ ipcMainHandle("SHOW_AUDIO_SAVE_DIALOG", async (_, { title, defaultPath }) => {
       defaultPath,
       filters: [{ name: "Wave File", extensions: ["wav"] }],
       properties: ["createDirectory"],
-    })
+    }),
   );
   return result.filePath;
 });
@@ -709,7 +709,7 @@ ipcMainHandle("SHOW_TEXT_SAVE_DIALOG", async (_, { title, defaultPath }) => {
       defaultPath,
       filters: [{ name: "Text File", extensions: ["txt"] }],
       properties: ["createDirectory"],
-    })
+    }),
   );
   return result.filePath;
 });
@@ -726,7 +726,7 @@ ipcMainHandle("SHOW_SAVE_DIRECTORY_DIALOG", async (_, { title }) => {
         "createDirectory",
         "treatPackageAsDirectory",
       ],
-    })
+    }),
   );
   if (result.canceled) {
     return undefined;
@@ -768,7 +768,7 @@ ipcMainHandle("SHOW_PROJECT_SAVE_DIALOG", async (_, { title, defaultPath }) => {
       defaultPath,
       filters: [{ name: "VOICEVOX Project file", extensions: ["vvproj"] }],
       properties: ["showOverwriteConfirmation"],
-    })
+    }),
   );
   if (result.canceled) {
     return undefined;
@@ -812,7 +812,7 @@ ipcMainHandle(
       .then((value) => {
         return value.response;
       });
-  }
+  },
 );
 
 ipcMainHandle("SHOW_WARNING_DIALOG", (_, { title, message }) => {
@@ -888,7 +888,7 @@ ipcMainHandle("HOTKEY_SETTINGS", (_, { newData }) => {
   if (newData != undefined) {
     const hotkeySettings = configManager.get("hotkeySettings");
     const hotkeySetting = hotkeySettings.find(
-      (hotkey) => hotkey.action == newData.action
+      (hotkey) => hotkey.action == newData.action,
     );
     if (hotkeySetting != undefined) {
       hotkeySetting.combination = newData.combination;
@@ -1108,7 +1108,7 @@ app.on("ready", async () => {
           type: "error",
           title: "設定ファイルの読み込みエラー",
           message: `設定ファイルの読み込みに失敗しました。${app.getPath(
-            "userData"
+            "userData",
           )} にある config.json の名前を変えることで解決することがあります（ただし設定がすべてリセットされます）。設定ファイルがあるフォルダを開きますか？`,
           buttons: ["いいえ", "はい"],
           noLink: true,

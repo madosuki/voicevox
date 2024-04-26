@@ -17,14 +17,13 @@ import { formatCharacterStyleName } from "@/store/utility";
 import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 
-const props =
-  defineProps<{
-    getLive2dViewer: () => Live2dViewer | undefined;
-    addMouseEventToLive2dCanvas: () => void;
-    removeMouseEventAtLive2dCanvas: () => void;
-    live2dCanvas: HTMLCanvasElement;
-    live2dSceneRenderer: Live2dSceneRenderer;
-  }>();
+const props = defineProps<{
+  getLive2dViewer: () => Live2dViewer | undefined;
+  addMouseEventToLive2dCanvas: () => void;
+  removeMouseEventAtLive2dCanvas: () => void;
+  live2dCanvas: HTMLCanvasElement;
+  live2dSceneRenderer: Live2dSceneRenderer;
+}>();
 
 const store = useStore();
 const isShowSinger = computed(() => store.state.isShowSinger);
@@ -38,10 +37,10 @@ const portraitPath = computed(() => {
   }
   const characterInfo = store.getters.CHARACTER_INFO(
     singer.engineId,
-    singer.styleId
+    singer.styleId,
   );
   const styleInfo = characterInfo?.metas.styles.find(
-    (style) => style.styleId === singer.styleId
+    (style) => style.styleId === singer.styleId,
   );
   return styleInfo?.portraitPath || characterInfo?.portraitPath;
 });
@@ -51,7 +50,7 @@ const characterName = computed(() => {
   if (singer.value == undefined) return;
   const characterInfo = store.getters.CHARACTER_INFO(
     singer.value.engineId,
-    singer.value.styleId
+    singer.value.styleId,
   );
   // 初期化前・未選択時
   if (characterInfo == undefined) {
@@ -60,7 +59,7 @@ const characterName = computed(() => {
 
   const speakerName = characterInfo.metas.speakerName;
   const styleInfo = characterInfo.metas.styles.find(
-    (style) => style.styleId === singer.value?.styleId
+    (style) => style.styleId === singer.value?.styleId,
   );
   const styleName = styleInfo?.styleName;
   return styleName
@@ -69,7 +68,7 @@ const characterName = computed(() => {
 });
 
 const isEnableLive2dFeature = computed(
-  () => store.state.experimentalSetting.enableLive2dPortrait
+  () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const isLive2dPortrait = ref(false);
 const live2dViewer = computed(() => props.getLive2dViewer());
@@ -87,7 +86,7 @@ const changeLive2dModelIndex = () => {
     return;
 
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value
+    characterName.value,
   );
   if (targetName == undefined) return;
 
@@ -196,7 +195,7 @@ onUpdated(async () => {
   }
 
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value
+    characterName.value,
   );
   if (name == undefined) return;
 
@@ -214,8 +213,8 @@ onUpdated(async () => {
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/variables' as vars;
-@use '@/styles/colors' as colors;
+@use "@/styles/variables" as vars;
+@use "@/styles/colors" as colors;
 
 // 画面右下に固定表示
 // 幅固定、高さ可変、画像のアスペクト比を保持、wrapのwidthに合わせてheightを調整

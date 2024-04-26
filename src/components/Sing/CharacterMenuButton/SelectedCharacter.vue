@@ -50,13 +50,12 @@ import { useStore } from "@/store";
 
 const store = useStore();
 
-const props =
-  defineProps<{
-    showSkeleton: boolean;
-    selectedCharacterInfo: CharacterInfo | undefined;
-    selectedSinger: Singer | undefined;
-    getLive2dViewer: () => Live2dViewer | undefined;
-  }>();
+const props = defineProps<{
+  showSkeleton: boolean;
+  selectedCharacterInfo: CharacterInfo | undefined;
+  selectedSinger: Singer | undefined;
+  getLive2dViewer: () => Live2dViewer | undefined;
+}>();
 
 const selectedCharacterName = computed(() => {
   return props.selectedCharacterInfo?.metas.speakerName;
@@ -107,8 +106,8 @@ watch(selectedCharacterName, (newVal) => {
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/variables' as vars;
-@use '@/styles/colors' as colors;
+@use "@/styles/variables" as vars;
+@use "@/styles/colors" as colors;
 
 .selected-character {
   align-items: center;
