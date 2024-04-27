@@ -310,7 +310,9 @@ const onLyricInput = (event: Event) => {
   &.selected {
     // 色は仮
     .note-bar {
-      background-color: hsl(33, 100%, 50%);
+      background-color: lab(95, -22.953, 14.365);
+      border-color: lab(65, -22.953, 14.365);
+      outline: solid 2px lab(70, -22.953, 14.365);
     }
 
     &.below-pitch {
@@ -322,8 +324,13 @@ const onLyricInput = (event: Event) => {
   // TODO：もっといい見た目を考える
   &.preview-lyric {
     .note-bar {
-      background-color: hsl(130, 35%, 90%);
-      border: 2px solid colors.$primary;
+      background-color: lab(90, -22.953, 14.365);
+      border-color: lab(75, -22.953, 14.365);
+      outline: solid 2px lab(80, -22.953, 14.365);
+    }
+
+    .note-lyric {
+      opacity: 0.38;
     }
 
     &.below-pitch {
@@ -347,6 +354,7 @@ const onLyricInput = (event: Event) => {
       .note-bar {
         background-color: rgba(colors.$warning-rgb, 0.5);
         border-color: colors.$warning;
+        outline: 2px solid rgba(colors.$warning-rgb, 0.3);
       }
     }
   }
@@ -372,12 +380,13 @@ const onLyricInput = (event: Event) => {
 }
 
 .note-bar {
+  box-sizing: border-box;
   position: absolute;
   width: calc(100% + 1px);
   height: 100%;
   background-color: colors.$primary;
   border: 1px solid rgba(colors.$background-rgb, 0.5);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .note-left-edge {
@@ -386,6 +395,11 @@ const onLyricInput = (event: Event) => {
   left: -1px;
   width: 5px;
   height: 100%;
+
+  &:hover {
+    // FIXME: hoverだとカーソル位置によって適用されないので、プレビュー中に明示的にクラス指定する
+    background-color: lab(80, -22.953, 14.365);
+  }
 }
 
 .note-right-edge {
@@ -394,6 +408,11 @@ const onLyricInput = (event: Event) => {
   right: -1px;
   width: 5px;
   height: 100%;
+
+  &:hover {
+    // FIXME: hoverだとカーソル位置によって適用されないので、プレビュー中に明示的にクラス指定する
+    background-color: lab(80, -22.953, 14.365);
+  }
 }
 
 .note-lyric-input {
@@ -403,8 +422,8 @@ const onLyricInput = (event: Event) => {
   min-width: 3rem;
   max-width: 6rem;
   border: 0;
-  outline: 2px solid colors.$primary;
-  border-radius: 0.25rem;
+  outline: 2px solid lab(80, -22.953, 14.365);
+  border-radius: 4px;
 }
 
 .cursor-move {

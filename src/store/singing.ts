@@ -26,7 +26,7 @@ import {
   SequencerEditTarget,
 } from "./type";
 import { sanitizeFileName } from "./utility";
-import { EngineId } from "@/type/preload";
+import { EngineId, StyleId } from "@/type/preload";
 import { FrameAudioQuery, Note as NoteForRequestToEngine } from "@/openapi";
 import { ResultError, getValueOrThrow } from "@/type/result";
 import {
@@ -62,6 +62,7 @@ import {
   decibelToLinear,
   applyPitchEdit,
   VALUE_INDICATING_NO_DATA,
+  isValidPitchEditData,
 } from "@/sing/domain";
 import {
   DEFAULT_BEATS,
@@ -81,6 +82,7 @@ import {
   createPromiseThatResolvesWhen,
   round,
 } from "@/sing/utility";
+import { getWorkaroundKeyRangeAdjustment } from "@/sing/workaroundKeyRangeAdjustment";
 import { createLogger } from "@/domain/frontend/log";
 import { noteSchema } from "@/domain/project/schema";
 
@@ -276,12 +278,27 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SET_SINGER: {
-    mutation(state, { singer }: { singer?: Singer }) {
+    // 歌手をセットする。
+    // withRelatedがtrueの場合、関連する情報もセットする。
+    mutation(
+      state,
+      { singer, withRelated }: { singer?: Singer; withRelated?: boolean },
+    ) {
       state.tracks[selectedTrackIndex].singer = singer;
+
+      if (withRelated == true && singer != undefined) {
+        // 音域調整量マジックナンバーを設定するワークアラウンド
+        const keyRangeAdjustment = getWorkaroundKeyRangeAdjustment(
+          state.characterInfos,
+          singer,
+        );
+        state.tracks[selectedTrackIndex].keyRangeAdjustment =
+          keyRangeAdjustment;
+      }
     },
     async action(
       { state, getters, dispatch, commit },
-      { singer }: { singer?: Singer },
+      { singer, withRelated }: { singer?: Singer; withRelated?: boolean },
     ) {
       if (state.defaultStyleIds == undefined)
         throw new Error("state.defaultStyleIds == undefined");
@@ -300,7 +317,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       const styleId = singer?.styleId ?? defaultStyleId;
 
       dispatch("SETUP_SINGER", { singer: { engineId, styleId } });
-      commit("SET_SINGER", { singer: { engineId, styleId } });
+      commit("SET_SINGER", { singer: { engineId, styleId }, withRelated });
 
       dispatch("RENDER");
     },
@@ -594,6 +611,20 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       tempData.splice(startFrame, data.length, ...data);
       state.tracks[selectedTrackIndex].pitchEditData = tempData;
     },
+    async action(
+      { dispatch, commit },
+      { data, startFrame }: { data: number[]; startFrame: number },
+    ) {
+      if (startFrame < 0) {
+        throw new Error("startFrame must be greater than or equal to 0.");
+      }
+      if (!isValidPitchEditData(data)) {
+        throw new Error("The pitch edit data is invalid.");
+      }
+      commit("SET_PITCH_EDIT_DATA", { data, startFrame });
+
+      dispatch("RENDER");
+    },
   },
 
   ERASE_PITCH_EDIT_DATA: {
@@ -606,6 +637,18 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       const endFrame = Math.min(startFrame + frameLength, tempData.length);
       tempData.fill(VALUE_INDICATING_NO_DATA, startFrame, endFrame);
       state.tracks[selectedTrackIndex].pitchEditData = tempData;
+    },
+  },
+
+  CLEAR_PITCH_EDIT_DATA: {
+    // ピッチ編集データを失くす。
+    mutation(state) {
+      state.tracks[selectedTrackIndex].pitchEditData = [];
+    },
+    async action({ dispatch, commit }) {
+      commit("CLEAR_PITCH_EDIT_DATA");
+
+      dispatch("RENDER");
     },
   },
 
@@ -1025,8 +1068,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         return foundPhrases;
       };
 
-      const fetchQuery = async (
-        engineId: EngineId,
+      const createNotesForRequestToEngine = (
         notes: Note[],
         tempos: Tempo[],
         tpqn: number,
@@ -1072,6 +1114,29 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           lyric: "",
         });
 
+        return notesForRequestToEngine;
+      };
+
+      const singingTeacherStyleId = StyleId(6000); // TODO: 設定できるようにする
+
+      const fetchQuery = async (
+        engineId: EngineId,
+        notes: Note[],
+        tempos: Tempo[],
+        tpqn: number,
+        keyRangeAdjustment: number,
+        frameRate: number,
+        restDurationSeconds: number,
+      ) => {
+        const notesForRequestToEngine = createNotesForRequestToEngine(
+          notes,
+          tempos,
+          tpqn,
+          keyRangeAdjustment,
+          frameRate,
+          restDurationSeconds,
+        );
+
         try {
           if (!getters.IS_ENGINE_READY(engineId)) {
             throw new Error("Engine not ready.");
@@ -1083,7 +1148,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
             "singFrameAudioQuerySingFrameAudioQueryPost",
           )({
             score: { notes: notesForRequestToEngine },
-            speaker: 6000, // TODO: 設定できるようにする
+            speaker: singingTeacherStyleId,
           });
         } catch (error) {
           const lyrics = notesForRequestToEngine
@@ -1473,6 +1538,26 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
 
               logger.info(`Loaded singing voice from cache.`);
             } else {
+              // ピッチ編集を適用したクエリから音量を作る
+              // 音量値はAPIを叩く毎に変わるので、calc hashしたあとに音量を取得している
+              const notesForRequestToEngine = createNotesForRequestToEngine(
+                phrase.notes,
+                tempos,
+                tpqn,
+                keyRangeAdjustment,
+                singingGuide.frameRate,
+                restDurationSeconds,
+              );
+
+              const volumes = await dispatch("FETCH_SING_FRAME_VOLUME", {
+                notes: notesForRequestToEngine,
+                frameAudioQuery: singingGuide.query,
+                styleId: singingTeacherStyleId,
+                engineId: singerAndFrameRate.singer.engineId,
+              });
+              singingGuide.query.volume = volumes;
+              scaleGuideVolume(volumeRangeAdjustment, singingGuide.query);
+
               const blob = await synthesize(
                 singerAndFrameRate.singer,
                 singingGuide.query,
@@ -2183,6 +2268,35 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
     ),
   },
 
+  FETCH_SING_FRAME_VOLUME: {
+    async action(
+      { dispatch },
+      {
+        notes,
+        frameAudioQuery,
+        engineId,
+        styleId,
+      }: {
+        notes: NoteForRequestToEngine[];
+        frameAudioQuery: FrameAudioQuery;
+        engineId: EngineId;
+        styleId: StyleId;
+      },
+    ) {
+      const instance = await dispatch("INSTANTIATE_ENGINE_CONNECTOR", {
+        engineId,
+      });
+      return await instance.invoke("singFrameVolumeSingFrameVolumePost")({
+        bodySingFrameVolumeSingFrameVolumePost: {
+          score: {
+            notes,
+          },
+          frameAudioQuery,
+        },
+        speaker: styleId,
+      });
+    },
+  },
   SET_NOW_AUDIO_EXPORTING: {
     mutation(state, { nowAudioExporting }) {
       state.nowAudioExporting = nowAudioExporting;
@@ -2587,12 +2701,12 @@ export const singingCommandStoreState: SingingCommandStoreState = {};
 export const singingCommandStore = transformCommandStore(
   createPartialStore<SingingCommandStoreTypes>({
     COMMAND_SET_SINGER: {
-      mutation(draft, { singer }) {
-        singingStore.mutations.SET_SINGER(draft, { singer });
+      mutation(draft, { singer, withRelated }) {
+        singingStore.mutations.SET_SINGER(draft, { singer, withRelated });
       },
-      async action({ dispatch, commit }, { singer }) {
+      async action({ dispatch, commit }, { singer, withRelated }) {
         dispatch("SETUP_SINGER", { singer });
-        commit("COMMAND_SET_SINGER", { singer });
+        commit("COMMAND_SET_SINGER", { singer, withRelated });
 
         dispatch("RENDER");
       },
@@ -2783,8 +2897,8 @@ export const singingCommandStore = transformCommandStore(
         if (startFrame < 0) {
           throw new Error("startFrame must be greater than or equal to 0.");
         }
-        if (data.some((value) => !Number.isFinite(value) || value <= 0)) {
-          throw new Error("data is invalid.");
+        if (!isValidPitchEditData(data)) {
+          throw new Error("The pitch edit data is invalid.");
         }
         commit("COMMAND_SET_PITCH_EDIT_DATA", { data, startFrame });
 
