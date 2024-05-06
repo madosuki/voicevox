@@ -1,6 +1,5 @@
 import path from "path";
 import { Live2dViewer } from "live2dmanager";
-import { Midi } from "@tonejs/midi";
 import { v4 as uuidv4 } from "uuid";
 import { toRaw } from "vue";
 import { createPartialStore } from "./vuex";
@@ -26,7 +25,8 @@ import {
   SequencerEditTarget,
 } from "./type";
 import { sanitizeFileName } from "./utility";
-import { EngineId, StyleId } from "@/type/preload";
+import { EngineId, NoteId, StyleId } from "@/type/preload";
+import { Midi } from "@/sing/midi";
 import { FrameAudioQuery, Note as NoteForRequestToEngine } from "@/openapi";
 import { ResultError, getValueOrThrow } from "@/type/result";
 import {
@@ -496,7 +496,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
 
   UPDATE_NOTES: {
     mutation(state, { notes }: { notes: Note[] }) {
-      const notesMap = new Map<string, Note>();
+      const notesMap = new Map<NoteId, Note>();
       for (const note of notes) {
         notesMap.set(note.id, note);
       }
@@ -512,7 +512,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   REMOVE_NOTES: {
-    mutation(state, { noteIds }: { noteIds: string[] }) {
+    mutation(state, { noteIds }: { noteIds: NoteId[] }) {
       const noteIdsSet = new Set(noteIds);
       const selectedTrack = state.tracks[selectedTrackIndex];
       const notes = selectedTrack.notes.filter((value) => {
@@ -538,12 +538,12 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SELECT_NOTES: {
-    mutation(state, { noteIds }: { noteIds: string[] }) {
+    mutation(state, { noteIds }: { noteIds: NoteId[] }) {
       for (const noteId of noteIds) {
         state.selectedNoteIds.add(noteId);
       }
     },
-    async action({ getters, commit }, { noteIds }: { noteIds: string[] }) {
+    async action({ getters, commit }, { noteIds }: { noteIds: NoteId[] }) {
       const existingNoteIds = getters.NOTE_IDS;
       const isValidNoteIds = noteIds.every((value) => {
         return existingNoteIds.has(value);
@@ -577,14 +577,14 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SET_EDITING_LYRIC_NOTE_ID: {
-    mutation(state, { noteId }: { noteId?: string }) {
+    mutation(state, { noteId }: { noteId?: NoteId }) {
       if (noteId != undefined && !state.selectedNoteIds.has(noteId)) {
         state.selectedNoteIds.clear();
         state.selectedNoteIds.add(noteId);
       }
       state.editingLyricNoteId = noteId;
     },
-    async action({ getters, commit }, { noteId }: { noteId?: string }) {
+    async action({ getters, commit }, { noteId }: { noteId?: NoteId }) {
       if (noteId != undefined && !getters.NOTE_IDS.has(noteId)) {
         throw new Error("The note id is invalid.");
       }
@@ -1619,7 +1619,11 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
               phraseKey,
               phraseState: "COULD_NOT_RENDER",
             });
-            throw error;
+            // とりあえずエラーはロギングしてcontinueする
+            // NOTE: ほとんどは歌詞のエラー
+            // FIXME: 歌詞以外のエラーの場合はthrowして、エラーダイアログを表示するようにする
+            logger.error("An error occurred while rendering a phrase.", error);
+            continue;
           }
         }
       };
@@ -1749,30 +1753,28 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           await window.backend.readFile({ filePath }),
         );
         const midi = new Midi(midiData);
-        const midiTpqn = midi.header.ppq;
-        const midiTempos = [...midi.header.tempos];
-        const midiTimeSignatures = [...midi.header.timeSignatures];
+        const midiTpqn = midi.ticksPerBeat;
+        const midiTempos = midi.tempos;
+        const midiTimeSignatures = midi.timeSignatures;
 
-        const midiNotes = [...midi.tracks[trackIndex].notes];
+        const midiNotes = midi.tracks[trackIndex].notes;
 
-        midiTempos.sort((a, b) => a.ticks - b.ticks);
-        midiTimeSignatures.sort((a, b) => a.ticks - b.ticks);
         midiNotes.sort((a, b) => a.ticks - b.ticks);
 
         const tpqn = DEFAULT_TPQN;
 
         let notes = midiNotes.map((value): Note => {
           return {
-            id: uuidv4(),
+            id: NoteId(uuidv4()),
             position: convertPosition(value.ticks, midiTpqn, tpqn),
             duration: convertDuration(
               value.ticks,
-              value.ticks + value.durationTicks,
+              value.ticks + value.duration,
               midiTpqn,
               tpqn,
             ),
-            noteNumber: value.midi,
-            lyric: getDoremiFromNoteNumber(value.midi),
+            noteNumber: value.noteNumber,
+            lyric: value.lyric || getDoremiFromNoteNumber(value.noteNumber),
           };
         });
         // ノートの重なりを考慮して、一番音が高いノート（トップノート）のみインポートする
@@ -1795,8 +1797,8 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         let measureNumber = 1;
         for (let i = 0; i < midiTimeSignatures.length; i++) {
           const midiTs = midiTimeSignatures[i];
-          const beats = midiTs.timeSignature[0];
-          const beatType = midiTs.timeSignature[1];
+          const beats = midiTs.numerator;
+          const beatType = midiTs.denominator;
           timeSignatures.push({ measureNumber, beats, beatType });
           if (i < midiTimeSignatures.length - 1) {
             const nextTsTicks = midiTimeSignatures[i + 1].ticks;
@@ -2070,7 +2072,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           }
 
           const note: Note = {
-            id: uuidv4(),
+            id: NoteId(uuidv4()),
             position,
             duration,
             noteNumber,
@@ -2255,7 +2257,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
             } else {
               // それ以外の場合はノートを追加
               notes.push({
-                id: uuidv4(),
+                id: NoteId(uuidv4()),
                 position,
                 duration,
                 noteNumber,
@@ -2668,7 +2670,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         const quantizedPastePos =
           Math.round(pasteOriginPos / snapTicks) * snapTicks;
         return {
-          id: uuidv4(),
+          id: NoteId(uuidv4()),
           position: quantizedPastePos,
           duration: Number(note.duration),
           noteNumber: Number(note.noteNumber),
