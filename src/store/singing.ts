@@ -346,7 +346,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
     },
     async action(
       { state, getters, commit, dispatch },
-      { tpqn, live2dViewer }: { tpqn: number; live2dViewer?: Live2dViewer },
+      { tpqn }: { tpqn: number },
     ) {
       if (!isValidTpqn(tpqn)) {
         throw new Error("The tpqn is invalid.");
@@ -355,7 +355,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       if (state.nowPlaying) {
-        await dispatch("SING_STOP_AUDIO", { live2dViewer });
+        await dispatch("SING_STOP_AUDIO", {});
       }
       commit("SET_TPQN", { tpqn });
       transport.time = getters.TICK_TO_SECOND(playheadPosition.value);
@@ -370,10 +370,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
     },
     async action(
       { state, getters, commit, dispatch },
-      {
-        tempos,
-        live2dViewer,
-      }: { tempos: Tempo[]; live2dViewer?: Live2dViewer },
+      { tempos }: { tempos: Tempo[] },
     ) {
       if (!isValidTempos(tempos)) {
         throw new Error("The tempos are invalid.");
@@ -382,7 +379,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       if (state.nowPlaying) {
-        await dispatch("SING_STOP_AUDIO", { live2dViewer });
+        await dispatch("SING_STOP_AUDIO", {});
       }
       commit("SET_TEMPOS", { tempos });
       transport.time = getters.TICK_TO_SECOND(playheadPosition.value);

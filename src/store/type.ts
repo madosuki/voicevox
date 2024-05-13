@@ -858,12 +858,12 @@ export type SingingStoreTypes = {
 
   SET_TPQN: {
     mutation: { tpqn: number };
-    action(payload: { tpqn: number; live2dViewer?: Live2dViewer }): void;
+    action(payload: { tpqn: number }): void;
   };
 
   SET_TEMPOS: {
     mutation: { tempos: Tempo[] };
-    action(payload: { tempos: Tempo[]; live2dViewer?: Live2dViewer }): void;
+    action(payload: { tempos: Tempo[] }): void;
   };
 
   SET_TEMPO: {
