@@ -3,12 +3,12 @@ import { convertLongVowel } from "@/store/utility";
 import {
   Note,
   Phrase,
-  Score,
   SingingGuide,
   SingingGuideSource,
   SingingVoiceSource,
   Tempo,
   TimeSignature,
+  Track,
   singingGuideSourceHashSchema,
   singingVoiceSourceHashSchema,
 } from "@/store/type";
@@ -85,15 +85,6 @@ export const isValidTimeSignatures = (timeSignatures: TimeSignature[]) => {
 
 export const isValidNotes = (notes: Note[]) => {
   return notes.every((value) => isValidNote(value));
-};
-
-export const isValidScore = (score: Score) => {
-  return (
-    isValidTpqn(score.tpqn) &&
-    isValidTempos(score.tempos) &&
-    isValidTimeSignatures(score.timeSignatures) &&
-    isValidNotes(score.notes)
-  );
 };
 
 const tickToSecondForConstantBpm = (
@@ -283,6 +274,14 @@ export function decibelToLinear(decibelValue: number) {
   return Math.pow(10, decibelValue / 20);
 }
 
+export const DEFAULT_TPQN = 480;
+export const DEFAULT_BPM = 120;
+export const DEFAULT_BEATS = 4;
+export const DEFAULT_BEAT_TYPE = 4;
+
+// マルチエンジン対応のために将来的に廃止予定で、利用は非推奨
+export const DEPRECATED_DEFAULT_EDIT_FRAME_RATE = 93.75;
+
 export const VALUE_INDICATING_NO_DATA = -1;
 
 export const UNVOICED_PHONEMES = [
@@ -298,6 +297,30 @@ export const UNVOICED_PHONEMES = [
   "t",
   "ts",
 ];
+
+export function createDefaultTempo(position: number): Tempo {
+  return { position, bpm: DEFAULT_BPM };
+}
+
+export function createDefaultTimeSignature(
+  measureNumber: number,
+): TimeSignature {
+  return {
+    measureNumber,
+    beats: DEFAULT_BEATS,
+    beatType: DEFAULT_BEAT_TYPE,
+  };
+}
+
+export function createDefaultTrack(): Track {
+  return {
+    singer: undefined,
+    keyRangeAdjustment: 0,
+    volumeRangeAdjustment: 0,
+    notes: [],
+    pitchEditData: [],
+  };
+}
 
 export function getSnapTypes(tpqn: number) {
   return getRepresentableNoteTypes(tpqn).filter((value) => {
@@ -317,7 +340,7 @@ export function isValidKeyRangeAdjustment(keyRangeAdjustment: number) {
   );
 }
 
-export function isValidvolumeRangeAdjustment(volumeRangeAdjustment: number) {
+export function isValidVolumeRangeAdjustment(volumeRangeAdjustment: number) {
   return (
     Number.isInteger(volumeRangeAdjustment) &&
     volumeRangeAdjustment <= 20 &&
@@ -443,15 +466,21 @@ export function applyPitchEdit(
     throw new Error("f0.length and framePhonemes.length do not match.");
   }
 
-  const startFrame = Math.round(
+  // 歌い方の開始フレームと終了フレームを計算する
+  const singingGuideFrameLength = f0.length;
+  const singingGuideStartFrame = Math.round(
     singingGuide.startTime * singingGuide.frameRate,
   );
-  const endFrame = Math.min(startFrame + f0.length, pitchEditData.length);
+  const singingGuideEndFrame = singingGuideStartFrame + singingGuideFrameLength;
+
+  // ピッチ編集をf0に適用する
+  const startFrame = Math.max(0, singingGuideStartFrame);
+  const endFrame = Math.min(pitchEditData.length, singingGuideEndFrame);
   for (let i = startFrame; i < endFrame; i++) {
-    const phoneme = framePhonemes[i - startFrame];
+    const phoneme = framePhonemes[i - singingGuideStartFrame];
     const voiced = !unvoicedPhonemes.includes(phoneme);
     if (voiced && pitchEditData[i] !== VALUE_INDICATING_NO_DATA) {
-      f0[i - startFrame] = pitchEditData[i];
+      f0[i - singingGuideStartFrame] = pitchEditData[i];
     }
   }
 }

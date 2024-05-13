@@ -155,6 +155,8 @@ import {
   PresetKey,
   SplitterPositionType,
   Voice,
+  HotkeyActionNameType,
+  actionPostfixSelectNthCharacter,
 } from "@/type/preload";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
@@ -206,7 +208,7 @@ registerHotkeyWithCleanup({
 });
 registerHotkeyWithCleanup({
   editor: "talk",
-  name: "テキスト読み込む",
+  name: "テキストを読み込む",
   callback: () => {
     if (!uiLocked.value) {
       store.dispatch("SHOW_CONNECT_AND_EXPORT_TEXT_DIALOG");
@@ -265,10 +267,39 @@ registerHotkeyWithCleanup({
     }
   },
 });
+registerHotkeyWithCleanup({
+  editor: "talk",
+  enableInTextbox: false,
+  name: "全セルを選択",
+  callback: () => {
+    if (!uiLocked.value) {
+      store.dispatch("SET_SELECTED_AUDIO_KEYS", {
+        audioKeys: audioKeys.value,
+      });
+    }
+  },
+});
+for (let i = 0; i < 10; i++) {
+  registerHotkeyWithCleanup({
+    editor: "talk",
+    enableInTextbox: true,
+    name: `${i + 1}${actionPostfixSelectNthCharacter}` as HotkeyActionNameType,
+    callback: () => {
+      if (!uiLocked.value) {
+        onCharacterSelectHotkey(i);
+      }
+    },
+  });
+}
 
 const removeAudioItem = async () => {
   if (activeAudioKey.value == undefined) throw new Error();
   audioCellRefs[activeAudioKey.value].removeCell();
+};
+
+const onCharacterSelectHotkey = async (selectedCharacterIndex: number) => {
+  if (activeAudioKey.value == undefined) throw new Error();
+  audioCellRefs[activeAudioKey.value].selectCharacterAt(selectedCharacterIndex);
 };
 
 // view
