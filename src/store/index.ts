@@ -32,7 +32,7 @@ import { dictionaryStoreState, dictionaryStore } from "./dictionary";
 import { proxyStore, proxyStoreState } from "./proxy";
 import { createPartialStore } from "./vuex";
 import { engineStoreState, engineStore } from "./engine";
-import { live2dStore, live2dStoreState } from "./live2d"
+import { live2dStore, live2dStoreState } from "./live2d";
 import { filterCharacterInfosByStyleType } from "./utility";
 import {
   DefaultStyleId,
