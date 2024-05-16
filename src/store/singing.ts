@@ -1,5 +1,4 @@
 import path from "path";
-import { Live2dViewer } from "live2dmanager";
 import { v4 as uuidv4 } from "uuid";
 import { toRaw } from "vue";
 import { createPartialStore } from "./vuex";
