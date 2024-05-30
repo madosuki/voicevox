@@ -6,7 +6,10 @@ import {
 } from "@/sing/domain";
 import { Timer } from "@/sing/utility";
 
-const convertToInt16WavFileData = (audioBuffer: AudioBuffer) => {
+const convertToInt16WavFileData = (
+  audioBuffer: AudioBuffer,
+  offset: number,
+) => {
   const bytesPerSample = 2; // Int16
   const formatCode = 1; // WAVE_FORMAT_PCM
 
@@ -54,8 +57,11 @@ const convertToInt16WavFileData = (audioBuffer: AudioBuffer) => {
   writeString("data");
   writeUint32(dataSize);
 
+  const start = Math.floor(sampleRate * offset);
+
   for (let i = 0; i < numberOfChannels; i++) {
-    const channelData = audioBuffer.getChannelData(i);
+    if (audioBuffer.getChannelData(i).length < start) continue;
+    const channelData = audioBuffer.getChannelData(i).slice(start);
     for (let j = 0; j < numberOfSamples; j++) {
       writeSample(j * numberOfChannels + i, channelData[j]);
     }
@@ -632,6 +638,7 @@ class AudioPlayerVoice {
       ) {
         const wav = convertToInt16WavFileData(
           this.audioBufferSourceNode.buffer,
+          offset,
         );
         model.startLipSync(wav);
       } else {
@@ -643,6 +650,7 @@ class AudioPlayerVoice {
           ) {
             const wav = convertToInt16WavFileData(
               this.audioBufferSourceNode.buffer,
+              offset,
             );
             model.startLipSync(wav);
           }
