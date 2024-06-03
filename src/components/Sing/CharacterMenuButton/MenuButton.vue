@@ -150,9 +150,9 @@ import { computed, ref } from "vue";
 import { debounce } from "quasar";
 import SelectedCharacter from "./SelectedCharacter.vue";
 import { useStore } from "@/store";
-import { base64ImageToUri } from "@/helpers/base64Helper";
 import { SpeakerId, StyleId } from "@/type/preload";
 import { getStyleDescription } from "@/sing/viewHelper";
+import { useEngineIcons } from "@/composables/useEngineIcons";
 
 const store = useStore();
 const uiLocked = computed(() => store.getters.UI_LOCKED);
@@ -245,14 +245,7 @@ const selectedStyleId = computed(
 // 複数エンジン
 const isMultipleEngine = computed(() => store.state.engineIds.length > 1);
 
-const engineIcons = computed(() =>
-  Object.fromEntries(
-    store.state.engineIds.map((engineId) => [
-      engineId,
-      base64ImageToUri(store.state.engineManifests[engineId].icon),
-    ]),
-  ),
-);
+const engineIcons = useEngineIcons(() => store.state.engineManifests);
 </script>
 
 <style scoped lang="scss">
