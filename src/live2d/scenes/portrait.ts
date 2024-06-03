@@ -24,9 +24,6 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
 
       projection.multiplyByMatrix(live2dViewer._viewMatrix);
 
-      if (model._modelSetting?.getModelFileName().includes("Usagi")) {
-        model.setExpression("Inaba");
-      }
       model.update();
       model.draw(projection, 0, 0, width, height, live2dViewer.frameBuffer);
     }

@@ -277,6 +277,7 @@ const initializeLive2d = async () => {
       .then(() => {
         if (live2dViewer == undefined) return;
         chugokuUsagi.setLipSyncWeight(20);
+        chugokuUsagi.setExpression("Inaba");
         live2dViewer.addModel(
           "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
           chugokuUsagi,

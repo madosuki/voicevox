@@ -5,7 +5,7 @@
       class="character-portrait"
       :src="portraitPath"
     />
-    <div v-else class="character-portrait live2d"></div>
+    <div v-else class="character-portrait live2d-portrait"></div>
   </div>
 </template>
 
@@ -105,7 +105,7 @@ const showLive2d = () => {
   }
   console.log(`isLive2dPortrait in song: ${isLive2dPortrait.value}`);
 
-  const place = document.getElementsByClassName("live2d");
+  const place = document.getElementsByClassName("live2d-portrait");
   if (place.length < 1) return;
   place[0].appendChild(props.live2dCanvas);
   store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
@@ -185,7 +185,7 @@ onUpdated(async () => {
     // トークの遷移後にトーク側からcanvasを追加してもソング側の後処理なのか追加したcanvasが消されてしまうので改めて追加する
     if (store.getters.CURRENT_SHOW_IN_TALK) {
       console.log("do workaround in song for talk");
-      const place = document.getElementsByClassName("live2d");
+      const place = document.getElementsByClassName("live2d-portrait");
       if (place.length < 1) return;
       if (place.length === 1) {
         place[0].appendChild(props.live2dCanvas);

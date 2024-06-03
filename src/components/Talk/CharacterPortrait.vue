@@ -4,13 +4,27 @@
     <span v-if="isMultipleEngine" class="character-engine-name">{{
       engineName
     }}</span>
+    <span
+      v-if="isEnableLive2dFeature && isLoadedLive2dCore && isLive2dPortrait"
+    >
+      <select class="expressions-selector">
+        <option value="None">None</option>
+        <option
+          v-for="(value, key) in live2dExpressions"
+          :key="key"
+          :value="value"
+        >
+          {{ value }}
+        </option>
+      </select>
+    </span>
     <img
       v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
       :src="portraitPath"
       class="character-portrait"
       :alt="characterName"
     />
-    <div v-else class="live2d character-portrait"></div>
+    <div v-else class="live2d-portrait character-portrait"></div>
     <div v-if="isInitializingSpeaker" class="loading">
       <QSpinner color="primary" size="5rem" :thickness="4" />
     </div>
@@ -130,6 +144,17 @@ const getLive2dModelKey = (): string | undefined => {
   return v;
 };
 
+const live2dExpressions = computed(() => {
+  const modelKey = getLive2dModelKey();
+  if (modelKey != undefined && live2dViewer.value != undefined) {
+    const model = live2dViewer.value.getModelFromKey(modelKey);
+    if (model != undefined) {
+      return model.getExpressionIdList();
+    }
+  }
+  return [];
+});
+
 const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
   if (isMoveToTalk) {
@@ -167,7 +192,7 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
   console.log("show");
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
-  const place = document.getElementsByClassName("live2d");
+  const place = document.getElementsByClassName("live2d-portrait");
   if (place == undefined || place.length < 1) {
     return;
   }
@@ -327,5 +352,18 @@ onUpdated(() => {
     justify-content: center;
     align-content: center;
   }
+}
+
+.expressions-selector {
+  position: absolute;
+  padding: 1px 24px 1px 8px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(colors.$background-rgb, 0.5) 0%,
+    rgba(colors.$background-rgb, 0.5) 75%,
+    transparent 100%
+  );
+  overflow-wrap: anywhere;
+  right: 10px;
 }
 </style>
