@@ -6,12 +6,10 @@
     }}</span>
     <span
       v-if="isEnableLive2dFeature && isLoadedLive2dCore && isLive2dPortrait"
+      class="expressions-selector"
     >
-      <select
-        v-model="expressionName"
-        class="expressions-selector"
-        @change="setExpression(expressionName)"
-      >
+      表情
+      <select v-model="expressionName" @change="setExpression(expressionName)">
         <option value="">None</option>
         <option
           v-for="(value, key) in live2dExpressions"
