@@ -7,8 +7,12 @@
     <span
       v-if="isEnableLive2dFeature && isLoadedLive2dCore && isLive2dPortrait"
     >
-      <select class="expressions-selector">
-        <option value="None">None</option>
+      <select
+        v-model="expressionName"
+        class="expressions-selector"
+        @change="setExpression(expressionName)"
+      >
+        <option value="">None</option>
         <option
           v-for="(value, key) in live2dExpressions"
           :key="key"
@@ -144,6 +148,8 @@ const getLive2dModelKey = (): string | undefined => {
   return v;
 };
 
+const expressionName = ref("");
+
 const live2dExpressions = computed(() => {
   const modelKey = getLive2dModelKey();
   if (modelKey != undefined && live2dViewer.value != undefined) {
@@ -154,6 +160,19 @@ const live2dExpressions = computed(() => {
   }
   return [];
 });
+
+const setExpression = (name: string) => {
+  if (live2dViewer.value == undefined) return;
+  const model = live2dViewer.value.getModelFromKey(
+    live2dViewer.value.getCurrentModelKey(),
+  );
+  if (model == undefined) return;
+  if (name === "") {
+    model.resetExpression();
+  } else {
+    model.setExpression(name);
+  }
+};
 
 const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
