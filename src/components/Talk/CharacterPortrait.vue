@@ -8,7 +8,7 @@
       v-if="isEnableLive2dFeature && isLoadedLive2dCore && isLive2dPortrait"
       class="expressions-selector"
     >
-      表情
+      表情モーション：
       <select v-model="expressionName" @change="setExpression(expressionName)">
         <option value="">None</option>
         <option
