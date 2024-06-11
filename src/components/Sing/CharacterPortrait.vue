@@ -16,6 +16,7 @@ import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
 import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
+import { EditorType } from "@/type/preload";
 
 const props = defineProps<{
   getLive2dViewer: () => Live2dViewer | undefined;
@@ -167,6 +168,29 @@ watch(isEnableLive2dFeature, (newVal) => {
 });
 
 const editorMode = computed(() => store.state.openedEditor);
+watch(editorMode, (newVal) => {
+  console.log(`detect new val of editorMode in song: ${newVal}`);
+  if (
+    newVal === ("song" as EditorType) &&
+    isLoadedLive2dCore.value &&
+    isEnableLive2dFeature.value &&
+    isLive2dPortrait.value
+  ) {
+    // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
+    if (editorMode.value === "song") {
+      if (store.getters.CURRENT_SHOW_IN_SONG) {
+        console.log("do workaround when move talk to song");
+        const place = document.getElementsByClassName("live2d-portrait");
+        if (place.length < 1) return;
+        if (place.length === 1) {
+          place[0].appendChild(props.live2dCanvas);
+          showLive2d();
+        }
+      }
+    }
+    return;
+  }
+});
 
 onUpdated(async () => {
   console.log("onUpdated in CharacterPortrait on Sing Editor");
@@ -177,20 +201,6 @@ onUpdated(async () => {
     characterName.value == undefined
   ) {
     disAppearLive2d();
-    return;
-  }
-
-  // WORKAROUND: トークとソングの切り替え時に何故かTalkのCharacterPortraitではなくSongのCharacterPortraitのonUpdatedが発火してしまう．
-  if (editorMode.value === "talk") {
-    // トークの遷移後にトーク側からcanvasを追加してもソング側の後処理なのか追加したcanvasが消されてしまうので改めて追加する
-    if (store.getters.CURRENT_SHOW_IN_TALK) {
-      console.log("do workaround in song for talk");
-      const place = document.getElementsByClassName("live2d-portrait");
-      if (place.length < 1) return;
-      if (place.length === 1) {
-        place[0].appendChild(props.live2dCanvas);
-      }
-    }
     return;
   }
 

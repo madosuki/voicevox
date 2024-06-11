@@ -8,17 +8,15 @@
       v-if="isEnableLive2dFeature && isLoadedLive2dCore && isLive2dPortrait"
       class="expressions-selector"
     >
-      表情モーション：
-      <select v-model="expressionName" @change="setExpression(expressionName)">
-        <option value="">None</option>
-        <option
-          v-for="(value, key) in live2dExpressions"
-          :key="key"
-          :value="value"
-        >
-          {{ value }}
-        </option>
-      </select>
+      <QSelect
+        v-model="expressionName"
+        label="表情モーション"
+        :options="live2dExpressions"
+        emit-value
+        style="min-width: 128px"
+        @update:model-value="setExpression(expressionName)"
+      >
+      </QSelect>
     </span>
     <img
       v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
@@ -146,14 +144,15 @@ const getLive2dModelKey = (): string | undefined => {
   return v;
 };
 
-const expressionName = ref("");
+const expressionName = ref("None");
 
 const live2dExpressions = computed(() => {
   const modelKey = getLive2dModelKey();
   if (modelKey != undefined && live2dViewer.value != undefined) {
     const model = live2dViewer.value.getModelFromKey(modelKey);
     if (model != undefined) {
-      return model.getExpressionIdList();
+      const idList = model.getExpressionIdList();
+      return ["None", ...idList];
     }
   }
   return [];
@@ -165,18 +164,22 @@ const setExpression = (name: string) => {
     live2dViewer.value.getCurrentModelKey(),
   );
   if (model == undefined) return;
-  if (name === "") {
+  if (name === "None") {
     model.resetExpression();
   } else {
     model.setExpression(name);
   }
 };
 
+watch(characterName, () => {
+  expressionName.value = "None";
+});
+
 const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
   if (isMoveToTalk) {
     console.log(
-      `change live2d model index when is move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`,
+      `change live2d model index after move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`,
     );
     live2dViewer.value.setCurrentModel(
       store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK,
@@ -289,10 +292,25 @@ watch(editorMode, (newVal) => {
   console.log(`isShowLiv2d: ${isShowLive2d.value}`);
   console.log("in talk");
   if (newVal === ("song" as EditorType)) return;
+  if (
+    !isLoadedLive2dCore.value ||
+    !isLive2dInitialized.value ||
+    !isLive2dPortrait.value
+  )
+    return;
+  if (!store.getters.CURRENT_SHOW_IN_TALK) return;
 
-  if (store.getters.CURRENT_SHOW_IN_TALK) {
-    showLive2d(true);
+  // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
+  if (editorMode.value === "talk") {
+    const place = document.getElementsByClassName("live2d-portrait");
+    if (place.length < 1) return;
+    if (place.length === 1) {
+      place[0].appendChild(props.live2dCanvas);
+    }
   }
+
+  // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
+  showLive2d(true);
 });
 
 onUpdated(() => {
