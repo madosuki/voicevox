@@ -2014,13 +2014,13 @@ export type Live2dStoreTypes = {
     getter: string;
   };
 
-  CURRENT_SHOW_IN_TALK: {
+  CURRENT_SHOW_LIVE2D_IN_TALK: {
     mutation: { isShow: boolean };
     action(payload: { isShow: boolean }): void;
     getter: boolean;
   };
 
-  CURRENT_SHOW_IN_SONG: {
+  CURRENT_SHOW_LIVE2D_IN_SONG: {
     mutation: { isShow: boolean };
     action(payload: { isShow: boolean }): void;
     getter: boolean;

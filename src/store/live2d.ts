@@ -30,24 +30,24 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
   },
 
-  CURRENT_SHOW_IN_TALK: {
+  CURRENT_SHOW_LIVE2D_IN_TALK: {
     mutation(state, { isShow }: { isShow: boolean }) {
       state.isCurrentShowInTalk = isShow;
     },
     action({ commit }, { isShow }: { isShow: boolean }) {
-      commit("CURRENT_SHOW_IN_TALK", { isShow });
+      commit("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow });
     },
     getter(state) {
       return state.isCurrentShowInTalk;
     },
   },
 
-  CURRENT_SHOW_IN_SONG: {
+  CURRENT_SHOW_LIVE2D_IN_SONG: {
     mutation(state, { isShow }: { isShow: boolean }) {
       state.isCurrentShowInSong = isShow;
     },
     action({ commit }, { isShow }: { isShow: boolean }) {
-      commit("CURRENT_SHOW_IN_SONG", { isShow });
+      commit("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow });
     },
     getter(state) {
       return state.isCurrentShowInSong;

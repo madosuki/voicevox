@@ -74,7 +74,8 @@ const isEnableLive2dFeature = computed(
 const isLive2dPortrait = ref(false);
 const isContinueRunLive2d = computed(
   () =>
-    store.getters.CURRENT_SHOW_IN_SONG || store.getters.CURRENT_SHOW_IN_TALK,
+    store.getters.CURRENT_SHOW_LIVE2D_IN_SONG ||
+    store.getters.CURRENT_SHOW_LIVE2D_IN_TALK,
 );
 const live2dViewer = computed(() => props.getLive2dViewer());
 const isDrawing = computed(() => store.getters.IS_DRAWING);
@@ -112,7 +113,7 @@ const showLive2d = () => {
   const place = document.getElementsByClassName("live2d-portrait");
   if (place.length < 1) return;
   place[0].appendChild(props.live2dCanvas);
-  store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
+  store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: true });
 
   if (!isDrawing.value) {
     props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
@@ -121,7 +122,7 @@ const showLive2d = () => {
 };
 
 const disAppearLive2d = () => {
-  store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: false });
+  store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: false });
   isLive2dPortrait.value = false;
 };
 
@@ -156,6 +157,8 @@ watch(characterName, (newVal: string | undefined) => {
 watch(isEnableLive2dFeature, (newVal) => {
   if (!newVal) {
     isLive2dPortrait.value = false;
+    store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: false });
+    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
     return;
   }
 
@@ -177,8 +180,8 @@ watch(editorMode, (newVal) => {
     isEnableLive2dFeature.value &&
     characterName.value != undefined
   ) {
-    store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: true });
-    store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: false });
+    store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: true });
+    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
     // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
     console.log("do workaround when move talk to song");
     if (isCanUseLive2dPortrait(characterName.value)) {
