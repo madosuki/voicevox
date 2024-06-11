@@ -125,9 +125,12 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const isLive2dPortrait = ref(false);
+const isContinueRunLive2d = computed(
+  () =>
+    store.getters.CURRENT_SHOW_IN_SONG || store.getters.CURRENT_SHOW_IN_TALK,
+);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
-const isShowLive2d = computed(() => store.getters.CURRENT_SHOW_IN_TALK);
 const isDrawing = computed(() => store.getters.IS_DRAWING);
 const live2dViewer = computed(() => props.getLive2dViewer());
 
@@ -211,6 +214,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 const showLive2d = (isDoEditorSwitch?: boolean) => {
   console.log("show");
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
+  if (!isLive2dPortrait.value) return;
 
   const place = document.getElementsByClassName("live2d-portrait");
   if (place == undefined || place.length < 1) {
@@ -224,7 +228,6 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
   }
 
   changeLive2dModelIndex(isDoEditorSwitch);
-  if (!isShowLive2d.value) return;
   props.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
@@ -244,10 +247,8 @@ const disAppearLive2d = () => {
 watch(characterName, (newVal: string) => {
   if (!isLoadedLive2dCore.value) return;
 
-  if (!isEnableLive2dFeature.value) {
-    if (isShowLive2d.value) {
-      disAppearLive2d();
-    }
+  if (!isEnableLive2dFeature.value && isLive2dPortrait.value) {
+    disAppearLive2d();
     return;
   }
 
@@ -289,24 +290,17 @@ watch(isEnableLive2dFeature, (newVal) => {
 const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, (newVal) => {
   console.log(`editorMode: ${newVal}`);
-  console.log(`isShowLiv2d: ${isShowLive2d.value}`);
   console.log("in talk");
   if (newVal === ("song" as EditorType)) return;
-  if (
-    !isLoadedLive2dCore.value ||
-    !isLive2dInitialized.value ||
-    !isLive2dPortrait.value
-  )
-    return;
-  if (!store.getters.CURRENT_SHOW_IN_TALK) return;
+  if (!isLoadedLive2dCore.value || !isLive2dInitialized.value) return;
+  store.dispatch("CURRENT_SHOW_IN_SONG", { isShow: false });
+  store.dispatch("CURRENT_SHOW_IN_TALK", { isShow: true });
 
   // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
-  if (editorMode.value === "talk") {
-    const place = document.getElementsByClassName("live2d-portrait");
-    if (place.length < 1) return;
-    if (place.length === 1) {
-      place[0].appendChild(props.live2dCanvas);
-    }
+  const place = document.getElementsByClassName("live2d-portrait");
+  if (place.length < 1) return;
+  if (place.length === 1) {
+    place[0].appendChild(props.live2dCanvas);
   }
 
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
@@ -315,7 +309,7 @@ watch(editorMode, (newVal) => {
 
 onUpdated(() => {
   if (!isLoadedLive2dCore.value) return;
-  if (!isEnableLive2dFeature.value && isShowLive2d.value) {
+  if (!isEnableLive2dFeature.value && isContinueRunLive2d.value) {
     disAppearLive2d();
     return;
   }
