@@ -179,17 +179,8 @@ watch(characterName, () => {
   expressionName.value = "None";
 });
 
-const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
+const changeLive2dModelIndex = () => {
   if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
-  if (isMoveToTalk) {
-    console.log(
-      `change live2d model index after move to talk: ${store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK}`,
-    );
-    live2dViewer.value.setCurrentModel(
-      store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK,
-    );
-    return;
-  }
 
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
@@ -201,10 +192,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
-    if (v !== store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK) {
-      live2dViewer.value.setCurrentModel(v);
-    }
-    store.dispatch("LATEST_USE_CHARACTER_KEY_IN_TALK", { key: v });
+    live2dViewer.value.setCurrentModel(v);
     store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: true });
   } else {
     store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
@@ -212,7 +200,7 @@ const changeLive2dModelIndex = (isMoveToTalk?: boolean) => {
   console.log("changeLive2dModelIndex in talk");
 };
 
-const showLive2d = (isDoEditorSwitch?: boolean) => {
+const showLive2d = () => {
   console.log("show");
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
   if (!isLive2dPortrait.value) return;
@@ -228,7 +216,7 @@ const showLive2d = (isDoEditorSwitch?: boolean) => {
     place[0].appendChild(props.live2dCanvas);
   }
 
-  changeLive2dModelIndex(isDoEditorSwitch);
+  changeLive2dModelIndex();
   props.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
@@ -245,6 +233,14 @@ const disAppearLive2d = () => {
   props.removeMouseEventAtLive2dCanvas();
 };
 
+const isCanUseLive2dPortrait = (targetName: string): boolean => {
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
+  if (name == undefined) return false;
+
+  const key = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
+  return key != undefined;
+};
+
 watch(characterName, (newVal: string) => {
   if (!isLoadedLive2dCore.value) return;
 
@@ -253,14 +249,7 @@ watch(characterName, (newVal: string) => {
     return;
   }
 
-  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
-  if (name == undefined) {
-    disAppearLive2d();
-    return;
-  }
-
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  if (v == undefined) {
+  if (!isCanUseLive2dPortrait(newVal)) {
     disAppearLive2d();
     return;
   }
@@ -276,19 +265,12 @@ watch(isEnableLive2dFeature, (newVal) => {
     return;
   }
 
-  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value,
-  );
-  if (name == undefined) {
-    return;
-  }
+  if (!isCanUseLive2dPortrait(characterName.value)) return;
 
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  if (v == undefined) {
-    return;
+  if (!isLive2dPortrait.value) {
+    isLive2dPortrait.value = true;
+    showLive2d();
   }
-
-  isLive2dPortrait.value = true;
 });
 
 const editorMode = computed(() => store.state.openedEditor);
@@ -296,19 +278,19 @@ watch(editorMode, (newVal) => {
   console.log(`editorMode: ${newVal}`);
   console.log("in talk");
   if (newVal === ("song" as EditorType)) return;
-  if (!isLoadedLive2dCore.value || !isLive2dInitialized.value) return;
+  if (
+    !isEnableLive2dFeature.value ||
+    !isLoadedLive2dCore.value ||
+    !isLive2dInitialized.value
+  )
+    return;
+  if (!isCanUseLive2dPortrait(characterName.value)) return;
+  isLive2dPortrait.value = true;
   store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: false });
   store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: true });
 
-  // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
-  const place = document.getElementsByClassName("live2d-portrait");
-  if (place.length < 1) return;
-  if (place.length === 1) {
-    place[0].appendChild(props.live2dCanvas);
-  }
-
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
-  showLive2d(true);
+  showLive2d();
 });
 
 onUpdated(() => {
@@ -318,23 +300,17 @@ onUpdated(() => {
     return;
   }
 
-  const v = getLive2dModelKey();
-  if (v != undefined) {
-    if (
-      v != store.getters.LATEST_USE_CHARACTER_KEY_IN_TALK &&
-      !isLive2dPortrait.value
-    ) {
-      isLive2dPortrait.value = true;
-    }
-  } else {
-    disAppearLive2d();
-    return;
-  }
-
   console.log("onUpdated in talk");
+  if (isEnableLive2dFeature.value) {
+    if (isCanUseLive2dPortrait(characterName.value)) {
+      if (!isLive2dPortrait.value) {
+        isLive2dPortrait.value = true;
+      }
+    }
 
-  if (isLive2dPortrait.value) {
-    showLive2d();
+    if (isLive2dPortrait.value) {
+      showLive2d();
+    }
   }
 });
 </script>

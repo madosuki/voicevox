@@ -2008,12 +2008,6 @@ export type Live2dStoreState = {
 };
 
 export type Live2dStoreTypes = {
-  LATEST_USE_CHARACTER_KEY_IN_TALK: {
-    mutation: { key: string };
-    action(payload: { key: string }): void;
-    getter: string;
-  };
-
   CURRENT_SHOW_LIVE2D_IN_TALK: {
     mutation: { isShow: boolean };
     action(payload: { isShow: boolean }): void;
