@@ -32,7 +32,6 @@
             >
               <template #before>
                 <CharacterPortrait
-                  ref="characterPortrait"
                   :getLive2dViewer
                   :addMouseEventToLive2dCanvas
                   :removeMouseEventAtLive2dCanvas
@@ -135,6 +134,7 @@ import { computed, onBeforeUpdate, ref, toRaw, VNodeRef, watch } from "vue";
 import Draggable from "vuedraggable";
 import { QResizeObserver } from "quasar";
 import AudioCell from "./AudioCell.vue";
+import AudioDetail from "./AudioDetail.vue";
 import AudioInfo from "./AudioInfo.vue";
 import CharacterPortrait from "./CharacterPortrait.vue";
 import ToolBar from "./ToolBar.vue";
