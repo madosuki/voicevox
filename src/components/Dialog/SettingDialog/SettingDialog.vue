@@ -516,7 +516,7 @@
               <ToggleCell
                 title="Live2D立ち絵"
                 description="Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします"
-                :model-value="experimentalSetting.enableLive2dPortrait"
+                :modelValue="experimentalSetting.enableLive2dPortrait"
                 @updated="
                   changeExperimentalSetting('enableLive2dPortrait', $event)
                 "

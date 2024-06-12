@@ -1,6 +1,6 @@
 <template>
   <QLayout reveal elevated container class="layout-container">
-    <ToolBar :get-live2d-viewer="getLive2dViewer" />
+    <ToolBar :getLive2dViewer />
 
     <QPageContainer>
       <QPage class="main-row-panes">
@@ -33,15 +33,11 @@
               <template #before>
                 <CharacterPortrait
                   ref="characterPortrait"
-                  :get-live2d-viewer="getLive2dViewer"
-                  :add-mouse-event-to-live2d-canvas="
-                    addMouseEventToLive2dCanvas
-                  "
-                  :remove-mouse-event-at-live2d-canvas="
-                    removeMouseEventAtLive2dCanvas
-                  "
-                  :live2d-canvas="live2dCanvas"
-                  :live2d-scene-renderer="live2dSceneRenderer"
+                  :getLive2dViewer
+                  :addMouseEventToLive2dCanvas
+                  :removeMouseEventAtLive2dCanvas
+                  :live2dCanvas
+                  :live2dSceneRenderer
                 />
               </template>
               <template #after>
@@ -115,7 +111,11 @@
             </QSplitter>
           </template>
           <template #after>
-            <AudioDetail v-if="activeAudioKey != undefined" :activeAudioKey :get-live2d-viewer="getLive2dViewer" />
+            <AudioDetail
+              v-if="activeAudioKey != undefined"
+              :activeAudioKey
+              :getLive2dViewer
+            />
           </template>
         </QSplitter>
 
@@ -134,7 +134,11 @@ import { Live2dViewer } from "live2dmanager";
 import { computed, onBeforeUpdate, ref, toRaw, VNodeRef, watch } from "vue";
 import Draggable from "vuedraggable";
 import { QResizeObserver } from "quasar";
+import AudioCell from "./AudioCell.vue";
+import AudioInfo from "./AudioInfo.vue";
+import CharacterPortrait from "./CharacterPortrait.vue";
 import ToolBar from "./ToolBar.vue";
+import { useStore } from "@/store";
 import ProgressView from "@/components/ProgressView.vue";
 import EngineStartupOverlay from "@/components/EngineStartupOverlay.vue";
 import { AudioItem } from "@/store/type";

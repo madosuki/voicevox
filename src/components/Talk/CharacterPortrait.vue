@@ -12,9 +12,8 @@
         v-model="expressionName"
         label="表情モーション"
         :options="live2dExpressions"
-        emit-value
         style="min-width: 128px"
-        @update:model-value="setExpression(expressionName)"
+        @update:modelValue="setExpression(expressionName)"
       >
       </QSelect>
     </span>

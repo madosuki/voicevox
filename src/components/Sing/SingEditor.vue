@@ -1,5 +1,5 @@
 <template>
-  <ToolBar :get-live2d-viewer="getLive2dViewer" />
+  <ToolBar :getLive2dViewer />
   <div class="sing-main">
     <EngineStartupOverlay :isCompletedInitialStartup />
     <div v-if="nowAudioExporting" class="exporting-dialog">
@@ -20,11 +20,11 @@
       </div>
     </div>
     <ScoreSequencer
-      :get-live2d-viewer="getLive2dViewer"
-      :add-mouse-event-to-live2d-canvas="addMouseEventToLive2dCanvas"
-      :remove-mouse-event-at-live2d-canvas="removeMouseEventAtLive2dCanvas"
-      :live2d-canvas="live2dCanvas"
-      :live2d-scene-renderer="live2dSceneRenderer"
+      :getLive2dViewer
+      :addMouseEventToLive2dCanvas
+      :removeMouseEventAtLive2dCanvas
+      :live2dCanvas
+      :live2dSceneRenderer
     />
   </div>
 </template>

@@ -1,6 +1,11 @@
 <template>
   <QBtn flat class="q-pa-none" :disable="uiLocked">
-    <SelectedCharacter :showSkeleton :selectedCharacterInfo :selectedSinger :get-live2d-viewer="getLive2dViewer" />
+    <SelectedCharacter
+      :showSkeleton
+      :selectedCharacterInfo
+      :selectedSinger
+      :getLive2dViewer
+    />
     <QMenu
       class="character-menu"
       transitionShow="none"

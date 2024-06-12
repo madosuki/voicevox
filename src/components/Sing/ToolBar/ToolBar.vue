@@ -2,7 +2,7 @@
   <QToolbar class="sing-toolbar">
     <!-- configs for entire song -->
     <div class="sing-configs">
-      <CharacterMenuButton :get-live2d-viewer="getLive2dViewer" />
+      <CharacterMenuButton :getLive2dViewer />
       <QInput
         type="number"
         :modelValue="keyRangeAdjustmentInputBuffer"
