@@ -517,7 +517,7 @@
                 title="Live2D立ち絵"
                 description="Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします"
                 :modelValue="experimentalSetting.enableLive2dPortrait"
-                @updated="
+                @update:modelValue="
                   changeExperimentalSetting('enableLive2dPortrait', $event)
                 "
               />
