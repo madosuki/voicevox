@@ -1,16 +1,11 @@
 <template>
   <QBtn flat class="q-pa-none" :disable="uiLocked">
-    <SelectedCharacter
-      :show-skeleton="showSkeleton"
-      :selected-character-info="selectedCharacterInfo"
-      :selected-singer="selectedSinger"
-      :get-live2d-viewer="getLive2dViewer"
-    />
+    <SelectedCharacter :showSkeleton :selectedCharacterInfo :selectedSinger :get-live2d-viewer="getLive2dViewer" />
     <QMenu
       class="character-menu"
-      transition-show="none"
-      transition-hide="none"
-      touch-position
+      transitionShow="none"
+      transitionHide="none"
+      touchPosition
     >
       <QList>
         <QItem
@@ -22,7 +17,7 @@
             <QBtn
               v-close-popup
               flat
-              no-caps
+              noCaps
               class="col-grow"
               :class="
                 characterInfo.metas.speakerUuid === selectedSpeakerUuid &&
@@ -39,8 +34,8 @@
             >
               <QAvatar rounded size="2rem" class="q-mr-md">
                 <QImg
-                  no-spinner
-                  no-transition
+                  noSpinner
+                  noTransition
                   :ratio="1"
                   :src="
                     getDefaultStyle(characterInfo.metas.speakerUuid).iconPath
@@ -82,11 +77,11 @@
 
                 <QMenu
                   v-model="subMenuOpenFlags[characterIndex]"
-                  no-parent-event
+                  noParentEvent
                   anchor="top end"
                   self="top start"
-                  transition-show="none"
-                  transition-hide="none"
+                  transitionShow="none"
+                  transitionHide="none"
                   class="character-menu"
                 >
                   <QList>
@@ -95,7 +90,7 @@
                       :key="styleIndex"
                       v-close-popup
                       clickable
-                      active-class="selected-character-item"
+                      activeClass="selected-character-item"
                       :active="style.styleId === selectedStyleId"
                       @click="
                         changeStyleId(
@@ -106,8 +101,8 @@
                     >
                       <QAvatar rounded size="2rem" class="q-mr-md">
                         <QImg
-                          no-spinner
-                          no-transition
+                          noSpinner
+                          noTransition
                           :ratio="1"
                           :src="style.iconPath"
                         />

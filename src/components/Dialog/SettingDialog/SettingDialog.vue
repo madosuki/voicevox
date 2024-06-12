@@ -2,8 +2,8 @@
   <QDialog
     v-model="settingDialogOpenedComputed"
     maximized
-    transition-show="jump-up"
-    transition-hide="jump-down"
+    transitionShow="jump-up"
+    transitionHide="jump-down"
     class="setting-dialog transparent-backdrop"
   >
     <QLayout container view="hHh Lpr fFf" class="bg-background">
@@ -39,51 +39,26 @@
                     dense
                     name="engine"
                     :options="engineIds"
-                    :option-label="renderEngineNameLabel"
+                    :optionLabel="renderEngineNameLabel"
                   />
                 </template>
               </QCardActions>
-              <QCardActions class="q-px-md bg-surface">
-                <div>エンジンモード</div>
-                <div
-                  aria-label=" GPU モードの利用には GPU が必要です。Linux は
-                      NVIDIA&trade; 製 GPU のみ対応しています。また、エンジンが対応していない場合、切り替えられません。"
+              <ButtonToggleCell
+                v-model="engineUseGpu"
+                title="エンジンモード"
+                description="GPU モードの利用には GPU が必要です。Linux は NVIDIA™ 製 GPU のみ対応しています。"
+                :options="engineUseGpuOptions"
+                :disable="!gpuSwitchEnabled(selectedEngineId)"
+              >
+                <QTooltip
+                  :delay="500"
+                  :target="!gpuSwitchEnabled(selectedEngineId)"
                 >
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      GPU モードの利用には GPU が必要です。Linux は
-                      NVIDIA&trade; 製 GPU のみ対応しています。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QBtnToggle
-                  v-model="engineUseGpu"
-                  padding="xs md"
-                  unelevated
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="engineUseGpuOptions"
-                  :disable="!gpuSwitchEnabled(selectedEngineId)"
-                >
-                  <QTooltip
-                    :delay="500"
-                    :target="!gpuSwitchEnabled(selectedEngineId)"
-                  >
-                    {{
-                      engineInfos[selectedEngineId].name
-                    }}はCPU版のためGPUモードを利用できません。
-                  </QTooltip>
-                </QBtnToggle>
-              </QCardActions>
+                  {{
+                    engineInfos[selectedEngineId].name
+                  }}はCPU版のためGPUモードを利用できません。
+                </QTooltip>
+              </ButtonToggleCell>
               <QCardActions class="q-px-md bg-surface">
                 <div>音声のサンプリングレート</div>
                 <div
@@ -94,8 +69,8 @@
                       :delay="500"
                       anchor="center right"
                       self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
+                      transitionShow="jump-right"
+                      transitionHide="jump-left"
                     >
                       再生・保存時の音声のサンプリングレートを変更できます（サンプリングレートを上げても音声の品質は上がりません）。
                     </QTooltip>
@@ -108,7 +83,7 @@
                   dense
                   name="samplingRate"
                   :options="samplingRateOptions"
-                  :option-label="renderSamplingRateLabel"
+                  :optionLabel="renderSamplingRateLabel"
                 >
                 </QSelect>
               </QCardActions>
@@ -121,8 +96,8 @@
               <ToggleCell
                 title="プリセット機能"
                 description="ONの場合、プリセット機能を有効にします。パラメータを登録したり適用したりできます。"
-                :model-value="experimentalSetting.enablePreset"
-                @updated="changeEnablePreset"
+                :modelValue="experimentalSetting.enablePreset"
+                @update:modelValue="changeEnablePreset"
               />
               <QSlideTransition>
                 <!-- q-slide-transitionはheightだけをアニメーションするのでdivで囲う -->
@@ -131,10 +106,10 @@
                     title="スタイル変更時にデフォルトプリセットを適用"
                     description="ONの場合、キャラやスタイルの変更時にデフォルトプリセットが自動的に適用されます。"
                     class="in-slide-transition-workaround"
-                    :model-value="
+                    :modelValue="
                       experimentalSetting.shouldApplyDefaultPresetOnVoiceChanged
                     "
-                    @updated="
+                    @update:modelValue="
                       changeExperimentalSetting(
                         'shouldApplyDefaultPresetOnVoiceChanged',
                         $event,
@@ -146,138 +121,70 @@
               <ToggleCell
                 title="パラメータの引き継ぎ"
                 description="ONの場合、テキスト欄追加の際に、現在の話速等のパラメータが引き継がれます。"
-                :model-value="inheritAudioInfoMode"
-                @updated="changeinheritAudioInfo"
+                :modelValue="inheritAudioInfoMode"
+                @update:modelValue="changeinheritAudioInfo"
               />
-              <QCardActions class="q-px-md bg-surface">
-                <div>再生位置を追従</div>
-                <div
-                  aria-label="音声再生中の、詳細調整欄の自動スクロールのモードを選べます。"
-                >
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      音声再生中の、詳細調整欄の自動スクロールのモードを選べます。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QBtnToggle
-                  v-model="activePointScrollMode"
-                  padding="xs md"
-                  unelevated
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="[
-                    {
-                      label: '連続',
-                      value: 'CONTINUOUSLY',
-                      slot: 'CONTINUOUSLY',
-                    },
-                    {
-                      label: 'ページめくり',
-                      value: 'PAGE',
-                      slot: 'PAGE',
-                    },
-                    {
-                      label: 'オフ',
-                      value: 'OFF',
-                      slot: 'OFF',
-                    },
-                  ]"
-                >
-                  <template #CONTINUOUSLY>
-                    <QTooltip :delay="500">
-                      現在の再生位置を真ん中に表示します。
-                    </QTooltip>
-                  </template>
-                  <template #PAGE>
-                    <QTooltip :delay="500">
-                      現在の再生位置が表示範囲外にある場合にスクロールします。
-                    </QTooltip>
-                  </template>
-                  <template #OFF>
-                    <QTooltip :delay="500">
-                      自動でスクロールしません。
-                    </QTooltip>
-                  </template>
-                </QBtnToggle>
-              </QCardActions>
-              <QCardActions class="q-px-md bg-surface">
-                <div>テキスト自動分割</div>
-                <div
-                  aria-label="テキスト貼り付けの際のテキストの分割箇所を選べます。"
-                >
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      テキスト貼り付けの際のテキストの分割箇所を選べます。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <!-- FIXME: ツールチップの内容をaria-labelに付ける -->
-                <QBtnToggle
-                  padding="xs md"
-                  unelevated
-                  :model-value="splitTextWhenPaste"
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="[
-                    {
-                      label: '句点と改行',
-                      value: 'PERIOD_AND_NEW_LINE',
-                      slot: 'splitTextPeriodAndNewLine',
-                    },
-                    {
-                      label: '改行',
-                      value: 'NEW_LINE',
-                      slot: 'splitTextNewLine',
-                    },
-                    { label: 'オフ', value: 'OFF', slot: 'splitTextOFF' },
-                  ]"
-                  @update:model-value="changeSplitTextWhenPaste($event)"
-                >
-                  <template #splitTextPeriodAndNewLine>
-                    <QTooltip :delay="500">
-                      句点と改行を基にテキストを分割します。
-                    </QTooltip>
-                  </template>
-                  <template #splitTextNewLine>
-                    <QTooltip :delay="500">
-                      改行のみを基にテキストを分割します。
-                    </QTooltip>
-                  </template>
-                  <template #splitTextOFF>
-                    <QTooltip :delay="500"> 分割を行いません。 </QTooltip>
-                  </template>
-                </QBtnToggle>
-              </QCardActions>
+              <ButtonToggleCell
+                v-model="activePointScrollMode"
+                title="再生位置を追従"
+                description="音声再生中の、詳細調整欄の自動スクロールのモードを選べます。"
+                :options="[
+                  {
+                    label: '連続',
+                    value: 'CONTINUOUSLY',
+                    description: '現在の再生位置を真ん中に表示します。',
+                  },
+                  {
+                    label: 'ページめくり',
+                    value: 'PAGE',
+                    description:
+                      '現在の再生位置が表示範囲外にある場合にスクロールします。',
+                  },
+                  {
+                    label: 'オフ',
+                    value: 'OFF',
+                    description: '自動でスクロールしません。',
+                  },
+                ]"
+              />
+              <ButtonToggleCell
+                title="テキスト自動分割"
+                description="スト貼り付けの際のテキストの分割箇所を選べます。"
+                :modelValue="splitTextWhenPaste"
+                :options="[
+                  {
+                    label: '句点と改行',
+                    value: 'PERIOD_AND_NEW_LINE',
+                    description: '句点と改行を基にテキストを分割します。',
+                  },
+                  {
+                    label: '改行',
+                    value: 'NEW_LINE',
+                    description: '改行のみを基にテキストを分割します。',
+                  },
+                  {
+                    label: 'オフ',
+                    value: 'OFF',
+                    description: '分割を行いません。',
+                  },
+                ]"
+                @update:modelValue="
+                  changeSplitTextWhenPaste(
+                    $event as RootMiscSettingType['splitTextWhenPaste'],
+                  )
+                "
+              />
               <ToggleCell
                 title="メモ機能"
                 description="ONの場合、テキストを [] で囲むことで、テキスト中にメモを書けます。"
-                :model-value="enableMemoNotation"
-                @updated="changeEnableMemoNotation"
+                :modelValue="enableMemoNotation"
+                @update:modelValue="changeEnableMemoNotation"
               />
               <ToggleCell
                 title="ルビ機能"
                 description="ONの場合、テキストに {ルビ対象|よみかた} と書くことで、テキストの読み方を変えられます。"
-                :model-value="enableRubyNotation"
-                @updated="changeEnableRubyNotation"
+                :modelValue="enableRubyNotation"
+                @update:modelValue="changeEnableRubyNotation"
               />
               <QCardActions class="q-px-md bg-surface">
                 <div>非表示にしたヒントを全て再表示</div>
@@ -289,8 +196,8 @@
                       :delay="500"
                       anchor="center right"
                       self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
+                      transitionShow="jump-right"
+                      transitionHide="jump-left"
                     >
                       過去に非表示にしたヒントを全て再表示できます。
                     </QTooltip>
@@ -310,7 +217,7 @@
                   label="再表示する"
                   unelevated
                   color="background"
-                  text-color="display"
+                  textColor="display"
                   class="text-no-wrap q-mr-sm"
                   :disable="isDefaultConfirmedTips"
                   @click="
@@ -338,8 +245,8 @@
                       :delay="500"
                       anchor="center right"
                       self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
+                      transitionShow="jump-right"
+                      transitionHide="jump-left"
                     >
                       ONの場合、書き出す際のフォルダをあらかじめ指定できます。
                     </QTooltip>
@@ -351,15 +258,15 @@
                   dense
                   maxheight="10px"
                   label="書き出し先のフォルダ"
-                  hide-bottom-space
+                  hideBottomSpace
                   readonly
-                  :model-value="savingSetting.fixedExportDir"
-                  :input-style="{
+                  :modelValue="savingSetting.fixedExportDir"
+                  :inputStyle="{
                     width: `${savingSetting.fixedExportDir.length / 2 + 1}em`,
                     minWidth: '150px',
                     maxWidth: '450px',
                   }"
-                  @update:model-value="
+                  @update:modelValue="
                     (event) => {
                       if (event == null) throw 'event is null';
                       handleSavingSettingChange('fixedExportDir', event);
@@ -382,8 +289,8 @@
                   </template>
                 </QInput>
                 <QToggle
-                  :model-value="savingSetting.fixedExportEnabled"
-                  @update:model-value="
+                  :modelValue="savingSetting.fixedExportEnabled"
+                  @update:modelValue="
                     handleSavingSettingChange('fixedExportEnabled', $event)
                   "
                 >
@@ -404,8 +311,8 @@
                       :delay="500"
                       anchor="center right"
                       self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
+                      transitionShow="jump-right"
+                      transitionHide="jump-left"
                     >
                       書き出す際のファイル名のパターンをカスタマイズできます。
                     </QTooltip>
@@ -419,7 +326,7 @@
                   label="編集する"
                   unelevated
                   color="background"
-                  text-color="display"
+                  textColor="display"
                   class="text-no-wrap q-mr-sm"
                   @click="showsFilePatternEditDialog = true"
                 />
@@ -428,55 +335,38 @@
               <ToggleCell
                 title="上書き防止"
                 description="ONの場合、書き出す際に同名ファイルが既にあったとき、ファイル名に連番を付けて別名で保存されます。"
-                :model-value="savingSetting.avoidOverwrite"
-                @updated="handleSavingSettingChange('avoidOverwrite', $event)"
+                :modelValue="savingSetting.avoidOverwrite"
+                @update:modelValue="
+                  handleSavingSettingChange('avoidOverwrite', $event)
+                "
               />
-              <QCardActions class="q-px-md bg-surface">
-                <div>文字コード</div>
-                <div
-                  aria-label="テキストファイルを書き出す際の文字コードを選べます。"
-                >
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      テキストファイルを書き出す際の文字コードを選べます。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QBtnToggle
-                  padding="xs md"
-                  unelevated
-                  :model-value="savingSetting.fileEncoding"
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="[
-                    { label: 'UTF-8', value: 'UTF-8' },
-                    { label: 'Shift_JIS', value: 'Shift_JIS' },
-                  ]"
-                  @update:model-value="
-                    handleSavingSettingChange('fileEncoding', $event)
-                  "
-                />
-              </QCardActions>
+              <ButtonToggleCell
+                title="文字コード"
+                description="テキストファイルを書き出す際の文字コードを選べます。"
+                :modelValue="savingSetting.fileEncoding"
+                :options="[
+                  { label: 'UTF-8', value: 'UTF-8' },
+                  { label: 'Shift_JIS', value: 'Shift_JIS' },
+                ]"
+                @update:modelValue="
+                  handleSavingSettingChange('fileEncoding', $event)
+                "
+              />
               <ToggleCell
                 title="txtファイルを書き出し"
                 description="ONの場合、音声書き出しの際にテキストがtxtファイルとして書き出されます。"
-                :model-value="savingSetting.exportText"
-                @updated="handleSavingSettingChange('exportText', $event)"
+                :modelValue="savingSetting.exportText"
+                @update:modelValue="
+                  handleSavingSettingChange('exportText', $event)
+                "
               />
               <ToggleCell
                 title="labファイルを書き出し"
                 description="ONの場合、音声書き出しの際にリップシンク用のlabファイルが書き出されます。"
-                :model-value="savingSetting.exportLab"
-                @updated="handleSavingSettingChange('exportLab', $event)"
+                :modelValue="savingSetting.exportLab"
+                @update:modelValue="
+                  handleSavingSettingChange('exportLab', $event)
+                "
               />
             </QCard>
             <!-- Theme Card -->
@@ -484,76 +374,33 @@
               <QCardActions>
                 <h5 class="text-h5">外観</h5>
               </QCardActions>
-              <QCardActions class="q-px-md bg-surface">
-                <div>テーマ</div>
-                <div aria-label="エディタの色を選べます。">
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      エディタの色を選べます。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QBtnToggle
-                  v-model="currentThemeNameComputed"
-                  unelevated
-                  padding="xs md"
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="availableThemeNameComputed"
-                />
-              </QCardActions>
-
-              <QCardActions class="q-px-md bg-surface">
-                <div>フォント</div>
-                <div aria-label="エディタのフォントを選べます。">
-                  <QIcon name="help_outline" size="sm" class="help-hover-icon">
-                    <QTooltip
-                      :delay="500"
-                      anchor="center right"
-                      self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
-                    >
-                      エディタのフォントを選べます。
-                    </QTooltip>
-                  </QIcon>
-                </div>
-                <QSpace />
-                <QBtnToggle
-                  padding="xs md"
-                  unelevated
-                  :model-value="editorFont"
-                  color="background"
-                  text-color="display"
-                  toggle-color="primary"
-                  toggle-text-color="display-on-primary"
-                  :options="[
-                    { label: 'デフォルト', value: 'default' },
-                    { label: 'OS標準', value: 'os' },
-                  ]"
-                  @update:model-value="changeEditorFont($event)"
-                />
-              </QCardActions>
+              <ButtonToggleCell
+                v-model="currentThemeNameComputed"
+                title="テーマ"
+                description="エディタの色を選べます。"
+                :options="availableThemeNameComputed"
+              />
+              <ButtonToggleCell
+                title="フォント"
+                description="エディタのフォントを選べます。"
+                :modelValue="editorFont"
+                :options="[
+                  { label: 'デフォルト', value: 'default' },
+                  { label: 'OS標準', value: 'os' },
+                ]"
+                @update:modelValue="changeEditorFont($event as EditorFontType)"
+              />
               <ToggleCell
                 title="行番号の表示"
                 description="ONの場合、テキスト欄の左側に行番号が表示されます。"
-                :model-value="showTextLineNumber"
-                @updated="changeShowTextLineNumber"
+                :modelValue="showTextLineNumber"
+                @update:modelValue="changeShowTextLineNumber"
               />
               <ToggleCell
                 title="テキスト追加ボタンの表示"
                 description="OFFの場合、右下にテキスト追加ボタンが表示されません。（テキスト欄は Shift + Enter で追加できます）"
-                :model-value="showAddAudioItemButton"
-                @updated="changeShowAddAudioItemButton"
+                :modelValue="showAddAudioItemButton"
+                @update:modelValue="changeShowAddAudioItemButton"
               />
             </QCard>
 
@@ -565,14 +412,16 @@
               <ToggleCell
                 title="マルチエンジン機能"
                 description="ONの場合、複数のVOICEVOX準拠エンジンを利用可能にします。"
-                :model-value="enableMultiEngine"
-                @updated="setEnableMultiEngine"
+                :modelValue="enableMultiEngine"
+                @update:modelValue="setEnableMultiEngine"
               />
               <ToggleCell
                 title="音声をステレオ化"
                 description="ONの場合、音声データがモノラルからステレオに変換されてから再生・保存が行われます。"
-                :model-value="savingSetting.outputStereo"
-                @updated="handleSavingSettingChange('outputStereo', $event)"
+                :modelValue="savingSetting.outputStereo"
+                @update:modelValue="
+                  handleSavingSettingChange('outputStereo', $event)
+                "
               />
               <QCardActions
                 class="q-px-md bg-surface"
@@ -585,8 +434,8 @@
                       :delay="500"
                       anchor="center right"
                       self="center left"
-                      transition-show="jump-right"
-                      transition-hide="jump-left"
+                      transitionShow="jump-right"
+                      transitionHide="jump-left"
                     >
                       音声の再生デバイスを変更できます。
                       <template v-if="!canSetAudioOutputDevice">
@@ -617,8 +466,8 @@
               <ToggleCell
                 title="疑問文を自動調整"
                 description="ONの場合、疑問文の語尾の音高が自動的に上げられます。"
-                :model-value="experimentalSetting.enableInterrogativeUpspeak"
-                @updated="
+                :modelValue="experimentalSetting.enableInterrogativeUpspeak"
+                @update:modelValue="
                   changeExperimentalSetting(
                     'enableInterrogativeUpspeak',
                     $event,
@@ -628,14 +477,16 @@
               <ToggleCell
                 title="モーフィング機能"
                 description="ONの場合、モーフィング機能を有効にします。2つの音声混ぜられるようになります。"
-                :model-value="experimentalSetting.enableMorphing"
-                @updated="changeExperimentalSetting('enableMorphing', $event)"
+                :modelValue="experimentalSetting.enableMorphing"
+                @update:modelValue="
+                  changeExperimentalSetting('enableMorphing', $event)
+                "
               />
               <ToggleCell
                 title="複数選択"
                 description="ONの場合、複数のテキスト欄を選択できるようにします。"
-                :model-value="experimentalSetting.enableMultiSelect"
-                @updated="
+                :modelValue="experimentalSetting.enableMultiSelect"
+                @update:modelValue="
                   changeExperimentalSetting('enableMultiSelect', $event)
                 "
               />
@@ -643,8 +494,8 @@
                 v-if="!isProduction"
                 title="[開発時のみ機能] 調整結果の保持"
                 description="ONの場合、テキスト変更時、同じ読みのアクセント区間内の調整結果を保持します。"
-                :model-value="experimentalSetting.shouldKeepTuningOnTextChange"
-                @updated="
+                :modelValue="experimentalSetting.shouldKeepTuningOnTextChange"
+                @update:modelValue="
                   changeExperimentalSetting(
                     'shouldKeepTuningOnTextChange',
                     $event,
@@ -654,8 +505,8 @@
               <ToggleCell
                 title="ソング：ピッチ編集機能"
                 description="ONの場合、ピッチ編集モードに切り替えて音の高さを変えられるようになります。"
-                :model-value="experimentalSetting.enablePitchEditInSongEditor"
-                @updated="
+                :modelValue="experimentalSetting.enablePitchEditInSongEditor"
+                @update:modelValue="
                   changeExperimentalSetting(
                     'enablePitchEditInSongEditor',
                     $event,
@@ -678,8 +529,8 @@
               <ToggleCell
                 title="ソフトウェア利用状況のデータ収集を許可"
                 description="ONの場合、各UIの利用率などのデータが送信され、VOICEVOXの改善に役立てられます。テキストデータや音声データは送信されません。"
-                :model-value="acceptRetrieveTelemetryComputed"
-                @updated="acceptRetrieveTelemetryComputed = $event"
+                :modelValue="acceptRetrieveTelemetryComputed"
+                @update:modelValue="acceptRetrieveTelemetryComputed = $event"
               />
             </QCard>
           </div>
@@ -693,6 +544,7 @@
 import { computed, ref, watchEffect } from "vue";
 import FileNamePatternDialog from "./FileNamePatternDialog.vue";
 import ToggleCell from "./ToggleCell.vue";
+import ButtonToggleCell from "./ButtonToggleCell.vue";
 import { useStore } from "@/store";
 import {
   isProduction,
@@ -702,6 +554,7 @@ import {
   ActivePointScrollMode,
   RootMiscSettingType,
   EngineId,
+  EditorFontType,
 } from "@/type/preload";
 import { createLogger } from "@/domain/frontend/log";
 

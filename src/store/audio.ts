@@ -1,6 +1,5 @@
 import path from "path";
 import { Live2dViewer } from "live2dmanager";
-import { v4 as uuidv4 } from "uuid";
 import Encoding from "encoding-japanese";
 import { createUILockAction, withProgress } from "./ui";
 import {
@@ -60,7 +59,7 @@ import { base64ImageToUri, base64ToUri } from "@/helpers/base64Helper";
 import { getValueOrThrow, ResultError } from "@/type/result";
 
 function generateAudioKey() {
-  return AudioKey(uuidv4());
+  return AudioKey(crypto.randomUUID());
 }
 
 function parseTextFile(
