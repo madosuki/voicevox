@@ -40,6 +40,7 @@ import {
   SpeakerId,
   StyleId,
   Voice,
+  isProduction,
 } from "@/type/preload";
 
 export const storeKey: InjectionKey<
@@ -413,7 +414,7 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...singingCommandStore.actions,
     ...live2dStore.actions,
   },
-  strict: process.env.NODE_ENV !== "production",
+  strict: !isProduction,
 });
 
 export const useStore = (): Store<
