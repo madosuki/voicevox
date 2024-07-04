@@ -1484,6 +1484,10 @@ export type ProjectStoreState = {
 };
 
 export type ProjectStoreTypes = {
+  PROJECT_NAME_WITH_EXT: {
+    getter: string | undefined;
+  };
+
   PROJECT_NAME: {
     getter: string | undefined;
   };
