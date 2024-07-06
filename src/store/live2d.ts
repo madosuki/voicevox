@@ -9,6 +9,7 @@ export const live2dStoreState: Live2dStoreState = {
   isLive2dInitialized: false,
   isLive2dCoreLoaded: false,
   canUseLive2dModelArray: [
+    "四国めたん",
     "ずんだもん",
     "春日部つむぎ",
     "九州そら",

@@ -187,6 +187,28 @@ const initializeLive2d = async () => {
 
   if (!isLive2dInitialized.value && live2dViewer) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
+    const metan = new Live2dModel(
+      live2dAssetsPath + "/四国めたん_vts/",
+      "四国めたん.model3.json",
+      live2dViewer,
+      readFileFunction,
+    );
+    metan
+      .loadAssets()
+      .then(() => {
+        if (live2dViewer == undefined) return;
+        metan.setLipSyncWeight(20);
+        live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
+        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "四国めたん",
+          key: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load metan live2d model assets: ${e}`,
+        );
+      });
     const zundamon = new Live2dModel(
       live2dAssetsPath + "/Zundamon_vts/",
       "zundamon.model3.json",
@@ -294,7 +316,7 @@ const initializeLive2d = async () => {
         chugokuUsagi.release();
       });
 
-    live2dViewer.setCurrentModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9");
+    live2dViewer.setCurrentModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff");
     store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
   }
 };
