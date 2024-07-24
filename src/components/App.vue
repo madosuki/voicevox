@@ -197,7 +197,7 @@ const initializeLive2d = async () => {
       .loadAssets()
       .then(() => {
         if (live2dViewer == undefined) return;
-        metan.setLipSyncWeight(20);
+        metan.setLipSyncWeight(10);
         live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
         store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "四国めたん",
