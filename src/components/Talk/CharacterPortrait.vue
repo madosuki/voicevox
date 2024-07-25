@@ -139,7 +139,7 @@ const getLive2dModelKey = (): string | undefined => {
     characterName.value,
   );
   if (targetName == undefined) {
-    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     return;
   }
 
@@ -186,15 +186,16 @@ const changeLive2dModelIndex = () => {
   );
   if (targetName == undefined) {
     store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     return;
   }
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
     live2dViewer.value.setCurrentModel(v);
-    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: true });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
-    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   }
   console.log("changeLive2dModelIndex in talk");
 };
@@ -221,12 +222,12 @@ const showLive2d = () => {
   if (!isDrawing.value) {
     console.log("draw");
     props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
-    store.dispatch("IS_DRAWING", { isDrawing: true });
+    store.actions.IS_DRAWING({ isDrawing: true });
   }
 };
 
 const disAppearLive2d = () => {
-  store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
+  store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   isLive2dPortrait.value = false;
 
   props.removeMouseEventAtLive2dCanvas();
@@ -258,8 +259,8 @@ watch(characterName, (newVal: string) => {
 
 watch(isEnableLive2dFeature, (newVal) => {
   if (!newVal) {
-    store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: false });
-    store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
+    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     isLive2dPortrait.value = false;
     return;
   }
@@ -285,8 +286,8 @@ watch(editorMode, (newVal) => {
     return;
   if (!isCanUseLive2dPortrait(characterName.value)) return;
   isLive2dPortrait.value = true;
-  store.dispatch("CURRENT_SHOW_LIVE2D_IN_SONG", { isShow: false });
-  store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: true });
+  store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
+  store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
 
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
   showLive2d();
