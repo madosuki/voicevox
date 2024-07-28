@@ -116,7 +116,9 @@ export const audioPlayerStore = createPartialStore<AudioPlayerStoreTypes>({
     // 停止中でも呼び出して問題ない
     action(_, { live2dViewer }) {
       if (live2dViewer) {
-        const model = live2dViewer._models[live2dViewer.getCurrentModelKey()];
+        const model = live2dViewer._models.getValue(
+          live2dViewer.getCurrentModelKey(),
+        );
         if (model) {
           model.stopLipSync();
         }
