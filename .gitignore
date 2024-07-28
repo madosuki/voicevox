@@ -45,5 +45,11 @@ electron-builder.yml
 live2dcubismcore.js
 live2dcubismcore.js.map
 live2dcubismcore.min.js
+live2dcubismcore.d.ts
+
+live2dcubismmotionsynccore.js
+live2dcubismmotionsynccore.js.map
+live2dcubismmotionsynccore.min.js
+live2dcubismmotionsynccore.d.ts
 
 public/live2d_assets/
