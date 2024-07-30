@@ -152,7 +152,7 @@ import {
 } from "@/type/preload";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 
 const props = defineProps<{
   isEnginesReady: boolean;

@@ -57,7 +57,7 @@ import SideBar from "./SideBar/SideBar.vue";
 import EngineStartupOverlay from "@/components/EngineStartupOverlay.vue";
 import { useStore } from "@/store";
 import onetimeWatch from "@/helpers/onetimeWatch";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 import {
   DEFAULT_TPQN,
   createDefaultTempo,

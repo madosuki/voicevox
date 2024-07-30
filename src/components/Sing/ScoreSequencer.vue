@@ -215,7 +215,7 @@ import SequencerLyricInput from "@/components/Sing/SequencerLyricInput.vue";
 import { isOnCommandOrCtrlKeyDown } from "@/store/utility";
 import { createLogger } from "@/domain/frontend/log";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 import {
   useCommandOrControlKey,
   useShiftKey,

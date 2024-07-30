@@ -14,7 +14,7 @@ import { Live2dViewer } from "live2dmanager";
 import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 import { EditorType } from "@/type/preload";
 

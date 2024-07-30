@@ -35,7 +35,7 @@ import ErrorBoundary from "@/components/ErrorBoundary.vue";
 import { useStore } from "@/store";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import AllDialog from "@/components/Dialog/AllDialog.vue";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 import MenuBar from "@/components/Menu/MenuBar/MenuBar.vue";
 import { useMenuBarData as useTalkMenuBarData } from "@/components/Talk/menuBarData";
 import { useMenuBarData as useSingMenuBarData } from "@/components/Sing/menuBarData";

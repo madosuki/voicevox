@@ -36,7 +36,7 @@ import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
-import { Live2dSceneRenderer } from "@/live2d/scenes/renderer";
+import { Live2dSceneRenderer } from "@/live2d/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 
 const store = useStore();
