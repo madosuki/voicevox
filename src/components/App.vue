@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer, Live2dModel } from "live2dmanager";
+// import { Live2dViewer, Live2dModel } from "live2dmanager";
 import { watch, onMounted, ref, computed, toRaw } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
@@ -39,6 +39,16 @@ import { Live2dSceneRenderer } from "@/live2d/renderer";
 import MenuBar from "@/components/Menu/MenuBar/MenuBar.vue";
 import { useMenuBarData as useTalkMenuBarData } from "@/components/Talk/menuBarData";
 import { useMenuBarData as useSingMenuBarData } from "@/components/Sing/menuBarData";
+
+const { Live2dViewer, Live2dModel } = await import("live2dmanager")
+  .then((m) => {
+    return { Live2dViewer: m.Live2dViewer, Live2dModel: m.Live2dModel };
+  })
+  .catch((e) => {
+    window.backend.logError("error!");
+    window.backend.logError(e);
+    return { Live2dViewer: undefined, Live2dModel: undefined };
+  });
 
 const store = useStore();
 
@@ -113,13 +123,17 @@ const isEnableLive2dFeature = computed(
 );
 const live2dCanvas = document.createElement("canvas");
 const allocationMemory = 1024 * 1024 * 32;
-let live2dViewer: Live2dViewer | undefined = undefined;
-try {
-  live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
-  live2dViewer.initialize(allocationMemory);
-  store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
-} catch (e) {
-  window.backend.logError(e);
+let live2dViewer = undefined;
+if (Live2dViewer != undefined) {
+  try {
+    console.log("new live2dViewer");
+    live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
+    console.log("end");
+    live2dViewer.initialize(allocationMemory);
+    store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
+  } catch (e) {
+    window.backend.logError(e);
+  }
 }
 const getLive2dViewer = () => {
   return live2dViewer;
@@ -180,12 +194,17 @@ const releaseLive2d = () => {
 window.addEventListener("unload", releaseLive2d, { passive: true });
 
 const initializeLive2d = async () => {
+  console.log(`isLoadedLive2dCore: ${isLoadedLive2dCore.value}`);
   if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value) {
     return;
   }
 
-  if (!isLive2dInitialized.value && live2dViewer) {
+  if (
+    !isLive2dInitialized.value &&
+    live2dViewer != undefined &&
+    Live2dModel != undefined
+  ) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
     const metan = new Live2dModel(
       live2dAssetsPath + "/四国めたん_vts/",
