@@ -1,5 +1,5 @@
 import path from "path";
-import { Live2dMotionSyncModel, Live2dViewer } from "live2dmanager";
+import { Live2dViewer } from "live2dmanager";
 import Encoding from "encoding-japanese";
 import {
   createDotNotationUILockAction as createUILockAction,
