@@ -14,6 +14,7 @@ export const live2dStoreState: Live2dStoreState = {
     "春日部つむぎ",
     "九州そら",
     "中国うさぎ",
+    "波音リツ",
   ],
   addedLive2dModelNameRecord: {},
 };

@@ -1,5 +1,5 @@
 import path from "path";
-import { Live2dViewer } from "live2dmanager";
+import { Live2dMotionSyncModel, Live2dViewer } from "live2dmanager";
 import Encoding from "encoding-japanese";
 import {
   createDotNotationUILockAction as createUILockAction,
@@ -1800,6 +1800,9 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             if (speakerId === "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8") {
               live2dModelsKey = speakerId;
             }
+            if (speakerId === "b1a81618-b27b-40d2-b0ea-27a9ad408c4b") {
+              live2dModelsKey = speakerId;
+            }
 
             if (live2dModelsKey !== "") {
               live2dViewer.setCurrentModel(live2dModelsKey);
@@ -1808,11 +1811,18 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
           const buf = await audioBlob.arrayBuffer();
           const currentLive2dModelsKey = live2dViewer.getCurrentModelKey();
+          /*
           console.log(currentLive2dModelsKey);
           console.log("generate audio");
+          */
           const model = live2dViewer.getModelFromKey(currentLive2dModelsKey);
           if (model) {
-            model.startLipSync(buf);
+            await model.startLipSync(buf);
+            /*
+            if (model instanceof Live2dMotionSyncModel) {
+              model.startMotionSync();
+            }
+            */
           }
         }
 

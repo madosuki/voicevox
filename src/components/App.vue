@@ -40,14 +40,24 @@ import MenuBar from "@/components/Menu/MenuBar/MenuBar.vue";
 import { useMenuBarData as useTalkMenuBarData } from "@/components/Talk/menuBarData";
 import { useMenuBarData as useSingMenuBarData } from "@/components/Sing/menuBarData";
 
-const { Live2dViewer, Live2dModel } = await import("live2dmanager")
+const { Live2dViewer, Live2dModel, Live2dMotionSyncModel } = await import(
+  "live2dmanager"
+)
   .then((m) => {
-    return { Live2dViewer: m.Live2dViewer, Live2dModel: m.Live2dModel };
+    return {
+      Live2dViewer: m.Live2dViewer,
+      Live2dModel: m.Live2dModel,
+      Live2dMotionSyncModel: m.Live2dMotionSyncModel,
+    };
   })
   .catch((e) => {
     window.backend.logError("error!");
     window.backend.logError(e);
-    return { Live2dViewer: undefined, Live2dModel: undefined };
+    return {
+      Live2dViewer: undefined,
+      Live2dModel: undefined,
+      Live2dMotionSyncModel: undefined,
+    };
   });
 
 const store = useStore();
@@ -203,7 +213,8 @@ const initializeLive2d = async () => {
   if (
     !isLive2dInitialized.value &&
     live2dViewer != undefined &&
-    Live2dModel != undefined
+    Live2dModel != undefined &&
+    Live2dMotionSyncModel != undefined
   ) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
     const metan = new Live2dModel(
@@ -334,6 +345,22 @@ const initializeLive2d = async () => {
         );
         chugokuUsagi.release();
       });
+
+    // Motion Sync サンプル
+    const kei = new Live2dMotionSyncModel(
+      live2dAssetsPath + "/Kei_basic/",
+      "Kei_basic.model3.json",
+      live2dViewer,
+      readFileFunction,
+    );
+    kei.loadAssets().then(() => {
+      if (live2dViewer == undefined) return;
+      live2dViewer.addModel("b1a81618-b27b-40d2-b0ea-27a9ad408c4b", kei);
+      store.actions.ADDED_LIVE2D_MODEL_RECORD({
+        name: "波音リツ",
+        key: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b",
+      });
+    });
 
     live2dViewer.setCurrentModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff");
     store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
