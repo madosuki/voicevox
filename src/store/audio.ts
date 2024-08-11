@@ -1,5 +1,5 @@
 import path from "path";
-import { Live2dViewer } from "live2dmanager";
+import { Live2dViewer, Live2dMotionSyncModel } from "live2dmanager";
 import Encoding from "encoding-japanese";
 import {
   createDotNotationUILockAction as createUILockAction,
@@ -1817,12 +1817,15 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           */
           const model = live2dViewer.getModelFromKey(currentLive2dModelsKey);
           if (model) {
-            await model.startLipSync(buf);
-            /*
             if (model instanceof Live2dMotionSyncModel) {
-              model.startMotionSync();
+              try {
+                await model.startMotionSync(buf);
+              } catch (e) {
+                window.backend.logError(e);
+              }
+            } else {
+              await model.startLipSync(buf);
             }
-            */
           }
         }
 

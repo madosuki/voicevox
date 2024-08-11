@@ -1,4 +1,4 @@
-import { Live2dViewer } from "live2dmanager";
+import { Live2dMotionSyncModel, Live2dViewer } from "live2dmanager";
 import {
   noteNumberToFrequency,
   decibelToLinear,
@@ -640,7 +640,11 @@ class AudioPlayerVoice {
           this.audioBufferSourceNode.buffer,
           offset,
         );
-        model.startLipSync(wav);
+        if (model instanceof Live2dMotionSyncModel) {
+          model.startMotionSync(wav);
+        } else {
+          model.startLipSync(wav);
+        }
       } else {
         const miliSeconds = seconds * 1000;
         setTimeout(() => {
@@ -652,7 +656,11 @@ class AudioPlayerVoice {
               this.audioBufferSourceNode.buffer,
               offset,
             );
-            model.startLipSync(wav);
+            if (model instanceof Live2dMotionSyncModel) {
+              model.startMotionSync(wav);
+            } else {
+              model.startLipSync(wav);
+            }
           }
         }, miliSeconds);
       }
