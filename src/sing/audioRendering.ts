@@ -641,9 +641,9 @@ class AudioPlayerVoice {
           offset,
         );
         if (model instanceof Live2dMotionSyncModel) {
-          model.startMotionSync(wav);
+          model.startMotionSync(wav).catch((e) => window.backend.logError(e));
         } else {
-          model.startLipSync(wav);
+          model.startLipSync(wav).catch((e) => window.backend.logError(e));
         }
       } else {
         const miliSeconds = seconds * 1000;
@@ -657,9 +657,11 @@ class AudioPlayerVoice {
               offset,
             );
             if (model instanceof Live2dMotionSyncModel) {
-              model.startMotionSync(wav);
+              model
+                .startMotionSync(wav)
+                .catch((e) => window.backend.logError(e));
             } else {
-              model.startLipSync(wav);
+              model.startLipSync(wav).catch((e) => window.backend.logError(e));
             }
           }
         }, miliSeconds);

@@ -18,6 +18,7 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
 
   const draw = () => {
     if (model.getModel()) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
         model.getModelMatrix().setWidth(2.0);
         projection.scale(1.0, width / height);
@@ -25,6 +26,7 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
         projection.scale(height / width, 1.0);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       projection.multiplyByMatrix(live2dViewer._viewMatrix);
 
       model.update();
