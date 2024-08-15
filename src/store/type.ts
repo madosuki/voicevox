@@ -307,7 +307,7 @@ export type AudioStoreTypes = {
       engineId: EngineId;
       baseStyleId: StyleId;
       morphableTargets?: Exclude<
-        { [key: number]: MorphableTargetInfo },
+        Record<number, MorphableTargetInfo>,
         undefined
       >;
     };
@@ -804,6 +804,11 @@ export type SingingVoiceSourceHash = z.infer<
   typeof singingVoiceSourceHashSchema
 >;
 
+export const sequenceIdSchema = z.string().brand<"SequenceId">();
+export type SequenceId = z.infer<typeof sequenceIdSchema>;
+export const SequenceId = (id: string): SequenceId =>
+  sequenceIdSchema.parse(id);
+
 /**
  * フレーズ（レンダリング区間）
  */
@@ -814,6 +819,7 @@ export type Phrase = {
   state: PhraseState;
   singingGuideKey?: SingingGuideSourceHash;
   singingVoiceKey?: SingingVoiceSourceHash;
+  sequenceId?: SequenceId;
 };
 
 /**
@@ -840,8 +846,6 @@ export type SingingStoreState = {
   editFrameRate: number;
   phrases: Map<PhraseSourceHash, Phrase>;
   singingGuides: Map<SingingGuideSourceHash, SingingGuide>;
-  // NOTE: UIの状態などは分割・統合した方がよさそうだが、ボイス側と混在させないためいったん局所化する
-  isShowSinger: boolean;
   sequencerZoomX: number;
   sequencerZoomY: number;
   sequencerSnapType: number;
@@ -859,11 +863,6 @@ export type SingingStoreState = {
 };
 
 export type SingingStoreTypes = {
-  SET_SHOW_SINGER: {
-    mutation: { isShowSinger: boolean };
-    action(payload: { isShowSinger: boolean }): void;
-  };
-
   SELECTED_TRACK_ID: {
     getter: TrackId;
   };
@@ -1010,6 +1009,13 @@ export type SingingStoreTypes = {
     mutation: {
       phraseKey: PhraseSourceHash;
       singingVoiceKey: SingingVoiceSourceHash | undefined;
+    };
+  };
+
+  SET_SEQUENCE_ID_TO_PHRASE: {
+    mutation: {
+      phraseKey: PhraseSourceHash;
+      sequenceId: SequenceId | undefined;
     };
   };
 
@@ -1254,6 +1260,10 @@ export type SingingStoreTypes = {
 
   CALC_RENDER_DURATION: {
     getter: number;
+  };
+
+  SYNC_TRACKS_AND_TRACK_CHANNEL_STRIPS: {
+    action(): void;
   };
 };
 

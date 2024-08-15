@@ -1,33 +1,41 @@
 <template>
   <ErrorBoundary>
-    <MenuBar
-      v-if="openedEditor != undefined"
-      :fileSubMenuData="subMenuData.fileSubMenuData.value"
-      :editSubMenuData="subMenuData.editSubMenuData.value"
-      :editor="openedEditor"
-    />
-    <KeepAlive>
-      <Component
-        :is="openedEditor == 'talk' ? TalkEditor : SingEditor"
+    <TooltipProvider disableHoverableContent>
+      <MenuBar
         v-if="openedEditor != undefined"
-        :key="openedEditor"
-        :isEnginesReady
-        :isProjectFileLoaded
+        :fileSubMenuData="subMenuData.fileSubMenuData.value"
+        :editSubMenuData="subMenuData.editSubMenuData.value"
+        :viewSubMenuData="subMenuData.viewSubMenuData.value"
+        :editor="openedEditor"
         :getLive2dViewer
         :addMouseEventToLive2dCanvas
         :removeMouseEventAtLive2dCanvas
         :live2dCanvas
         :live2dSceneRenderer
       />
-    </KeepAlive>
-    <AllDialog :isEnginesReady />
+      <KeepAlive>
+        <Component
+          :is="openedEditor == 'talk' ? TalkEditor : SingEditor"
+          v-if="openedEditor != undefined"
+          :key="openedEditor"
+          :isEnginesReady
+          :isProjectFileLoaded
+          :getLive2dViewer
+          :addMouseEventToLive2dCanvas
+          :removeMouseEventAtLive2dCanvas
+          :live2dCanvas
+          :live2dSceneRenderer
+        />
+      </KeepAlive>
+      <AllDialog :isEnginesReady />
+    </TooltipProvider>
   </ErrorBoundary>
 </template>
 
 <script setup lang="ts">
-// import { Live2dViewer, Live2dModel } from "live2dmanager";
 import { watch, onMounted, ref, computed, toRaw } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
+import { TooltipProvider } from "radix-vue";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
 import SingEditor from "@/components/Sing/SingEditor.vue";
 import { EngineId } from "@/type/preload";
@@ -39,6 +47,7 @@ import { Live2dSceneRenderer } from "@/live2d/renderer";
 import MenuBar from "@/components/Menu/MenuBar/MenuBar.vue";
 import { useMenuBarData as useTalkMenuBarData } from "@/components/Talk/menuBarData";
 import { useMenuBarData as useSingMenuBarData } from "@/components/Sing/menuBarData";
+import { ExhaustiveError } from "@/type/utility";
 
 const { Live2dViewer, Live2dModel, Live2dMotionSyncModel } = await import(
   "live2dmanager"
@@ -72,7 +81,7 @@ const subMenuData = computed(() => {
     return singMenuBarData;
   }
 
-  throw new Error(`Invalid openedEditor: ${openedEditor.value}`);
+  throw new ExhaustiveError(openedEditor.value);
 });
 
 const openedEditor = computed(() => store.state.openedEditor);
@@ -140,7 +149,7 @@ if (Live2dViewer != undefined) {
     live2dViewer = new Live2dViewer(live2dCanvas, 800, 800);
     console.log("end");
     live2dViewer.initialize(allocationMemory);
-    store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
+    await store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
   } catch (e) {
     window.backend.logError(e);
   }
@@ -194,11 +203,11 @@ const removeMouseEventAtLive2dCanvas = () => {
   live2dCanvas.removeEventListener("mousemove", mousemove);
 };
 
-const releaseLive2d = () => {
+const releaseLive2d = async () => {
   if (live2dViewer != undefined) {
     live2dSceneRenderer.cancelRender();
     live2dViewer.release();
-    store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: false });
+    await store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: false });
   }
 };
 window.addEventListener("unload", releaseLive2d, { passive: true });
@@ -225,11 +234,11 @@ const initializeLive2d = async () => {
     );
     metan
       .loadAssets()
-      .then(() => {
+      .then(async () => {
         if (live2dViewer == undefined) return;
         metan.setLipSyncWeight(10);
         live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
-        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "四国めたん",
           key: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
         });
@@ -247,11 +256,11 @@ const initializeLive2d = async () => {
     );
     zundamon
       .loadAssets()
-      .then(() => {
+      .then(async () => {
         if (live2dViewer == undefined) return;
         zundamon.setLipSyncWeight(20);
         live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
-        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "ずんだもん",
           key: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
         });
@@ -272,14 +281,14 @@ const initializeLive2d = async () => {
     );
     kasukabeTsumugi
       .loadAssets()
-      .then(() => {
+      .then(async () => {
         if (live2dViewer == undefined) return;
         kasukabeTsumugi.setLipSyncWeight(15);
         live2dViewer.addModel(
           "35b2c544-660e-401e-b503-0e14c635303a",
           kasukabeTsumugi,
         );
-        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "春日部つむぎ",
           key: "35b2c544-660e-401e-b503-0e14c635303a",
         });
@@ -299,14 +308,14 @@ const initializeLive2d = async () => {
     );
     kyuusyuuSora
       .loadAssets()
-      .then(() => {
+      .then(async () => {
         if (live2dViewer == undefined) return;
         kyuusyuuSora.setLipSyncWeight(20);
         live2dViewer.addModel(
           "481fb609-6446-4870-9f46-90c4dd623403",
           kyuusyuuSora,
         );
-        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "九州そら",
           key: "481fb609-6446-4870-9f46-90c4dd623403",
         });
@@ -326,7 +335,7 @@ const initializeLive2d = async () => {
     );
     chugokuUsagi
       .loadAssets()
-      .then(() => {
+      .then(async () => {
         if (live2dViewer == undefined) return;
         chugokuUsagi.setLipSyncWeight(20);
         chugokuUsagi.setExpression("Inaba");
@@ -334,7 +343,7 @@ const initializeLive2d = async () => {
           "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
           chugokuUsagi,
         );
-        store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
           name: "中国うさぎ",
           key: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
         });
@@ -353,17 +362,23 @@ const initializeLive2d = async () => {
       live2dViewer,
       readFileFunction,
     );
-    kei.loadAssets().then(() => {
-      if (live2dViewer == undefined) return;
-      live2dViewer.addModel("b1a81618-b27b-40d2-b0ea-27a9ad408c4b", kei);
-      store.actions.ADDED_LIVE2D_MODEL_RECORD({
-        name: "波音リツ",
-        key: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b",
+    kei
+      .loadAssets()
+      .then(async () => {
+        if (live2dViewer == undefined) return;
+        live2dViewer.addModel("b1a81618-b27b-40d2-b0ea-27a9ad408c4b", kei);
+        await store.actions.ADDED_LIVE2D_MODEL_RECORD({
+          name: "波音リツ",
+          key: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(e);
+        kei.release();
       });
-    });
 
     live2dViewer.setCurrentModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff");
-    store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
+    await store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
   }
 };
 
@@ -403,7 +418,7 @@ onMounted(async () => {
 
   // URLパラメータに従ってマルチエンジンをオフにする
   const isMultiEngineOffMode = urlParams.get("isMultiEngineOffMode") === "true";
-  store.dispatch("SET_IS_MULTI_ENGINE_OFF_MODE", isMultiEngineOffMode);
+  void store.dispatch("SET_IS_MULTI_ENGINE_OFF_MODE", isMultiEngineOffMode);
 
   // マルチエンジンオフモードのときはデフォルトエンジンだけにする
   let engineIds: EngineId[];
@@ -429,7 +444,7 @@ onMounted(async () => {
   isEnginesReady.value = true;
 
   // エンジン起動後にダイアログを開く
-  store.dispatch("SET_DIALOG_OPEN", {
+  void store.dispatch("SET_DIALOG_OPEN", {
     isAcceptRetrieveTelemetryDialogOpen:
       store.state.acceptRetrieveTelemetry === "Unconfirmed",
     isAcceptTermsDialogOpen:

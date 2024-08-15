@@ -1,5 +1,5 @@
 <template>
-  <div class="character-portrait-wrap" :class="{ hide: !isShowSinger }">
+  <div v-if="showSinger" class="character-portrait-wrap">
     <img
       v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
       class="character-portrait"
@@ -27,7 +27,7 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
-const isShowSinger = computed(() => store.state.isShowSinger);
+const showSinger = computed(() => store.state.showSinger);
 
 const portraitPath = computed(() => {
   const userOrderedCharacterInfos =
@@ -101,7 +101,7 @@ const changeLive2dModelIndex = () => {
   }
 };
 
-const showLive2d = () => {
+const showLive2d = async () => {
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
   changeLive2dModelIndex();
@@ -113,16 +113,16 @@ const showLive2d = () => {
   const place = document.getElementsByClassName("live2d-portrait");
   if (place.length < 1) return;
   place[0].appendChild(props.live2dCanvas);
-  store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
+  await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
   if (!isDrawing.value) {
     props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
-    store.dispatch("IS_DRAWING", { isDrawing: true });
+    await store.dispatch("IS_DRAWING", { isDrawing: true });
   }
 };
 
-const disAppearLive2d = () => {
-  store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
+const disAppearLive2d = async () => {
+  await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
   isLive2dPortrait.value = false;
 };
 
@@ -138,27 +138,27 @@ const isCanUseLive2dPortrait = (targetName: string): boolean => {
   return key != undefined;
 };
 
-watch(characterName, (newVal: string | undefined) => {
+watch(characterName, async (newVal: string | undefined) => {
   if (!isLoadedLive2dCore.value || newVal == undefined) return;
 
   if (!isEnableLive2dFeature.value && isLive2dPortrait.value) {
-    disAppearLive2d();
+    await disAppearLive2d();
     return;
   }
 
   if (!isCanUseLive2dPortrait(newVal)) {
-    disAppearLive2d();
+    await disAppearLive2d();
     return;
   }
 
   isLive2dPortrait.value = true;
 });
 
-watch(isEnableLive2dFeature, (newVal) => {
+watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal) {
     isLive2dPortrait.value = false;
-    store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
-    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
+    await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
+    await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     return;
   }
 
@@ -171,7 +171,7 @@ watch(isEnableLive2dFeature, (newVal) => {
 });
 
 const editorMode = computed(() => store.state.openedEditor);
-watch(editorMode, (newVal) => {
+watch(editorMode, async (newVal) => {
   console.log(`detect new val of editorMode in song: ${newVal}`);
   console.log(`characterName: ${characterName.value}`);
   if (
@@ -180,14 +180,14 @@ watch(editorMode, (newVal) => {
     isEnableLive2dFeature.value &&
     characterName.value != undefined
   ) {
-    store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
-    store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
+    await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
+    await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
     console.log("do workaround when move talk to song");
     if (isCanUseLive2dPortrait(characterName.value)) {
       isLive2dPortrait.value = true;
     }
-    showLive2d();
+    await showLive2d();
     return;
   }
 });
@@ -199,7 +199,7 @@ onUpdated(async () => {
     (!isEnableLive2dFeature.value && isContinueRunLive2d) ||
     characterName.value == undefined
   ) {
-    disAppearLive2d();
+    await disAppearLive2d();
     return;
   }
 
@@ -212,11 +212,11 @@ onUpdated(async () => {
   if (v != undefined) {
     isLive2dPortrait.value = true;
   } else {
-    disAppearLive2d();
+    await disAppearLive2d();
   }
 
   if (isLive2dPortrait.value) {
-    showLive2d();
+    await showLive2d();
   }
 });
 </script>
