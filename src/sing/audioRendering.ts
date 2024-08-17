@@ -1,4 +1,3 @@
-import { Live2dMotionSyncModel, Live2dViewer } from "live2dmanager";
 import {
   noteNumberToFrequency,
   decibelToLinear,
@@ -133,7 +132,7 @@ export class Transport {
   private startTime = 0;
   private schedulers = new Map<Sequence, EventScheduler>();
 
-  private live2dViewer: Live2dViewer | undefined = undefined;
+  private live2dViewer: unknown = undefined;
 
   get state() {
     return this._state;
@@ -268,7 +267,7 @@ export class Transport {
   /**
    * 再生を開始します。すでに再生中の場合は何も行いません。
    */
-  start(live2dViewer?: Live2dViewer) {
+  start(live2dViewer?: unknown) {
     if (this._state === "started") return;
     const contextTime = this.audioContext.currentTime;
 
@@ -431,7 +430,7 @@ class AudioEventScheduler implements EventScheduler {
    * 指定された位置までスケジューリングを行います。
    * @param untilTime どこまでスケジューリングを行うかを表す位置
    */
-  schedule(untilTime: number, live2dViewer?: Live2dViewer) {
+  schedule(untilTime: number, live2dViewer?: unknown) {
     if (!this.isStarted) {
       throw new Error("Not started.");
     }
@@ -618,55 +617,77 @@ class AudioPlayerVoice {
    * @param contextTime 再生を行う時刻（コンテキスト時刻）
    * @param offset オフセット（秒）
    */
-  play(contextTime: number, offset: number, live2dViewer?: Live2dViewer) {
+  play(contextTime: number, offset: number, live2dViewer?: unknown) {
     if (this.stopContextTime != undefined) {
       throw new Error("Already started.");
     }
-    if (
-      live2dViewer != undefined &&
-      this.audioBufferSourceNode.buffer != undefined
-    ) {
-      const model = live2dViewer.getModelFromKey(
-        live2dViewer.getCurrentModelKey(),
-      );
-      const seconds =
-        contextTime - this.audioBufferSourceNode.context.currentTime;
+
+    const processForLive2d = async () => {
+      const { Live2dViewer, Live2dMotionSyncModel } = await import(
+        "live2dmanager"
+      )
+        .then((m) => {
+          return {
+            Live2dViewer: m.Live2dViewer,
+            Live2dMotionSyncModel: m.Live2dMotionSyncModel,
+          };
+        })
+        .catch((e) => {
+          window.backend.logError(e);
+          return { Live2dViewer: undefined, Live2dMotionSyncModel: undefined };
+        });
       if (
-        (this.audioBufferSourceNode.context.currentTime === 0 ||
-          seconds <= 0) &&
-        model != undefined
+        Live2dViewer != undefined &&
+        live2dViewer instanceof Live2dViewer &&
+        this.audioBufferSourceNode.buffer != undefined
       ) {
-        const wav = convertToInt16WavFileData(
-          this.audioBufferSourceNode.buffer,
-          offset,
+        const model = live2dViewer.getModelFromKey(
+          live2dViewer.getCurrentModelKey(),
         );
-        if (model instanceof Live2dMotionSyncModel) {
-          model.startMotionSync(wav).catch((e) => window.backend.logError(e));
-        } else {
-          model.startLipSync(wav).catch((e) => window.backend.logError(e));
-        }
-      } else {
-        const miliSeconds = seconds * 1000;
-        setTimeout(() => {
-          if (
-            model != undefined &&
-            this.audioBufferSourceNode.buffer != undefined
-          ) {
-            const wav = convertToInt16WavFileData(
-              this.audioBufferSourceNode.buffer,
-              offset,
-            );
-            if (model instanceof Live2dMotionSyncModel) {
-              model
-                .startMotionSync(wav)
-                .catch((e) => window.backend.logError(e));
-            } else {
-              model.startLipSync(wav).catch((e) => window.backend.logError(e));
-            }
+        const seconds =
+          contextTime - this.audioBufferSourceNode.context.currentTime;
+        if (
+          (this.audioBufferSourceNode.context.currentTime === 0 ||
+            seconds <= 0) &&
+          model != undefined
+        ) {
+          const wav = convertToInt16WavFileData(
+            this.audioBufferSourceNode.buffer,
+            offset,
+          );
+          if (model instanceof Live2dMotionSyncModel) {
+            model.startMotionSync(wav).catch((e) => window.backend.logError(e));
+          } else {
+            model.startLipSync(wav).catch((e) => window.backend.logError(e));
           }
-        }, miliSeconds);
+        } else {
+          const miliSeconds = seconds * 1000;
+          setTimeout(() => {
+            if (
+              model != undefined &&
+              this.audioBufferSourceNode.buffer != undefined
+            ) {
+              const wav = convertToInt16WavFileData(
+                this.audioBufferSourceNode.buffer,
+                offset,
+              );
+              if (model instanceof Live2dMotionSyncModel) {
+                model
+                  .startMotionSync(wav)
+                  .catch((e) => window.backend.logError(e));
+              } else {
+                model
+                  .startLipSync(wav)
+                  .catch((e) => window.backend.logError(e));
+              }
+            }
+          }, miliSeconds);
+        }
       }
-    }
+    };
+
+    processForLive2d().catch((e) => window.backend.logError(e));
+
     this.audioBufferSourceNode.start(contextTime, offset);
     this.stopContextTime = contextTime + this.buffer.duration;
   }
@@ -722,7 +743,7 @@ export class AudioPlayer {
     contextTime: number,
     offset: number,
     buffer: AudioBuffer,
-    live2dViewer?: Live2dViewer,
+    live2dViewer?: unknown,
   ) {
     const voice = new AudioPlayerVoice(this.audioContext, buffer);
     this.voices = this.voices.filter((value) => {
