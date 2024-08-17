@@ -1,5 +1,4 @@
 import path from "path";
-import { Live2dViewer, Live2dMotionSyncModel } from "live2dmanager";
 import Encoding from "encoding-japanese";
 import {
   createDotNotationUILockAction as createUILockAction,
@@ -1728,9 +1727,19 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         {
           audioKey,
           live2dViewer,
-        }: { audioKey: AudioKey; live2dViewer?: Live2dViewer },
+        }: { audioKey: AudioKey; live2dViewer?: unknown },
       ) => {
-        await actions.STOP_AUDIO({ live2dViewer });
+        const Live2dViewer = await import("live2dmanager")
+          .then((m) => m.Live2dViewer)
+          .catch((e) => {
+            window.backend.logError(e);
+            return undefined;
+          });
+        if (Live2dViewer != undefined && live2dViewer instanceof Live2dViewer) {
+          await actions.STOP_AUDIO({ live2dViewer });
+        } else {
+          await actions.STOP_AUDIO({ live2dViewer: undefined });
+        }
 
         // 音声用意
         let fetchAudioResult: FetchAudioResult;
@@ -1751,11 +1760,19 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }
 
         const { blob } = fetchAudioResult;
-        return actions.PLAY_AUDIO_BLOB({
-          audioBlob: blob,
-          audioKey,
-          live2dViewer,
-        });
+        if (Live2dViewer != undefined && live2dViewer instanceof Live2dViewer) {
+          return actions.PLAY_AUDIO_BLOB({
+            audioBlob: blob,
+            audioKey,
+            live2dViewer,
+          });
+        } else {
+          return actions.PLAY_AUDIO_BLOB({
+            audioBlob: blob,
+            audioKey,
+            live2dViewer: undefined,
+          });
+        }
       },
     ),
   },
@@ -1771,7 +1788,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }: {
           audioBlob: Blob;
           audioKey?: AudioKey;
-          live2dViewer?: Live2dViewer;
+          live2dViewer?: unknown;
         },
       ) => {
         mutations.SET_AUDIO_SOURCE({ audioBlob });
@@ -1791,7 +1808,28 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           offset = startTime + 10e-6;
         }
 
-        if (live2dViewer && state.isCurrentShowInTalk && audioKey) {
+        const { Live2dViewer, Live2dMotionSyncModel } = await import(
+          "live2dmanager"
+        )
+          .then((m) => {
+            return {
+              Live2dViewer: m.Live2dViewer,
+              Live2dMotionSyncModel: m.Live2dMotionSyncModel,
+            };
+          })
+          .catch((e) => {
+            window.backend.logError(e);
+            return {
+              Live2dViewer: undefined,
+              Live2dMotionSyncModel: undefined,
+            };
+          });
+        if (
+          Live2dViewer != undefined &&
+          live2dViewer instanceof Live2dViewer &&
+          state.isCurrentShowInTalk &&
+          audioKey != undefined
+        ) {
           if (state.nowPlayingContinuously) {
             const audioItem = state.audioItems[audioKey];
             const speakerId = audioItem.voice.speakerId.toString();
