@@ -1,11 +1,11 @@
-import { createApp, defineAsyncComponent } from "vue";
+import { createApp } from "vue";
 import { createGtm } from "@gtm-support/vue-gtm";
 import { Quasar, Dialog, Loading, Notify } from "quasar";
 import iconSet from "quasar/icon-set/material-icons";
 import { store, storeKey } from "./store";
 import { ipcMessageReceiver } from "./plugins/ipcMessageReceiverPlugin";
 import { hotkeyPlugin } from "./plugins/hotkeyPlugin";
-// import App from "@/components/App.vue";
+import AsyncAppWrapper from "./components/AsyncAppWrapper.vue";
 import { markdownItPlugin } from "@/plugins/markdownItPlugin";
 
 import "@quasar/extras/material-icons/material-icons.css";
@@ -16,12 +16,7 @@ import "./styles/_index.scss";
 //       ため、それを防止するため自前でdataLayerをあらかじめ用意する
 window.dataLayer = [];
 
-const App = defineAsyncComponent(() => import("@/components/App.vue"));
-const AsyncComponentWrapper = {
-  template: "<Suspense><App /></Suspense>",
-  components: { App },
-};
-createApp(AsyncComponentWrapper)
+createApp(AsyncAppWrapper)
   .use(store, storeKey)
   .use(
     createGtm({
