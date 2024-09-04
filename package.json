@@ -50,7 +50,7 @@
     "glob": "8.0.3",
     "hotkeys-js": "3.13.6",
     "immer": "9.0.21",
-    "live2dmanager": "github:madosuki/live2dManager#motionsync",
+    "live2dmanager": "github:madosuki/live2dmanager#motionsync",
     "markdown-it": "13.0.2",
     "move-file": "3.0.0",
     "multistream": "4.1.0",
