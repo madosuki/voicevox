@@ -99,7 +99,7 @@ const redo = () => {
 };
 const playContinuously = async () => {
   try {
-    const live2dViewer = props.getLive2dViewer()
+    const live2dViewer = props.getLive2dViewer();
     await store.actions.PLAY_CONTINUOUSLY_AUDIO({ live2dViewer });
   } catch (e) {
     const msg = handlePossiblyNotMorphableError(e);
@@ -110,12 +110,8 @@ const playContinuously = async () => {
   }
 };
 const stop = () => {
-<<<<<<< HEAD
   const live2dViewer = props.getLive2dViewer();
-  void store.dispatch("STOP_AUDIO", { live2dViewer });
-=======
-  void store.actions.STOP_AUDIO();
->>>>>>> 8120d293f7a588e9ac3229a29f0bc94fdeb5d0c1
+  void store.actions.STOP_AUDIO({ live2dViewer });
 };
 const generateAndSaveSelectedAudio = async () => {
   if (activeAudioKey.value == undefined)
