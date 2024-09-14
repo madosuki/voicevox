@@ -1077,7 +1077,10 @@ export type SingingStoreTypes = {
   };
 
   EXPORT_STEM_WAVE_FILE: {
-    action(payload: { dirPath?: string }): SaveResultObject;
+    action(payload: {
+      dirPath?: string;
+      live2dViewer?: Live2dViewer;
+    }): SaveResultObject;
   };
 
   CANCEL_AUDIO_EXPORT: {
