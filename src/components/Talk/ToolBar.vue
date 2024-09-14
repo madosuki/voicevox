@@ -92,26 +92,30 @@ registerHotkeyWithCleanup({
 });
 
 const undo = () => {
-  void store.dispatch("UNDO", { editor });
+  void store.actions.UNDO({ editor });
 };
 const redo = () => {
-  void store.dispatch("REDO", { editor });
+  void store.actions.REDO({ editor });
 };
 const playContinuously = async () => {
   try {
-    const live2dViewer = props.getLive2dViewer();
-    await store.dispatch("PLAY_CONTINUOUSLY_AUDIO", { live2dViewer });
+    const live2dViewer = props.getLive2dViewer()
+    await store.actions.PLAY_CONTINUOUSLY_AUDIO({ live2dViewer });
   } catch (e) {
     const msg = handlePossiblyNotMorphableError(e);
-    void store.dispatch("SHOW_ALERT_DIALOG", {
+    void store.actions.SHOW_ALERT_DIALOG({
       title: "再生に失敗しました",
       message: msg ?? "エンジンの再起動をお試しください。",
     });
   }
 };
 const stop = () => {
+<<<<<<< HEAD
   const live2dViewer = props.getLive2dViewer();
   void store.dispatch("STOP_AUDIO", { live2dViewer });
+=======
+  void store.actions.STOP_AUDIO();
+>>>>>>> 8120d293f7a588e9ac3229a29f0bc94fdeb5d0c1
 };
 const generateAndSaveSelectedAudio = async () => {
   if (activeAudioKey.value == undefined)
@@ -124,35 +128,35 @@ const generateAndSaveSelectedAudio = async () => {
   ) {
     await multiGenerateAndSaveAudioWithDialog({
       audioKeys: selectedAudioKeys,
-      dispatch: store.dispatch,
+      actions: store.actions,
       disableNotifyOnGenerate: store.state.confirmedTips.notifyOnGenerate,
     });
   } else {
     await generateAndSaveOneAudioWithDialog({
       audioKey: activeAudioKey.value,
       disableNotifyOnGenerate: store.state.confirmedTips.notifyOnGenerate,
-      dispatch: store.dispatch,
+      actions: store.actions,
     });
   }
 };
 const generateAndSaveAllAudio = async () => {
   await multiGenerateAndSaveAudioWithDialog({
     audioKeys: store.state.audioKeys,
-    dispatch: store.dispatch,
+    actions: store.actions,
     disableNotifyOnGenerate: store.state.confirmedTips.notifyOnGenerate,
   });
 };
 const generateAndConnectAndSaveAudio = async () => {
   await generateAndConnectAndSaveAudioWithDialog({
-    dispatch: store.dispatch,
+    actions: store.actions,
     disableNotifyOnGenerate: store.state.confirmedTips.notifyOnGenerate,
   });
 };
 const saveProject = async () => {
-  await store.dispatch("SAVE_PROJECT_FILE", { overwrite: true });
+  await store.actions.SAVE_PROJECT_FILE({ overwrite: true });
 };
 const importTextFile = () => {
-  void store.dispatch("COMMAND_IMPORT_FROM_FILE", {});
+  void store.actions.COMMAND_IMPORT_FROM_FILE({});
 };
 
 const usableButtons: Record<
