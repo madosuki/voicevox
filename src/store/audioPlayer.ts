@@ -114,7 +114,15 @@ export const audioPlayerStore = createPartialStore<AudioPlayerStoreTypes>({
 
   STOP_AUDIO: {
     // 停止中でも呼び出して問題ない
-    action() {
+    action(_, { live2dViewer }) {
+      if (live2dViewer) {
+        const model = live2dViewer._models.getValue(
+          live2dViewer.getCurrentModelKey(),
+        );
+        if (model) {
+          model.stopLipSync();
+        }
+      }
       // PLAY_ でonpause時の処理が設定されているため、pauseするだけで良い
       getAudioElement().pause();
     },

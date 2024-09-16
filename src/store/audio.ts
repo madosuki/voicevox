@@ -1735,7 +1735,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             window.backend.logError(e);
             return undefined;
           });
-        await actions.STOP_AUDIO();
+        if (Live2dViewer != undefined && live2dViewer instanceof Live2dViewer) {
+          await actions.STOP_AUDIO({ live2dViewer });
+        } else {
+          await actions.STOP_AUDIO({ live2dViewer: undefined });
+        }
 
         // 音声用意
         let fetchAudioResult: FetchAudioResult;

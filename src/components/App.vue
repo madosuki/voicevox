@@ -391,17 +391,6 @@ watch(isEnableLive2dFeature, async (newVal) => {
   await initializeLive2d();
 });
 
-const isNowPlaying = computed(() => store.getters.NOW_PLAYING);
-watch(isNowPlaying, (newVal) => {
-  const v = getLive2dViewer();
-  if (v == undefined || newVal) return;
-
-  const m = v.getModelFromKey(v.getCurrentModelKey());
-  if (m != undefined) {
-    m.stopLipSync();
-  }
-});
-
 // ソフトウェアを初期化
 const { hotkeyManager } = useHotkeyManager();
 const isEnginesReady = ref(false);

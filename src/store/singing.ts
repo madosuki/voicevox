@@ -570,7 +570,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       if (state.nowPlaying) {
-        await actions.SING_STOP_AUDIO();
+        await actions.SING_STOP_AUDIO({});
       }
       mutations.SET_TPQN({ tpqn });
       transport.time = getters.TICK_TO_SECOND(playheadPosition.value);
@@ -594,7 +594,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       if (state.nowPlaying) {
-        await actions.SING_STOP_AUDIO();
+        await actions.SING_STOP_AUDIO({});
       }
       mutations.SET_TEMPOS({ tempos });
       transport.time = getters.TICK_TO_SECOND(playheadPosition.value);
@@ -1126,7 +1126,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SING_STOP_AUDIO: {
-    async action({ state, getters, mutations }) {
+    async action({ state, getters, mutations }, { live2dViewer }) {
       if (!state.nowPlaying) {
         return;
       }
@@ -1134,6 +1134,15 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         throw new Error("transport is undefined.");
       }
       mutations.SET_PLAYBACK_STATE({ nowPlaying: false });
+
+      if (live2dViewer != undefined) {
+        const model = live2dViewer.getModelFromKey(
+          live2dViewer.getCurrentModelKey(),
+        );
+        if (model != undefined) {
+          model.stopLipSync();
+        }
+      }
 
       transport.stop();
       animationTimer.stop();
@@ -1921,7 +1930,10 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
 
   EXPORT_WAVE_FILE: {
     action: createUILockAction(
-      async ({ state, mutations, getters, actions }, { filePath }) => {
+      async (
+        { state, mutations, getters, actions },
+        { filePath, live2dViewer },
+      ) => {
         const exportWaveFile = async (): Promise<SaveResultObject> => {
           const fileName = generateDefaultSongFileName(
             getters.PROJECT_NAME,
@@ -1935,7 +1947,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           const renderDuration = getters.CALC_RENDER_DURATION;
 
           if (state.nowPlaying) {
-            await actions.SING_STOP_AUDIO();
+            await actions.SING_STOP_AUDIO({ live2dViewer });
           }
 
           if (state.savingSetting.fixedExportEnabled) {
@@ -2027,7 +2039,10 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   // TODO: EXPORT_WAVE_FILEとコードが重複しているので、共通化する
   EXPORT_STEM_WAVE_FILE: {
     action: createUILockAction(
-      async ({ state, mutations, getters, actions }, { dirPath }) => {
+      async (
+        { state, mutations, getters, actions },
+        { dirPath, live2dViewer },
+      ) => {
         let firstFilePath = "";
         const exportWaveFile = async (): Promise<SaveResultObject> => {
           const numberOfChannels = 2;
@@ -2037,7 +2052,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
           const renderDuration = getters.CALC_RENDER_DURATION;
 
           if (state.nowPlaying) {
-            await actions.SING_STOP_AUDIO();
+            await actions.SING_STOP_AUDIO({ live2dViewer: live2dViewer });
           }
 
           if (state.savingSetting.fixedExportEnabled) {
