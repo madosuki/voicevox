@@ -726,7 +726,7 @@ export type AudioPlayerStoreTypes = {
   };
 
   STOP_AUDIO: {
-    action(payload: { live2dViewer: Live2dViewer | undefined }): void;
+    action(): void;
   };
 };
 
@@ -1070,17 +1070,11 @@ export type SingingStoreTypes = {
   };
 
   EXPORT_WAVE_FILE: {
-    action(payload: {
-      filePath?: string;
-      live2dViewer?: Live2dViewer;
-    }): SaveResultObject;
+    action(payload: { filePath?: string }): SaveResultObject;
   };
 
   EXPORT_STEM_WAVE_FILE: {
-    action(payload: {
-      dirPath?: string;
-      live2dViewer?: Live2dViewer;
-    }): SaveResultObject;
+    action(payload: { dirPath?: string }): SaveResultObject;
   };
 
   CANCEL_AUDIO_EXPORT: {
@@ -1129,7 +1123,7 @@ export type SingingStoreTypes = {
   };
 
   SING_STOP_AUDIO: {
-    action(payload: { live2dViewer?: Live2dViewer }): void;
+    action(): void;
   };
 
   SET_VOLUME: {
