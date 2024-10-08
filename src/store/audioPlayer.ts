@@ -87,6 +87,7 @@ export const audioPlayerStore = createPartialStore<AudioPlayerStoreTypes>({
       // 再生終了時にresolveされるPromiseを返す
       const played = async () => {
         if (audioKey) {
+          window.backend.logInfo("set nowPlaying in played callback function");
           commit("SET_AUDIO_NOW_PLAYING", { audioKey, nowPlaying: true });
         }
       };
@@ -114,15 +115,7 @@ export const audioPlayerStore = createPartialStore<AudioPlayerStoreTypes>({
 
   STOP_AUDIO: {
     // 停止中でも呼び出して問題ない
-    action(_, { live2dViewer }) {
-      if (live2dViewer) {
-        const model = live2dViewer._models.getValue(
-          live2dViewer.getCurrentModelKey(),
-        );
-        if (model) {
-          model.stopLipSync();
-        }
-      }
+    action() {
       // PLAY_ でonpause時の処理が設定されているため、pauseするだけで良い
       getAudioElement().pause();
     },

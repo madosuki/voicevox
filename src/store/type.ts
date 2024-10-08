@@ -726,7 +726,7 @@ export type AudioPlayerStoreTypes = {
   };
 
   STOP_AUDIO: {
-    action(payload: { live2dViewer: Live2dViewer | undefined }): void;
+    action(): void;
   };
 };
 
@@ -1129,7 +1129,7 @@ export type SingingStoreTypes = {
   };
 
   SING_STOP_AUDIO: {
-    action(payload: { live2dViewer?: Live2dViewer }): void;
+    action(): void;
   };
 
   SET_VOLUME: {

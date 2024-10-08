@@ -391,8 +391,31 @@ watch(isEnableLive2dFeature, async (newVal) => {
   await initializeLive2d();
 });
 
-const isNowPlaying = computed(() => store.state.nowPlaying);
-watch(isNowPlaying, (newVal) => {
+// ファイルメニュー書き出しに使用するEXPORT_WAVE_FILE等にlive2dViewerを渡すのが難しく、VuexのstateにしてしまうとLive2D Modelのupdateメソッドの変更がmutationの制約に引っかかるためここで停止処理を行う。
+const isNowPlayingForSong = computed(() => store.state.nowPlaying);
+watch(isNowPlayingForSong, (newVal) => {
+  if (
+    !newVal &&
+    Live2dModel != undefined &&
+    Live2dMotionSyncModel != undefined &&
+    live2dViewer != undefined
+  ) {
+    const m = live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
+    if (m == undefined) {
+      return;
+    }
+
+    if (m instanceof Live2dMotionSyncModel) {
+      m.stopMotionSync();
+    } else {
+      m.stopLipSync();
+    }
+  }
+});
+
+// 上記と同様。ただしTalkはnowPlayingAudioKeyを使用している。
+const isNowPlayingForTalk = computed(() => store.state.nowPlayingAudioKey);
+watch(isNowPlayingForTalk, (newVal) => {
   if (
     !newVal &&
     Live2dModel != undefined &&
