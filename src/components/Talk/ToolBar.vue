@@ -110,8 +110,7 @@ const playContinuously = async () => {
   }
 };
 const stop = () => {
-  const live2dViewer = props.getLive2dViewer();
-  void store.actions.STOP_AUDIO({ live2dViewer });
+  void store.actions.STOP_AUDIO();
 };
 const generateAndSaveSelectedAudio = async () => {
   if (activeAudioKey.value == undefined)

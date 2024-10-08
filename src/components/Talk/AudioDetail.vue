@@ -260,7 +260,7 @@ const play = async () => {
 };
 
 const stop = () => {
-  void store.actions.STOP_AUDIO({ live2dViewer: props.getLive2dViewer() });
+  void store.actions.STOP_AUDIO();
 };
 
 const nowPlaying = computed(() => store.getters.NOW_PLAYING);

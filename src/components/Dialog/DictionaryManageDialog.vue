@@ -511,7 +511,7 @@ const play = async () => {
   nowPlaying.value = false;
 };
 const stop = () => {
-  void store.dispatch("STOP_AUDIO", { live2dViewer: undefined });
+  void store.dispatch("STOP_AUDIO");
 };
 
 // accent phraseにあるaccentと実際に登録するアクセントには差が生まれる

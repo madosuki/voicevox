@@ -425,9 +425,7 @@ const play = () => {
 };
 
 const stop = () => {
-  void store.dispatch("SING_STOP_AUDIO", {
-    live2dViewer: props.getLive2dViewer(),
-  });
+  void store.dispatch("SING_STOP_AUDIO");
 };
 
 const goToZero = () => {
