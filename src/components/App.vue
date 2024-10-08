@@ -391,6 +391,27 @@ watch(isEnableLive2dFeature, async (newVal) => {
   await initializeLive2d();
 });
 
+const isNowPlaying = computed(() => store.state.nowPlaying);
+watch(isNowPlaying, (newVal) => {
+  if (
+    !newVal &&
+    Live2dModel != undefined &&
+    Live2dMotionSyncModel != undefined &&
+    live2dViewer != undefined
+  ) {
+    const m = live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
+    if (m == undefined) {
+      return;
+    }
+
+    if (m instanceof Live2dMotionSyncModel) {
+      m.stopMotionSync();
+    } else {
+      m.stopLipSync();
+    }
+  }
+});
+
 // ソフトウェアを初期化
 const { hotkeyManager } = useHotkeyManager();
 const isEnginesReady = ref(false);
