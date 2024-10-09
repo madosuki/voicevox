@@ -87,7 +87,6 @@ export const audioPlayerStore = createPartialStore<AudioPlayerStoreTypes>({
       // 再生終了時にresolveされるPromiseを返す
       const played = async () => {
         if (audioKey) {
-          window.backend.logInfo("set nowPlaying in played callback function");
           commit("SET_AUDIO_NOW_PLAYING", { audioKey, nowPlaying: true });
         }
       };
