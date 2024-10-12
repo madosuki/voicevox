@@ -12,9 +12,8 @@
           v-if="nowRendering"
           padding="xs md"
           label="音声の書き出しをキャンセル"
-          color="surface"
-          textColor="display"
           class="q-mt-sm"
+          outline
           @click="cancelExport"
         />
       </div>
@@ -50,7 +49,7 @@
 
 <script setup lang="ts">
 import { Live2dViewer } from "live2dmanager";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import ToolBar from "./ToolBar/ToolBar.vue";
 import ScoreSequencer from "./ScoreSequencer.vue";
 import SideBar from "./SideBar/SideBar.vue";
@@ -76,11 +75,7 @@ const props = defineProps<{
 
 const store = useStore();
 
-const isSidebarOpen = computed(
-  () =>
-    store.state.experimentalSetting.enableMultiTrack &&
-    store.state.isSongSidebarOpen,
-);
+const isSidebarOpen = computed(() => store.state.isSongSidebarOpen);
 const sidebarWidth = ref(300);
 
 const setSidebarWidth = (width: number) => {
@@ -88,6 +83,16 @@ const setSidebarWidth = (width: number) => {
     sidebarWidth.value = width;
   }
 };
+
+// トラック数が1から増えたら、サイドバーを開く
+watch(
+  () => store.state.tracks.size,
+  (tracksSize, oldTracksSize) => {
+    if (oldTracksSize <= 1 && tracksSize > 1) {
+      void store.dispatch("SET_SONG_SIDEBAR_OPEN", { isSongSidebarOpen: true });
+    }
+  },
+);
 
 const nowRendering = computed(() => {
   return store.state.nowRendering;
