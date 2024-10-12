@@ -9,6 +9,13 @@
       class="expressions-selector"
     >
       <QSelect
+        v-model="motionFileName"
+        label="モーション"
+        :options="live2dMotions"
+        style="min-width: 128px"
+        @update:modelValue="setMotion(motionFileName)"
+      ></QSelect>
+      <QSelect
         v-model="expressionName"
         label="表情モーション"
         :options="live2dExpressions"
@@ -150,7 +157,6 @@ const getLive2dModelKey = (): string | undefined => {
 };
 
 const expressionName = ref("None");
-
 const live2dExpressions = computed(() => {
   const modelKey = getLive2dModelKey();
   if (modelKey != undefined && live2dViewer.value != undefined) {
@@ -162,22 +168,59 @@ const live2dExpressions = computed(() => {
   }
   return [];
 });
-
 const setExpression = (name: string) => {
   if (live2dViewer.value == undefined) return;
   const model = live2dViewer.value.getModelFromKey(
     live2dViewer.value.getCurrentModelKey(),
   );
   if (model == undefined) return;
+  model.releaseExpressions();
   if (name === "None") {
-    model.resetExpression();
+    model.stopExpression();
   } else {
     model.setExpression(name);
   }
 };
 
+const motionFileName = ref("None");
+const live2dMotions = computed(() => {
+  const modelKey = getLive2dModelKey();
+  if (modelKey != undefined && live2dViewer.value != undefined) {
+    const model = live2dViewer.value.getModelFromKey(modelKey);
+    if (model != undefined) {
+      const motionInfos = model.getMotionFileNameList();
+      return ["None", ...motionInfos];
+    }
+  }
+  return [];
+});
+
+const setMotion = (name: string) => {
+  if (live2dViewer.value == undefined) return;
+  const model = live2dViewer.value.getModelFromKey(
+    live2dViewer.value.getCurrentModelKey(),
+  );
+  if (model == undefined) return;
+
+  model.releaseMotions();
+  if (name === "None") {
+    model.setIdleMotion();
+  }
+  if (name !== "None") {
+    const r = model.getMotionGroupAndIndex(name);
+    if (r != undefined) {
+      const groupName = r[0];
+      const indexAtGroup = r[1];
+      model
+        .startMotion(groupName, indexAtGroup)
+        .catch((e) => window.backend.logError(e));
+    }
+  }
+};
+
 watch(characterName, () => {
   expressionName.value = "None";
+  motionFileName.value = "None";
 });
 
 const changeLive2dModelIndex = async () => {

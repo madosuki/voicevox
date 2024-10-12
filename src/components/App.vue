@@ -226,9 +226,33 @@ const initializeLive2d = async () => {
     Live2dMotionSyncModel != undefined
   ) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
+    /*
     const metan = new Live2dModel(
       live2dAssetsPath + "/四国めたん_vts/",
       "四国めたん.model3.json",
+      live2dViewer,
+      readFileFunction,
+    );
+    metan
+      .loadAssets()
+      .then(async () => {
+        if (live2dViewer == undefined) return;
+        metan.setLipSyncWeight(10);
+        live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "四国めたん",
+          key: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load metan live2d model assets: ${e}`,
+        );
+      });
+    */
+    const metan = new Live2dModel(
+      live2dAssetsPath + "/Mao/",
+      "Mao.model3.json",
       live2dViewer,
       readFileFunction,
     );
