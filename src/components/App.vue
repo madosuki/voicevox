@@ -226,7 +226,6 @@ const initializeLive2d = async () => {
     Live2dMotionSyncModel != undefined
   ) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
-    /*
     const metan = new Live2dModel(
       live2dAssetsPath + "/四国めたん_vts/",
       "四国めたん.model3.json",
@@ -249,7 +248,7 @@ const initializeLive2d = async () => {
           `Error when load metan live2d model assets: ${e}`,
         );
       });
-    */
+    /*
     const metan = new Live2dModel(
       live2dAssetsPath + "/Mao/",
       "Mao.model3.json",
@@ -272,6 +271,7 @@ const initializeLive2d = async () => {
           `Error when load metan live2d model assets: ${e}`,
         );
       });
+    */
     const zundamon = new Live2dModel(
       live2dAssetsPath + "/Zundamon_vts/",
       "zundamon.model3.json",
