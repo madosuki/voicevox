@@ -174,6 +174,7 @@ const setExpression = (name: string) => {
     live2dViewer.value.getCurrentModelKey(),
   );
   if (model == undefined) return;
+  model.releaseMotions();
   model.releaseExpressions();
   if (name === "None") {
     model.stopExpression();
