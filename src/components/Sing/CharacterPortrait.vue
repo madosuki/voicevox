@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showSinger" class="character-portrait-wrap">
+  <div v-if="showSingCharacterPortrait" class="character-portrait-wrap">
     <img
       v-if="!isEnableLive2dFeature || !isLoadedLive2dCore || !isLive2dPortrait"
       class="character-portrait"
@@ -27,7 +27,9 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
-const showSinger = computed(() => store.state.showSinger);
+const showSingCharacterPortrait = computed(
+  () => store.state.showSingCharacterPortrait,
+);
 
 const portraitPath = computed(() => {
   const userOrderedCharacterInfos =
