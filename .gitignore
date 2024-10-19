@@ -42,6 +42,10 @@ electron-builder.yml
 # generated licenses.json
 /*licenses.json
 
+# Storybook
+storybook-static/
+
+# Live2D
 live2dcubismcore.js
 live2dcubismcore.js.map
 live2dcubismcore.min.js
@@ -53,4 +57,4 @@ live2dcubismmotionsynccore.min.js
 live2dcubismmotionsynccore.d.ts
 
 public/live2d_assets/
-public/CRI/
+public/CRI
