@@ -165,9 +165,23 @@ const mousedown = (e: MouseEvent) => {
 
   const modelKey = live2dViewer.getCurrentModelKey();
   const model = live2dViewer.getModelFromKey(modelKey);
+  const n = Math.floor(Math.random() * 3);
   if (model) {
-    model.closeEyelids();
-    setTimeout(() => model.openEyelids(), 500);
+    model.stopKeepEyeValue();
+    switch (n) {
+      case 1:
+        model.closeEyelids();
+        setTimeout(() => model.openEyelids(), 500);
+        break;
+      case 2: {
+        model.keepEyeOpenParams({
+          lOpen: 0.8,
+          rOpen: 0.8,
+        });
+        setTimeout(() => model.stopKeepEyeValue(), 1000);
+        break;
+      }
+    }
   }
 };
 const mouseleave = () => {
