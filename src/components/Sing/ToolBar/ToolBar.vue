@@ -386,7 +386,7 @@ const setVolumeRangeAdjustment = () => {
 const nowPlaying = computed(() => store.state.nowPlaying);
 
 const play = () => {
-  void store.actions.SING_PLAY_AUDIO();
+  void store.actions.SING_PLAY_AUDIO({ live2dViewer: props.getLive2dViewer() });
 };
 
 const stop = () => {
