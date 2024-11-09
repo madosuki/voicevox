@@ -45,6 +45,9 @@ electron-builder.yml
 # Storybook
 storybook-static/
 
+# Preview Build Output
+dist_preview/
+
 # Live2D
 live2dcubismcore.js
 live2dcubismcore.js.map

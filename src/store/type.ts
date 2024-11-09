@@ -759,6 +759,11 @@ export type PhraseState =
 export type EditorFrameAudioQuery = FrameAudioQuery & { frameRate: number };
 
 /**
+ * 歌唱ピッチ
+ */
+export type SingingPitch = number[];
+
+/**
  * 歌唱ボリューム
  */
 export type SingingVolume = number[];
@@ -777,6 +782,11 @@ export type EditorFrameAudioQueryKey = z.infer<
 export const EditorFrameAudioQueryKey = (
   id: string,
 ): EditorFrameAudioQueryKey => editorFrameAudioQueryKeySchema.parse(id);
+
+const singingPitchKeySchema = z.string().brand<"SingingPitchKey">();
+export type SingingPitchKey = z.infer<typeof singingPitchKeySchema>;
+export const SingingPitchKey = (id: string): SingingPitchKey =>
+  singingPitchKeySchema.parse(id);
 
 const singingVolumeKeySchema = z.string().brand<"SingingVolumeKey">();
 export type SingingVolumeKey = z.infer<typeof singingVolumeKeySchema>;
@@ -802,6 +812,7 @@ export type Phrase = {
   startTime: number;
   state: PhraseState;
   queryKey?: EditorFrameAudioQueryKey;
+  singingPitchKey?: SingingPitchKey;
   singingVolumeKey?: SingingVolumeKey;
   singingVoiceKey?: SingingVoiceKey;
   sequenceId?: SequenceId;
@@ -847,6 +858,7 @@ export type SingingStoreState = {
   editorFrameRate: number;
   phrases: Map<PhraseKey, Phrase>;
   phraseQueries: Map<EditorFrameAudioQueryKey, EditorFrameAudioQuery>;
+  phraseSingingPitches: Map<SingingPitchKey, SingingPitch>;
   phraseSingingVolumes: Map<SingingVolumeKey, SingingVolume>;
   sequencerZoomX: number;
   sequencerZoomY: number;
@@ -1007,6 +1019,13 @@ export type SingingStoreTypes = {
     };
   };
 
+  SET_SINGING_PITCH_KEY_TO_PHRASE: {
+    mutation: {
+      phraseKey: PhraseKey;
+      singingPitchKey: SingingPitchKey | undefined;
+    };
+  };
+
   SET_SINGING_VOLUME_KEY_TO_PHRASE: {
     mutation: {
       phraseKey: PhraseKey;
@@ -1037,6 +1056,17 @@ export type SingingStoreTypes = {
 
   DELETE_PHRASE_QUERY: {
     mutation: { queryKey: EditorFrameAudioQueryKey };
+  };
+
+  SET_PHRASE_SINGING_PITCH: {
+    mutation: {
+      singingPitchKey: SingingPitchKey;
+      singingPitch: SingingPitch;
+    };
+  };
+
+  DELETE_PHRASE_SINGING_PITCH: {
+    mutation: { singingPitchKey: SingingPitchKey };
   };
 
   SET_PHRASE_SINGING_VOLUME: {
