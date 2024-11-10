@@ -8,14 +8,18 @@ export const live2dStoreState: Live2dStoreState = {
   isDrawing: false,
   isLive2dInitialized: false,
   isLive2dCoreLoaded: false,
+
+  // Live2Dモデルが利用可能なキャラクターを指すリスト。CharacterPortraitでのキャラクター変更時等に使用される。
   canUseLive2dModelArray: [
     "四国めたん",
     "ずんだもん",
     "春日部つむぎ",
+    "雨晴はう",
+    "波音リツ",
     "九州そら",
     "中国うさぎ",
-    "波音リツ",
   ],
+
   addedLive2dModelNameRecord: {},
 };
 

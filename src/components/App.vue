@@ -237,6 +237,7 @@ const initializeLive2d = async () => {
     Live2dMotionSyncModel != undefined
   ) {
     const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
+    // Live2Dモデルをキャラクターに割り当てるにはここだけではなく store/live2d.tsのcanUseLive2dModelArrayも変更すること
     const metan = new Live2dModel(
       live2dAssetsPath + "/四国めたん_vts/",
       "四国めたん.model3.json",
@@ -259,30 +260,6 @@ const initializeLive2d = async () => {
           `Error when load metan live2d model assets: ${e}`,
         );
       });
-    /*
-    const metan = new Live2dModel(
-      live2dAssetsPath + "/Mao/",
-      "Mao.model3.json",
-      live2dViewer,
-      readFileFunction,
-    );
-    metan
-      .loadAssets()
-      .then(async () => {
-        if (live2dViewer == undefined) return;
-        metan.setLipSyncWeight(10);
-        live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
-        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-          name: "四国めたん",
-          key: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
-        });
-      })
-      .catch((e) => {
-        window.backend.logError(
-          `Error when load metan live2d model assets: ${e}`,
-        );
-      });
-    */
     const zundamon = new Live2dModel(
       live2dAssetsPath + "/Zundamon_vts/",
       "zundamon.model3.json",
@@ -390,7 +367,30 @@ const initializeLive2d = async () => {
         chugokuUsagi.release();
       });
 
-    // Motion Sync サンプル
+    // モーションが動作するか検証するためにLive2dのサンプルモデルを使用。便宜上雨晴はうに。
+    const hau = new Live2dModel(
+      live2dAssetsPath + "/Mao/",
+      "Mao.model3.json",
+      live2dViewer,
+      readFileFunction,
+    );
+    hau
+      .loadAssets()
+      .then(async () => {
+        if (live2dViewer == undefined) return;
+        hau.setLipSyncWeight(10);
+        live2dViewer.addModel("3474ee95-c274-47f9-aa1a-8322163d96f1", hau);
+        await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          name: "雨晴はう",
+          key: "3474ee95-c274-47f9-aa1a-8322163d96f1",
+        });
+      })
+      .catch((e) => {
+        window.backend.logError(
+          `Error when load metan live2d model assets: ${e}`,
+        );
+      });
+    // Motion Sync サンプル。波音リツに割り当てているのは雨晴はうの時と同様の理由。
     const kei = new Live2dMotionSyncModel(
       live2dAssetsPath + "/Kei_basic/",
       "Kei_basic.model3.json",
