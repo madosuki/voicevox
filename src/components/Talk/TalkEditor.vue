@@ -128,7 +128,6 @@
 </template>
 
 <script setup lang="ts">
-import path from "path";
 import { Live2dViewer } from "live2dmanager";
 import { computed, onBeforeUpdate, ref, toRaw, VNodeRef, watch } from "vue";
 import Draggable from "vuedraggable";
@@ -153,6 +152,7 @@ import {
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
 import { Live2dSceneRenderer } from "@/live2d/renderer";
+import path from "@/helpers/path";
 
 const props = defineProps<{
   isEnginesReady: boolean;
