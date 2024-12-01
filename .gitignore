@@ -48,6 +48,9 @@ storybook-static/
 # Preview Build Output
 dist_preview/
 
+# Downloaded binaries
+vendored
+
 # Live2D
 live2dcubismcore.js
 live2dcubismcore.js.map
@@ -60,4 +63,4 @@ live2dcubismmotionsynccore.min.js
 live2dcubismmotionsynccore.d.ts
 
 public/live2d_assets/
-public/CRI
+public/CR
