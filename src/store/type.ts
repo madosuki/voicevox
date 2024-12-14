@@ -61,7 +61,7 @@ import {
   TextDialogResult,
   NotifyAndNotShowAgainButtonOption,
   LoadingScreenOption,
-  AlertDialogOptions,
+  MessageDialogOptions,
   ConfirmDialogOptions,
   WarningDialogOptions,
 } from "@/components/Dialog/Dialog";
@@ -846,7 +846,14 @@ const phraseKeySchema = z.string().brand<"PhraseKey">();
 export type PhraseKey = z.infer<typeof phraseKeySchema>;
 export const PhraseKey = (id: string): PhraseKey => phraseKeySchema.parse(id);
 
+// 編集対象 ノート or ピッチ
+// ボリュームを足すのであれば"VOLUME"を追加する
 export type SequencerEditTarget = "NOTE" | "PITCH";
+
+// ノート編集ツール
+export type NoteEditTool = "SELECT_FIRST" | "EDIT_FIRST";
+// ピッチ編集ツール
+export type PitchEditTool = "DRAW" | "ERASE";
 
 export type TrackParameters = {
   gain: boolean;
@@ -877,6 +884,8 @@ export type SingingStoreState = {
   sequencerZoomY: number;
   sequencerSnapType: number;
   sequencerEditTarget: SequencerEditTarget;
+  sequencerNoteTool: NoteEditTool;
+  sequencerPitchTool: PitchEditTool;
   _selectedNoteIds: Set<NoteId>;
   editingLyricNoteId?: NoteId;
   nowPlaying: boolean;
@@ -984,6 +993,11 @@ export type SingingStoreTypes = {
 
   SELECT_ALL_NOTES_IN_TRACK: {
     action({ trackId }: { trackId: TrackId }): void;
+  };
+
+  DESELECT_NOTES: {
+    mutation: { noteIds: NoteId[] };
+    action(payload: { noteIds: NoteId[] }): void;
   };
 
   DESELECT_ALL_NOTES: {
@@ -1119,6 +1133,16 @@ export type SingingStoreTypes = {
   SET_EDIT_TARGET: {
     mutation: { editTarget: SequencerEditTarget };
     action(payload: { editTarget: SequencerEditTarget }): void;
+  };
+
+  SET_SEQUENCER_NOTE_TOOL: {
+    mutation: { sequencerNoteTool: NoteEditTool };
+    action(payload: { sequencerNoteTool: NoteEditTool }): void;
+  };
+
+  SET_SEQUENCER_PITCH_TOOL: {
+    mutation: { sequencerPitchTool: PitchEditTool };
+    action(payload: { sequencerPitchTool: PitchEditTool }): void;
   };
 
   SET_IS_DRAG: {
@@ -2015,7 +2039,7 @@ export type UiStoreTypes = {
   };
 
   SHOW_ALERT_DIALOG: {
-    action(payload: AlertDialogOptions): TextDialogResult;
+    action(payload: MessageDialogOptions): TextDialogResult;
   };
 
   SHOW_CONFIRM_DIALOG: {
@@ -2097,6 +2121,18 @@ export type UiStoreTypes = {
 
   IS_FULLSCREEN: {
     getter: boolean;
+  };
+
+  ZOOM_IN: {
+    action(): void;
+  };
+
+  ZOOM_OUT: {
+    action(): void;
+  };
+
+  ZOOM_RESET: {
+    action(): void;
   };
 
   CHECK_EDITED_AND_NOT_SAVE: {
