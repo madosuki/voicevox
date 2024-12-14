@@ -61,7 +61,6 @@ const { Live2dViewer, Live2dModel, Live2dMotionSyncModel } = await import(
     };
   })
   .catch((e) => {
-    window.backend.logError("error!");
     window.backend.logError(e);
     return {
       Live2dViewer: undefined,
