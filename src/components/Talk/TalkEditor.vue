@@ -146,13 +146,15 @@ import {
   PresetKey,
   SplitterPositionType,
   Voice,
-  HotkeyActionNameType,
-  actionPostfixSelectNthCharacter,
 } from "@/type/preload";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
 import { Live2dSceneRenderer } from "@/live2d/renderer";
 import path from "@/helpers/path";
+import {
+  actionPostfixSelectNthCharacter,
+  HotkeyActionNameType,
+} from "@/domain/hotkeyAction";
 
 const props = defineProps<{
   isEnginesReady: boolean;

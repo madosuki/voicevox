@@ -27,7 +27,6 @@ import {
   DefaultStyleId,
   AcceptRetrieveTelemetryStatus,
   AcceptTermsStatus,
-  HotkeySettingType,
   MoraDataType,
   SavingSetting,
   ThemeConf,
@@ -73,6 +72,7 @@ import {
   timeSignatureSchema,
   trackSchema,
 } from "@/domain/project/schema";
+import { HotkeySettingType } from "@/domain/hotkeyAction";
 
 /**
  * エディタ用のAudioQuery
@@ -1976,7 +1976,6 @@ export type UiStoreState = {
 } & DialogStates;
 
 export type DialogStates = {
-  isHelpDialogOpen: boolean;
   isSettingDialogOpen: boolean;
   isCharacterOrderDialogOpen: boolean;
   isDefaultStyleSelectDialogOpen: boolean;
