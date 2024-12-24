@@ -26,6 +26,7 @@ exports[`0.13.0からマイグレーションできる 1`] = `
   },
   "experimentalSetting": {
     "enableInterrogativeUpspeak": false,
+    "enableLive2dPortrait": false,
     "enableMorphing": false,
     "enableMultiSelect": false,
     "shouldKeepTuningOnTextChange": false,
