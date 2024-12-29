@@ -868,6 +868,11 @@ export type SongExportSetting = {
   withTrackParameters: TrackParameters;
 };
 
+export type SongExportState =
+  | "EXPORTING_AUDIO"
+  | "EXPORTING_LABEL"
+  | "NOT_EXPORTING";
+
 export type SingingStoreState = {
   tpqn: number; // Ticks Per Quarter Note
   tempos: Tempo[];
@@ -893,8 +898,8 @@ export type SingingStoreState = {
   startRenderingRequested: boolean;
   stopRenderingRequested: boolean;
   nowRendering: boolean;
-  nowAudioExporting: boolean;
-  cancellationOfAudioExportRequested: boolean;
+  exportState: SongExportState;
+  cancellationOfExportRequested: boolean;
   isSongSidebarOpen: boolean;
 };
 
@@ -1150,6 +1155,10 @@ export type SingingStoreTypes = {
     action(payload: { isDrag: boolean }): void;
   };
 
+  EXPORT_LABEL_FILES: {
+    action(payload: { dirPath?: string }): SaveResultObject[];
+  };
+
   EXPORT_AUDIO_FILE: {
     action(payload: {
       filePath?: string;
@@ -1164,6 +1173,14 @@ export type SingingStoreTypes = {
     }): SaveResultObject;
   };
 
+  GENERATE_FILE_PATH_FOR_TRACK_EXPORT: {
+    action(payload: {
+      trackId: TrackId;
+      directoryPath: string;
+      extension: string;
+    }): Promise<string>;
+  };
+
   EXPORT_FILE: {
     action(payload: {
       filePath: string;
@@ -1171,7 +1188,7 @@ export type SingingStoreTypes = {
     }): Promise<SaveResultObject>;
   };
 
-  CANCEL_AUDIO_EXPORT: {
+  CANCEL_EXPORT: {
     action(): void;
   };
 
@@ -1237,12 +1254,12 @@ export type SingingStoreTypes = {
     mutation: { nowRendering: boolean };
   };
 
-  SET_NOW_AUDIO_EXPORTING: {
-    mutation: { nowAudioExporting: boolean };
+  SET_EXPORT_STATE: {
+    mutation: { exportState: SongExportState };
   };
 
-  SET_CANCELLATION_OF_AUDIO_EXPORT_REQUESTED: {
-    mutation: { cancellationOfAudioExportRequested: boolean };
+  SET_CANCELLATION_OF_EXPORT_REQUESTED: {
+    mutation: { cancellationOfExportRequested: boolean };
   };
 
   RENDER: {
@@ -1817,7 +1834,7 @@ export type ProjectStoreTypes = {
   };
 
   LOAD_PROJECT_FILE: {
-    action(payload: { filePath?: string; confirm?: boolean }): boolean;
+    action(payload: { filePath?: string }): boolean;
   };
 
   SAVE_PROJECT_FILE: {
