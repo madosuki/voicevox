@@ -53,6 +53,9 @@ importers:
       kuromoji:
         specifier: github:VOICEVOX/kuromoji.js#0.0.1
         version: https://codeload.github.com/VOICEVOX/kuromoji.js/tar.gz/0e8d670cd3df64217d0502d3bb71f431531ff353
+      live2dmanager:
+        specifier: github:madosuki/live2dManager
+        version: https://codeload.github.com/madosuki/live2dManager/tar.gz/5832ef280c36a2925dfb7e057fda63926c47aa71
       markdown-it:
         specifier: 13.0.2
         version: 13.0.2
@@ -3563,6 +3566,10 @@ packages:
 
   linkify-it@4.0.1:
     resolution: {integrity: sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==}
+
+  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/5832ef280c36a2925dfb7e057fda63926c47aa71:
+    resolution: {tarball: https://codeload.github.com/madosuki/live2dManager/tar.gz/5832ef280c36a2925dfb7e057fda63926c47aa71}
+    version: 1.0.0
 
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -9023,6 +9030,8 @@ snapshots:
   linkify-it@4.0.1:
     dependencies:
       uc.micro: 1.0.6
+
+  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/5832ef280c36a2925dfb7e057fda63926c47aa71: {}
 
   locate-path@6.0.0:
     dependencies:

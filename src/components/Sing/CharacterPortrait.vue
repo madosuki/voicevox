@@ -238,17 +238,8 @@ $portrait-min-height: 500px;
 .clipping-container {
   position: relative;
   display: grid;
-<<<<<<< HEAD
-  place-items: end;
-  bottom: 0;
-  right: $right-margin;
-  min-width: 200px;
-  // max-width: 20vw;
-  max-width: 800px;
-=======
   overflow: hidden;
   pointer-events: none;
->>>>>>> cffee0158743ec63cce5f8824e77cc5b6e24dc9c
 }
 
 // 画面右下に固定表示
