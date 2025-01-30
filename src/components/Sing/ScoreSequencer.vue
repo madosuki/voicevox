@@ -42,6 +42,11 @@
         <!-- キャラクター全身 -->
         <CharacterPortrait
           class="sequencer-character-portrait"
+          :getLive2dViewer
+          :addMouseEventToLive2dCanvas
+          :removeMouseEventAtLive2dCanvas
+          :live2dCanvas
+          :live2dSceneRenderer
           :style="{
             marginRight: `${scrollBarWidth}px`,
             marginBottom: `${scrollBarWidth}px`,
