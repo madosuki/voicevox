@@ -445,6 +445,15 @@
                   "
                 />
                 <ToggleCell
+                  v-if="!isProduction"
+                  title="[開発時のみ機能] ソング：パラメーターパネルの表示"
+                  description="ONの場合、ソングエディタでパラメーターパネルが表示されます。"
+                  :modelValue="experimentalSetting.showParameterPanel"
+                  @update:modelValue="
+                    changeExperimentalSetting('showParameterPanel', $event)
+                  "
+                />
+                <ToggleCell
                   title="Live2D立ち絵"
                   description="Live2Dを使用した立ち絵が存在する場合に表示する機能をオンにします"
                   :modelValue="experimentalSetting.enableLive2dPortrait"
@@ -500,7 +509,7 @@ import {
   EngineId,
   EditorFontType,
 } from "@/type/preload";
-import { createLogger } from "@/domain/frontend/log";
+import { createLogger } from "@/helpers/log";
 import { useRootMiscSetting } from "@/composables/useRootMiscSetting";
 import { isProduction } from "@/helpers/platform";
 
