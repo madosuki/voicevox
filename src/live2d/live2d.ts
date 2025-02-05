@@ -194,7 +194,6 @@ export class Live2dManager {
           window.backend.logError(
             `Error when load zundamon live2d model assets: ${e}`,
           );
-          zundamon.release();
         });
 
       const kasukabeTsumugi = new Live2dModel(
@@ -273,7 +272,6 @@ export class Live2dManager {
           window.backend.logError(
             `Error when load kyuusyuu sora live2d model assets: ${e}`,
           );
-          kyuusyuuSora.release();
         });
 
       const chugokuUsagi = new Live2dModel(
@@ -314,7 +312,6 @@ export class Live2dManager {
           window.backend.logError(
             `Error when load chudoku usagi live2d model assets: ${e}`,
           );
-          chugokuUsagi.release();
         });
 
       // モーションが動作するか検証するためにLive2dのサンプルモデルを使用。便宜上雨晴はうに。
@@ -377,7 +374,6 @@ export class Live2dManager {
         })
         .catch((e) => {
           window.backend.logError(e);
-          kei.release();
         });
 
       live2dViewer.setCurrentModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff");
