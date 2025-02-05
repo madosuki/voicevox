@@ -9,7 +9,7 @@
         flat
         @click="toggleSidebar"
       />
-      <CharacterMenuButton :getLive2dViewer />
+      <CharacterMenuButton :live2dManager />
       <div class="sing-adjustment">
         <QInput
           type="number"
@@ -159,7 +159,6 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, watch, ref } from "vue";
 import PlayheadPositionDisplay from "../PlayheadPositionDisplay.vue";
 import EditTargetSwicher from "./EditTargetSwicher.vue";
@@ -180,10 +179,11 @@ import CharacterMenuButton from "@/components/Sing/CharacterMenuButton/MenuButto
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { SequencerEditTarget } from "@/store/type";
 import { UnreachableError } from "@/type/utility";
+import { Live2dManager } from "@/live2d/live2d";
 
 const store = useStore();
 const props = defineProps<{
-  getLive2dViewer: () => Live2dViewer | undefined;
+  live2dManager: Live2dManager;
 }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
@@ -218,7 +218,7 @@ registerHotkeyWithCleanup({
     if (nowPlaying.value) {
       stop();
     } else {
-      play();
+      void play();
     }
   },
 });
@@ -404,8 +404,10 @@ watch(
 
 const nowPlaying = computed(() => store.state.nowPlaying);
 
-const play = () => {
-  void store.actions.SING_PLAY_AUDIO({ live2dViewer: props.getLive2dViewer() });
+const play = async () => {
+  void store.actions.SING_PLAY_AUDIO({
+    live2dViewer: await props.live2dManager.getLive2dViewer(),
+  });
 };
 
 const stop = () => {

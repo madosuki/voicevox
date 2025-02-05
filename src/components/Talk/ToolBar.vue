@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, ComputedRef } from "vue";
 import {
   generateAndConnectAndSaveAudioWithDialog,
@@ -31,6 +30,7 @@ import { ToolbarButtonTagType } from "@/type/preload";
 import { getToolbarButtonName } from "@/store/utility";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { handlePossiblyNotMorphableError } from "@/store/audioGenerate";
+import { Live2dManager } from "@/live2d/live2d";
 
 type ButtonContent = {
   text: string;
@@ -45,7 +45,7 @@ type SpacerContent = {
 const store = useStore();
 
 const props = defineProps<{
-  getLive2dViewer: () => Live2dViewer | undefined;
+  live2dManager: Live2dManager;
 }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
@@ -99,7 +99,7 @@ const redo = () => {
 };
 const playContinuously = async () => {
   try {
-    const live2dViewer = props.getLive2dViewer();
+    const live2dViewer = await props.live2dManager.getLive2dViewer();
     await store.actions.PLAY_CONTINUOUSLY_AUDIO({ live2dViewer });
   } catch (e) {
     const msg = handlePossiblyNotMorphableError(e);

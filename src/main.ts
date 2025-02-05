@@ -5,7 +5,7 @@ import iconSet from "quasar/icon-set/material-icons";
 import { store, storeKey } from "./store";
 import { ipcMessageReceiver } from "./plugins/ipcMessageReceiverPlugin";
 import { hotkeyPlugin } from "./plugins/hotkeyPlugin";
-import AsyncAppWrapper from "./components/AsyncAppWrapper.vue";
+import App from "./components/App.vue";
 import { markdownItPlugin } from "@/plugins/markdownItPlugin";
 
 import "@quasar/extras/material-icons/material-icons.css";
@@ -16,7 +16,7 @@ import "./styles/_index.scss";
 //       ため、それを防止するため自前でdataLayerをあらかじめ用意する
 window.dataLayer = [];
 
-createApp(AsyncAppWrapper)
+createApp(App)
   .use(store, storeKey)
   .use(
     createGtm({

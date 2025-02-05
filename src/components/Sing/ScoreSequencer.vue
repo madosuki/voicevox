@@ -42,11 +42,10 @@
         <!-- キャラクター全身 -->
         <CharacterPortrait
           class="sequencer-character-portrait"
-          :getLive2dViewer
           :addMouseEventToLive2dCanvas
           :removeMouseEventAtLive2dCanvas
           :live2dCanvas
-          :live2dSceneRenderer
+          :live2dManager
           :style="{
             marginRight: `${scrollBarWidth}px`,
             marginBottom: `${scrollBarWidth}px`,
@@ -238,7 +237,6 @@ export const gridInfoInjectionKey: InjectionKey<{
 </script>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import {
   computed,
   ref,
@@ -305,7 +303,6 @@ import SequencerToolPalette from "@/components/Sing/SequencerToolPalette.vue";
 import { isOnCommandOrCtrlKeyDown } from "@/store/utility";
 import { createLogger } from "@/helpers/log";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
-import { Live2dSceneRenderer } from "@/live2d/renderer";
 import {
   useCommandOrControlKey,
   useShiftKey,
@@ -314,13 +311,13 @@ import { applyGaussianFilter, linearInterpolation } from "@/sing/utility";
 import { useLyricInput } from "@/composables/useLyricInput";
 import { ExhaustiveError } from "@/type/utility";
 import { uuid4 } from "@/helpers/random";
+import { Live2dManager } from "@/live2d/live2d";
 
 defineProps<{
-  getLive2dViewer: () => Live2dViewer | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
-  live2dSceneRenderer: Live2dSceneRenderer;
+  live2dManager: Live2dManager;
 }>();
 
 // 直接イベントが来ているかどうか

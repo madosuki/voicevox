@@ -38,22 +38,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed, watch, ref, onUpdated, onMounted, Ref } from "vue";
 import { Live2dViewer } from "live2dmanager";
-import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
-import { Live2dSceneRenderer } from "@/live2d/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
+import { Live2dManager } from "@/live2d/live2d";
 
 const store = useStore();
 
 const props = defineProps<{
-  getLive2dViewer: () => Live2dViewer | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
-  live2dSceneRenderer: Live2dSceneRenderer;
+  live2dManager: Live2dManager;
 }>();
 
 const characterInfo = computed(() => {
@@ -138,9 +137,8 @@ const isContinueRunLive2d = computed(
 );
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
+const live2dViewer: Ref<Live2dViewer | undefined> = ref();
 const isDrawing = computed(() => store.getters.IS_DRAWING);
-const live2dViewer = computed(() => props.getLive2dViewer());
-
 const getLive2dModelKey = (): string | undefined => {
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
@@ -267,7 +265,7 @@ const showLive2d = async () => {
 
   if (!isDrawing.value) {
     console.log("draw");
-    props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
+    await props.live2dManager.render(sceneOfPortrait);
     await store.actions.IS_DRAWING({ isDrawing: true });
   }
 };
@@ -337,6 +335,10 @@ watch(editorMode, async (newVal) => {
 
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
   await showLive2d();
+});
+
+onMounted(async () => {
+  live2dViewer.value = await props.live2dManager.getLive2dViewer();
 });
 
 onUpdated(async () => {

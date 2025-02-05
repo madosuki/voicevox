@@ -14,20 +14,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch, onUpdated, Ref } from "vue";
 import { Live2dViewer } from "live2dmanager";
-import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
-import { Live2dSceneRenderer } from "@/live2d/renderer";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 import { EditorType } from "@/type/preload";
+import { Live2dManager } from "@/live2d/live2d";
 
 const props = defineProps<{
-  getLive2dViewer: () => Live2dViewer | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
-  live2dSceneRenderer: Live2dSceneRenderer;
+  live2dManager: Live2dManager;
 }>();
 
 const store = useStore();
@@ -83,7 +82,15 @@ const isContinueRunLive2d = computed(
     store.getters.CURRENT_SHOW_LIVE2D_IN_SONG ||
     store.getters.CURRENT_SHOW_LIVE2D_IN_TALK,
 );
-const live2dViewer = computed(() => props.getLive2dViewer());
+const live2dViewer: Ref<Live2dViewer | undefined> = ref(undefined);
+props.live2dManager
+  .getLive2dViewer()
+  .then((m) => {
+    live2dViewer.value = m;
+  })
+  .catch((e) => {
+    window.backend.logError(e);
+  });
 const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
@@ -122,7 +129,7 @@ const showLive2d = async () => {
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
   if (!isDrawing.value) {
-    props.live2dSceneRenderer.render(live2dViewer.value, sceneOfPortrait);
+    await props.live2dManager.render(sceneOfPortrait);
     await store.dispatch("IS_DRAWING", { isDrawing: true });
   }
 };

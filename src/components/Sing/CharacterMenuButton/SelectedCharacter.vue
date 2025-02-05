@@ -37,12 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, watch } from "vue";
 import { Singer } from "@/store/type";
 import { CharacterInfo } from "@/type/preload";
 import { getStyleDescription } from "@/sing/viewHelper";
 import { useStore } from "@/store";
+import { Live2dManager } from "@/live2d/live2d";
 
 const store = useStore();
 
@@ -50,7 +50,7 @@ const props = defineProps<{
   showSkeleton: boolean;
   selectedCharacterInfo: CharacterInfo | undefined;
   selectedSinger: Singer | undefined;
-  getLive2dViewer: () => Live2dViewer | undefined;
+  live2dManager: Live2dManager;
 }>();
 
 const selectedCharacterName = computed(() => {
@@ -80,7 +80,7 @@ const selectedStyleIconPath = computed(() => {
 
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
-watch(selectedCharacterName, (newVal) => {
+watch(selectedCharacterName, async (newVal) => {
   if (
     !isLoadedLive2dCore.value ||
     !isLive2dInitialized.value ||
@@ -94,7 +94,7 @@ watch(selectedCharacterName, (newVal) => {
   const added = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
   if (added == undefined) return;
 
-  const viewer = props.getLive2dViewer();
+  const viewer = await props.live2dManager.getLive2dViewer();
   if (viewer == undefined) return;
 
   viewer.setCurrentModel(added);

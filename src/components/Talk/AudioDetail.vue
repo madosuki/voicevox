@@ -81,7 +81,6 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, nextTick, ref, watch } from "vue";
 import AccentPhrase from "./AccentPhrase.vue";
 import ToolTip from "@/components/ToolTip.vue";
@@ -92,10 +91,11 @@ import { EngineManifest } from "@/openapi/models";
 import { useShiftKey, useAltKey } from "@/composables/useModifierKey";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { handlePossiblyNotMorphableError } from "@/store/audioGenerate";
+import { Live2dManager } from "@/live2d/live2d";
 
 const props = defineProps<{
   activeAudioKey: AudioKey;
-  getLive2dViewer: () => Live2dViewer | undefined;
+  live2dManager: Live2dManager;
 }>();
 
 const store = useStore();
@@ -246,7 +246,8 @@ watch(accentPhrases, async () => {
 // audio play
 const play = async () => {
   try {
-    const live2dViewer: Live2dViewer | undefined = props.getLive2dViewer();
+    const live2dManager = props.live2dManager;
+    const live2dViewer = await live2dManager.getLive2dViewer();
     await store.actions.PLAY_AUDIO({
       audioKey: props.activeAudioKey,
       live2dViewer,

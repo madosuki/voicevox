@@ -1,6 +1,6 @@
 <template>
   <QLayout reveal elevated container class="layout-container">
-    <ToolBar :getLive2dViewer />
+    <ToolBar :live2dManager />
 
     <QPageContainer>
       <QPage class="main-row-panes">
@@ -32,11 +32,10 @@
             >
               <template #before>
                 <CharacterPortrait
-                  :getLive2dViewer
                   :addMouseEventToLive2dCanvas
                   :removeMouseEventAtLive2dCanvas
                   :live2dCanvas
-                  :live2dSceneRenderer
+                  :live2dManager
                 />
               </template>
               <template #after>
@@ -113,7 +112,7 @@
             <AudioDetail
               v-if="activeAudioKey != undefined"
               :activeAudioKey
-              :getLive2dViewer
+              :live2dManager
             />
           </template>
         </QSplitter>
@@ -128,7 +127,6 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, onBeforeUpdate, ref, toRaw, VNodeRef, watch } from "vue";
 import Draggable from "vuedraggable";
 import { QResizeObserver } from "quasar";
@@ -149,22 +147,21 @@ import {
 } from "@/type/preload";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import onetimeWatch from "@/helpers/onetimeWatch";
-import { Live2dSceneRenderer } from "@/live2d/renderer";
 import path from "@/helpers/path";
 import {
   actionPostfixSelectNthCharacter,
   HotkeyActionNameType,
 } from "@/domain/hotkeyAction";
 import { isElectron } from "@/helpers/platform";
+import { Live2dManager } from "@/live2d/live2d";
 
 const props = defineProps<{
   isEnginesReady: boolean;
   isProjectFileLoaded: boolean | "waiting";
-  getLive2dViewer: () => Live2dViewer | undefined;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
-  live2dSceneRenderer: Live2dSceneRenderer;
+  live2dManager: Live2dManager;
 }>();
 
 const store = useStore();

@@ -1,5 +1,5 @@
 <template>
-  <ToolBar :getLive2dViewer />
+  <ToolBar :live2dManager />
   <div class="sing-main" :class="{ 'sidebar-open': isSidebarOpen }">
     <EngineStartupOverlay :isCompletedInitialStartup />
     <ExportOverlay />
@@ -21,7 +21,7 @@
         <!-- full-heightで高さをQSplitterの高さに揃える -->
         <ScoreSequencer
           class="full-height"
-          :getLive2dViewer
+          :live2dManager
           :addMouseEventToLive2dCanvas
           :removeMouseEventAtLive2dCanvas
           :live2dCanvas
@@ -33,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { Live2dViewer } from "live2dmanager";
 import { computed, ref, watch } from "vue";
 import ToolBar from "./ToolBar/ToolBar.vue";
 import ScoreSequencer from "./ScoreSequencer.vue";
@@ -48,11 +47,12 @@ import {
   createDefaultTempo,
   createDefaultTimeSignature,
 } from "@/sing/domain";
+import { Live2dManager } from "@/live2d/live2d";
 
 const props = defineProps<{
   isEnginesReady: boolean;
   isProjectFileLoaded: boolean | "waiting";
-  getLive2dViewer: () => Live2dViewer | undefined;
+  live2dManager: Live2dManager;
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
