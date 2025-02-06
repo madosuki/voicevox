@@ -71,7 +71,7 @@ export class Live2dManager {
     return { Live2dViewer, Live2dModel, Live2dMotionSyncModel };
   }
 
-  async init(canvas: HTMLCanvasElement) {
+  async initViewer(canvas: HTMLCanvasElement) {
     /*
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
