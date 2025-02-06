@@ -33,7 +33,6 @@
 import { watch, onMounted, ref, computed, toRaw, watchEffect } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import { TooltipProvider } from "radix-vue";
-import { Live2dViewer } from "live2dmanager";
 import { Live2dManager } from "@/live2d/live2d";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
 import SingEditor from "@/components/Sing/SingEditor.vue";
@@ -91,15 +90,14 @@ watchEffect(
 );
 
 // Live2D
-// const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const live2dCanvas = document.createElement("canvas");
 const live2dManager = new Live2dManager(store);
-let live2dViewer: Live2dViewer | undefined = undefined;
 
+/*
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
   isClicked = true;
@@ -142,19 +140,24 @@ const mousemove = async (e: MouseEvent) => {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
+*/
 
 const addMouseEventToLive2dCanvas = () => {
+  /*
   live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
   live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
   live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
   live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
+  */
 };
 
 const removeMouseEventAtLive2dCanvas = () => {
+  /*
   live2dCanvas.removeEventListener("mousedown", mousedown);
   live2dCanvas.removeEventListener("mouseup", mouseup);
   live2dCanvas.removeEventListener("mouseleave", mouseleave);
   live2dCanvas.removeEventListener("mousemove", mousemove);
+  */
 };
 
 window.addEventListener(
@@ -172,7 +175,6 @@ watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal || isLive2dInitialized.value) return;
 
   await live2dManager.initViewer(live2dCanvas);
-  live2dViewer = live2dManager.getLive2dViewer();
   await live2dManager.LoadModels();
 });
 

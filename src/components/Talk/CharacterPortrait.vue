@@ -38,11 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onUpdated } from "vue";
+import { computed, watch, ref, onUpdated, Ref } from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
-import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 import { Live2dManager } from "@/live2d/live2d";
 
 const store = useStore();
@@ -136,7 +135,6 @@ const isContinueRunLive2d = computed(
 );
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
-const live2dViewer = computed(() => props.live2dManager.getLive2dViewer());
 const isDrawing = computed(() => store.getters.IS_DRAWING);
 const getLive2dModelKey = (): string | undefined => {
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
@@ -154,64 +152,77 @@ const getLive2dModelKey = (): string | undefined => {
 };
 
 const expressionName = ref("None");
-const live2dExpressions = computed(() => {
-  const modelKey = getLive2dModelKey();
-  if (modelKey != undefined && live2dViewer.value != undefined) {
-    const model = live2dViewer.value.getModelFromKey(modelKey);
+const live2dExpressions: Ref<string[]> = ref([]);
+const motionFileName = ref("None");
+const live2dMotions: Ref<string[]> = ref([]);
+
+const currentLive2dModelKey = computed(() => getLive2dModelKey());
+watch(currentLive2dModelKey, async (newVal) => {
+  if (newVal == undefined) return;
+
+  const live2dTypes = await props.live2dManager.getTypes();
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+  const live2dViewer = props.live2dManager.getLive2dViewer();
+
+  if (live2dViewer instanceof Live2dViewer) {
+    const model = live2dViewer.getModelFromKey(newVal);
     if (model != undefined) {
-      const idList = model.getExpressionIdList();
-      return ["None", ...idList];
+      const expressionIdList = model.getExpressionIdList();
+      live2dExpressions.value = ["None", ...expressionIdList];
+
+      live2dMotions.value = model.getMotionFileNameList();
+    } else {
+      live2dExpressions.value = [];
     }
   }
-  return [];
 });
-const setExpression = (name: string) => {
-  if (live2dViewer.value == undefined) return;
-  const model = live2dViewer.value.getModelFromKey(
-    live2dViewer.value.getCurrentModelKey(),
-  );
-  if (model == undefined) return;
-  model.releaseMotions();
-  model.releaseExpressions();
-  if (name === "None") {
-    model.stopExpression();
-  } else {
-    model.setExpression(name);
+
+const setExpression = async (name: string) => {
+  const live2dTypes = await props.live2dManager.getTypes();
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+  const live2dViewer = props.live2dManager.getLive2dViewer();
+  if (live2dViewer instanceof Live2dViewer) {
+    const model = live2dViewer.getModelFromKey(
+      live2dViewer.getCurrentModelKey(),
+    );
+    if (model == undefined) return;
+    model.releaseMotions();
+    model.releaseExpressions();
+    if (name === "None") {
+      model.stopExpression();
+    } else {
+      model.setExpression(name);
+    }
   }
 };
 
-const motionFileName = ref("None");
-const live2dMotions = computed(() => {
-  const modelKey = getLive2dModelKey();
-  if (modelKey != undefined && live2dViewer.value != undefined) {
-    const model = live2dViewer.value.getModelFromKey(modelKey);
-    if (model != undefined) {
-      const motionInfos = model.getMotionFileNameList();
-      return ["None", ...motionInfos];
+const setMotion = async (name: string) => {
+  const live2dTypes = await props.live2dManager.getTypes();
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+
+  const live2dViewer = props.live2dManager.getLive2dViewer();
+  if (live2dViewer instanceof Live2dViewer) {
+    const model = live2dViewer.getModelFromKey(
+      live2dViewer.getCurrentModelKey(),
+    );
+    if (model == undefined) return;
+
+    model.releaseMotions();
+    if (name === "None") {
+      model.setIdleMotion();
     }
-  }
-  return [];
-});
-
-const setMotion = (name: string) => {
-  if (live2dViewer.value == undefined) return;
-  const model = live2dViewer.value.getModelFromKey(
-    live2dViewer.value.getCurrentModelKey(),
-  );
-  if (model == undefined) return;
-
-  model.releaseMotions();
-  if (name === "None") {
-    model.setIdleMotion();
-  }
-  if (name !== "None") {
-    const r = model.getMotionGroupAndIndex(name);
-    if (r != undefined) {
-      const groupName = r[0];
-      const indexAtGroup = r[1];
-      model
-        .startMotion(groupName, indexAtGroup)
-        .catch((e) => window.backend.logError(e));
+    if (name !== "None") {
+      const r = model.getMotionGroupAndIndex(name);
+      if (r != undefined) {
+        const groupName = r[0];
+        const indexAtGroup = r[1];
+        model
+          .startMotion(groupName, indexAtGroup)
+          .catch((e) => window.backend.logError(e));
+      }
     }
   }
 };
@@ -222,7 +233,13 @@ watch(characterName, () => {
 });
 
 const changeLive2dModelIndex = async () => {
-  if (live2dViewer.value == undefined || !isLive2dInitialized.value) return;
+  const live2dTypes = await props.live2dManager.getTypes();
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+
+  const live2dViewer = props.live2dManager.getLive2dViewer();
+  if (!(live2dViewer instanceof Live2dViewer) || !isLive2dInitialized.value)
+    return;
 
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
@@ -235,7 +252,7 @@ const changeLive2dModelIndex = async () => {
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
-    live2dViewer.value.setCurrentModel(v);
+    live2dViewer.setCurrentModel(v);
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
@@ -245,7 +262,13 @@ const changeLive2dModelIndex = async () => {
 
 const showLive2d = async () => {
   console.log("show");
-  if (!live2dViewer.value || !isLive2dInitialized.value) return;
+  const live2dTypes = await props.live2dManager.getTypes();
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+
+  const live2dViewer = props.live2dManager.getLive2dViewer();
+  if (!(live2dViewer instanceof Live2dViewer) || !isLive2dInitialized.value)
+    return;
   if (!isLive2dPortrait.value) return;
 
   const place = document.getElementsByClassName("live2d-portrait");
@@ -264,7 +287,7 @@ const showLive2d = async () => {
 
   if (!isDrawing.value) {
     console.log("draw");
-    await props.live2dManager.render(sceneOfPortrait);
+    await props.live2dManager.render();
     await store.actions.IS_DRAWING({ isDrawing: true });
   }
 };

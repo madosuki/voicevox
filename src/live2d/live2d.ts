@@ -1,5 +1,5 @@
-import { Live2dViewer } from "live2dmanager";
 import { Live2dSceneRenderer } from "./renderer";
+import { sceneOfPortrait } from "./scenes/portrait";
 import { Store } from "@/store";
 
 async function readFileFunction(filePath: string) {
@@ -22,7 +22,7 @@ async function readFileFunction(filePath: string) {
 }
 
 export class Live2dManager {
-  live2dViewer: Live2dViewer | undefined;
+  live2dViewer: unknown;
   isLoadedLive2dCore: boolean;
   store: Store;
   live2dSceneRenderer: Live2dSceneRenderer;
@@ -34,9 +34,32 @@ export class Live2dManager {
     this.live2dSceneRenderer = new Live2dSceneRenderer();
   }
 
+  async setCurrentModelToViewer(key: string) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (this.live2dViewer instanceof Live2dViewer) {
+      this.live2dViewer.setCurrentModel(key);
+    }
+  }
+
+  /*
   async render(scene: (live2dViewer: Live2dViewer) => void) {
     if (this.live2dViewer == undefined) return;
-    this.live2dSceneRenderer.render(this.live2dViewer, scene);
+    if (this.live2dViewer instanceof Live2dViewer) {
+      this.live2dSceneRenderer.render(this.live2dViewer, scene);
+    }
+  }
+  */
+  async render() {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (this.live2dViewer instanceof Live2dViewer) {
+      this.live2dSceneRenderer.render(this.live2dViewer, sceneOfPortrait);
+    }
+
+    return;
   }
 
   async getTypes() {
@@ -70,7 +93,10 @@ export class Live2dManager {
   }
 
   async initViewer(canvas: HTMLCanvasElement) {
-    if (this.live2dViewer != undefined) return;
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+
     try {
       const allocationMemory = 1024 * 1024 * 32;
       this.live2dViewer = new Live2dViewer(canvas, 800, 800);
@@ -94,6 +120,7 @@ export class Live2dManager {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
+    const Live2dViewer = live2dTypes.Live2dViewer;
     const Live2dModel = live2dTypes.Live2dModel;
     const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
 
@@ -102,6 +129,7 @@ export class Live2dManager {
 
     if (
       live2dViewer != undefined &&
+      live2dViewer instanceof Live2dViewer &&
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
@@ -361,7 +389,14 @@ export class Live2dManager {
   }
 
   async releaseLive2d() {
-    if (this.live2dViewer != undefined) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+
+    if (
+      this.live2dViewer != undefined &&
+      this.live2dViewer instanceof Live2dViewer
+    ) {
       this.live2dSceneRenderer.cancelRender();
       this.live2dViewer.release();
       await this.store.dispatch("LIVE2D_INITIALIZED", {
@@ -371,21 +406,23 @@ export class Live2dManager {
   }
 
   async stopLipSync() {
-    if (this.live2dViewer == undefined) return;
-    const m = this.live2dViewer.getModelFromKey(
-      this.live2dViewer.getCurrentModelKey(),
-    );
-    if (m == undefined) {
-      return;
-    }
-
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
-    const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
-    if (m instanceof Live2dMotionSyncModel) {
-      m.stopMotionSync();
-    } else {
-      m.stopLipSync();
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const live2dViewer = this.live2dViewer;
+
+    if (live2dViewer instanceof Live2dViewer) {
+      const m = live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
+      if (m == undefined) {
+        return;
+      }
+
+      const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+      if (m instanceof Live2dMotionSyncModel) {
+        m.stopMotionSync();
+      } else {
+        m.stopLipSync();
+      }
     }
   }
 }

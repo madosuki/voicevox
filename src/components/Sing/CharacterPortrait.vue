@@ -17,7 +17,6 @@
 import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
-import { sceneOfPortrait } from "@/live2d/scenes/portrait";
 import { EditorType } from "@/type/preload";
 import { Live2dManager } from "@/live2d/live2d";
 
@@ -86,7 +85,7 @@ const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
-const changeLive2dModelIndex = () => {
+const changeLive2dModelIndex = async () => {
   if (
     live2dViewer.value == undefined ||
     !isLive2dInitialized.value ||
@@ -101,14 +100,14 @@ const changeLive2dModelIndex = () => {
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
-    live2dViewer.value.setCurrentModel(v);
+    await props.live2dManager.setCurrentModelToViewer(v);
   }
 };
 
 const showLive2d = async () => {
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
-  changeLive2dModelIndex();
+  await changeLive2dModelIndex();
   if (!isLive2dPortrait.value) {
     return;
   }
@@ -120,7 +119,7 @@ const showLive2d = async () => {
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
   if (!isDrawing.value) {
-    await props.live2dManager.render(sceneOfPortrait);
+    await props.live2dManager.render();
     await store.dispatch("IS_DRAWING", { isDrawing: true });
   }
 };
