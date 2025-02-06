@@ -22,7 +22,7 @@ async function readFileFunction(filePath: string) {
 }
 
 export class Live2dManager {
-  live2dViewer: unknown;
+  live2dViewer: Live2dViewer | undefined;
   isLoadedLive2dCore: boolean;
   store: Store;
   live2dSceneRenderer: Live2dSceneRenderer;
@@ -35,10 +35,8 @@ export class Live2dManager {
   }
 
   async render(scene: (live2dViewer: Live2dViewer) => void) {
-    const live2dViewer = await this.getLive2dViewer();
-    const live2dTypes = await this.getTypes();
-    if (live2dTypes == undefined || live2dViewer == undefined) return;
-    this.live2dSceneRenderer.render(live2dViewer, scene);
+    if (this.live2dViewer == undefined) return;
+    this.live2dSceneRenderer.render(this.live2dViewer, scene);
   }
 
   async getTypes() {
@@ -72,15 +70,7 @@ export class Live2dManager {
   }
 
   async initViewer(canvas: HTMLCanvasElement) {
-    /*
-    const live2dTypes = await this.getTypes();
-    if (live2dTypes == undefined) return;
-    */
-
-    // const Live2dViewer = live2dTypes.Live2dViewer;
-    // const Live2dModel = live2dTypes.Live2dModel;
-    // const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
-    if (this.live2dViewer instanceof Live2dViewer) return;
+    if (this.live2dViewer != undefined) return;
     try {
       const allocationMemory = 1024 * 1024 * 32;
       this.live2dViewer = new Live2dViewer(canvas, 800, 800);
@@ -94,26 +84,16 @@ export class Live2dManager {
     }
   }
 
-  async getLive2dViewer() {
-    /*
-    const live2dTypes = await this.getTypes();
-    if (live2dTypes == undefined) return undefined;
-    */
+  getLive2dViewer() {
     if (!this.isLoadedLive2dCore) return undefined;
 
-    // const Live2dViewer = live2dTypes.Live2dViewer;
-    if (this.live2dViewer instanceof Live2dViewer) {
-      return this.live2dViewer;
-    }
-
-    return undefined;
+    return this.live2dViewer;
   }
 
   async LoadModels() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
-    const Live2dViewer = live2dTypes.Live2dViewer;
     const Live2dModel = live2dTypes.Live2dModel;
     const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
 
@@ -122,7 +102,6 @@ export class Live2dManager {
 
     if (
       live2dViewer != undefined &&
-      live2dViewer instanceof Live2dViewer &&
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
@@ -382,10 +361,9 @@ export class Live2dManager {
   }
 
   async releaseLive2d() {
-    const live2dViewer = await this.getLive2dViewer();
-    if (live2dViewer != undefined) {
+    if (this.live2dViewer != undefined) {
       this.live2dSceneRenderer.cancelRender();
-      live2dViewer.release();
+      this.live2dViewer.release();
       await this.store.dispatch("LIVE2D_INITIALIZED", {
         isLive2dInitialized: false,
       });
@@ -393,9 +371,10 @@ export class Live2dManager {
   }
 
   async stopLipSync() {
-    const live2dViewer = await this.getLive2dViewer();
-    if (live2dViewer == undefined) return;
-    const m = live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
+    if (this.live2dViewer == undefined) return;
+    const m = this.live2dViewer.getModelFromKey(
+      this.live2dViewer.getCurrentModelKey(),
+    );
     if (m == undefined) {
       return;
     }

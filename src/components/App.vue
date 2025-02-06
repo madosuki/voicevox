@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted, ref, computed, toRaw, watchEffect, Ref } from "vue";
+import { watch, onMounted, ref, computed, toRaw, watchEffect } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import { TooltipProvider } from "radix-vue";
 import { Live2dViewer } from "live2dmanager";
@@ -98,24 +98,16 @@ const isEnableLive2dFeature = computed(
 );
 const live2dCanvas = document.createElement("canvas");
 const live2dManager = new Live2dManager(store);
-const live2dViewer: Ref<Live2dViewer | undefined> = ref(undefined);
-live2dManager
-  .getLive2dViewer()
-  .then((v) => {
-    live2dViewer.value = v;
-  })
-  .catch((e) => {
-    window.backend.logError(e);
-  });
+let live2dViewer: Live2dViewer | undefined = undefined;
 
 let isClicked = false;
 const mousedown = (e: MouseEvent) => {
   isClicked = true;
-  if (live2dViewer.value == undefined) return;
-  live2dViewer.value.onTouchesBegin(e.pageX, e.pageY);
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
 
-  const modelKey = live2dViewer.value.getCurrentModelKey();
-  const model = live2dViewer.value.getModelFromKey(modelKey);
+  const modelKey = live2dViewer.getCurrentModelKey();
+  const model = live2dViewer.getModelFromKey(modelKey);
   const n = Math.floor(Math.random() * 3);
   if (model) {
     model.stopKeepEyeValue();
@@ -137,17 +129,17 @@ const mousedown = (e: MouseEvent) => {
 };
 const mouseleave = () => {
   isClicked = false;
-  if (live2dViewer.value == undefined) return;
-  live2dViewer.value.onTouchesEnded();
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesEnded();
 };
 const mouseup = () => {
   isClicked = false;
-  if (live2dViewer.value == undefined) return;
-  live2dViewer.value.onTouchesEnded();
+  if (live2dViewer == undefined) return;
+  live2dViewer.onTouchesEnded();
 };
 const mousemove = async (e: MouseEvent) => {
-  if (isClicked && live2dViewer.value != undefined) {
-    live2dViewer.value.onTouchesMoved(e.pageX, e.pageY);
+  if (isClicked && live2dViewer != undefined) {
+    live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
 
@@ -180,6 +172,8 @@ watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal || isLive2dInitialized.value) return;
 
   await live2dManager.initViewer(live2dCanvas);
+  live2dViewer = live2dManager.getLive2dViewer();
+  await live2dManager.LoadModels();
 });
 
 // ファイルメニュー書き出しに使用するEXPORT_WAVE_FILE等にlive2dViewerを渡すのが難しく、VuexのstateにしてしまうとLive2D Modelのupdateメソッドの変更がmutationの制約に引っかかるためここで停止処理を行う。
@@ -289,9 +283,11 @@ onMounted(async () => {
     isProjectFileLoaded.value = false;
   }
 
+  /*
   if (isEnableLive2dFeature.value) {
     await live2dManager.initViewer(live2dCanvas);
     await live2dManager.LoadModels();
   }
+  */
 });
 </script>

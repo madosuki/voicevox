@@ -38,8 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onUpdated, onMounted, Ref } from "vue";
-import { Live2dViewer } from "live2dmanager";
+import { computed, watch, ref, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
@@ -137,7 +136,7 @@ const isContinueRunLive2d = computed(
 );
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
-const live2dViewer: Ref<Live2dViewer | undefined> = ref();
+const live2dViewer = computed(() => props.live2dManager.getLive2dViewer());
 const isDrawing = computed(() => store.getters.IS_DRAWING);
 const getLive2dModelKey = (): string | undefined => {
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
@@ -335,10 +334,6 @@ watch(editorMode, async (newVal) => {
 
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
   await showLive2d();
-});
-
-onMounted(async () => {
-  live2dViewer.value = await props.live2dManager.getLive2dViewer();
 });
 
 onUpdated(async () => {

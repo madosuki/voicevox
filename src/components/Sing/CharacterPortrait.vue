@@ -14,8 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onUpdated, Ref } from "vue";
-import { Live2dViewer } from "live2dmanager";
+import { computed, ref, watch, onUpdated } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
 import { sceneOfPortrait } from "@/live2d/scenes/portrait";
@@ -82,15 +81,7 @@ const isContinueRunLive2d = computed(
     store.getters.CURRENT_SHOW_LIVE2D_IN_SONG ||
     store.getters.CURRENT_SHOW_LIVE2D_IN_TALK,
 );
-const live2dViewer: Ref<Live2dViewer | undefined> = ref(undefined);
-props.live2dManager
-  .getLive2dViewer()
-  .then((m) => {
-    live2dViewer.value = m;
-  })
-  .catch((e) => {
-    window.backend.logError(e);
-  });
+const live2dViewer = computed(() => props.live2dManager.getLive2dViewer());
 const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
