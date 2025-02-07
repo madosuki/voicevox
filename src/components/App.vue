@@ -99,7 +99,7 @@ const live2dManager = new Live2dManager(store);
 
 /*
 let isClicked = false;
-const mousedown = (e: MouseEvent) => {
+const mouseDown = (e: MouseEvent) => {
   isClicked = true;
   if (live2dViewer == undefined) return;
   live2dViewer.onTouchesBegin(e.pageX, e.pageY);
@@ -125,39 +125,51 @@ const mousedown = (e: MouseEvent) => {
     }
   }
 };
-const mouseleave = () => {
+const mouseLeave = () => {
   isClicked = false;
   if (live2dViewer == undefined) return;
   live2dViewer.onTouchesEnded();
 };
-const mouseup = () => {
+const mouseUp = () => {
   isClicked = false;
   if (live2dViewer == undefined) return;
   live2dViewer.onTouchesEnded();
 };
-const mousemove = async (e: MouseEvent) => {
+const mouseMove = async (e: MouseEvent) => {
   if (isClicked && live2dViewer != undefined) {
     live2dViewer.onTouchesMoved(e.pageX, e.pageY);
   }
 };
 */
 
+const mouseDown = async (e: MouseEvent) => {
+  void (await live2dManager.onMouseDown(e.pageX, e.pageY));
+};
+
+const mouseLeave = async () => {
+  void (await live2dManager.onTouchEnd());
+};
+
+const mouseUp = async () => {
+  void (await live2dManager.onTouchEnd());
+};
+
+const mouseMove = async (e: MouseEvent) => {
+  void (await live2dManager.onTouchMoved(e.pageX, e.pageY));
+};
+
 const addMouseEventToLive2dCanvas = () => {
-  /*
-  live2dCanvas.addEventListener("mousedown", mousedown, { passive: true });
-  live2dCanvas.addEventListener("mouseup", mouseup, { passive: true });
-  live2dCanvas.addEventListener("mouseleave", mouseleave, { passive: true });
-  live2dCanvas.addEventListener("mousemove", mousemove, { passive: true });
-  */
+  live2dCanvas.addEventListener("mousedown", mouseDown, { passive: true });
+  live2dCanvas.addEventListener("mouseup", mouseUp, { passive: true });
+  live2dCanvas.addEventListener("mouseleave", mouseLeave, { passive: true });
+  live2dCanvas.addEventListener("mousemove", mouseMove, { passive: true });
 };
 
 const removeMouseEventAtLive2dCanvas = () => {
-  /*
-  live2dCanvas.removeEventListener("mousedown", mousedown);
-  live2dCanvas.removeEventListener("mouseup", mouseup);
-  live2dCanvas.removeEventListener("mouseleave", mouseleave);
-  live2dCanvas.removeEventListener("mousemove", mousemove);
-  */
+  live2dCanvas.removeEventListener("mousedown", mouseDown);
+  live2dCanvas.removeEventListener("mouseup", mouseUp);
+  live2dCanvas.removeEventListener("mouseleave", mouseLeave);
+  live2dCanvas.removeEventListener("mousemove", mouseMove);
 };
 
 window.addEventListener(

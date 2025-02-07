@@ -26,12 +26,69 @@ export class Live2dManager {
   isLoadedLive2dCore: boolean;
   store: Store;
   live2dSceneRenderer: Live2dSceneRenderer;
+  isClicked: boolean;
 
   constructor(store: Store) {
     this.live2dViewer = undefined;
     this.isLoadedLive2dCore = false;
     this.store = store;
     this.live2dSceneRenderer = new Live2dSceneRenderer();
+    this.isClicked = false;
+  }
+
+  async onMouseDown(pageX: number, pageY: number) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (!(this.live2dViewer instanceof Live2dViewer)) return;
+    this.isClicked = true;
+
+    this.live2dViewer.onTouchesBegin(pageX, pageY);
+
+    const modelKey = this.live2dViewer.getCurrentModelKey();
+    const model = this.live2dViewer.getModelFromKey(modelKey);
+    const n = Math.floor(Math.random() * 3);
+    if (model) {
+      model.stopKeepEyeValue();
+      switch (n) {
+        case 1:
+          model.closeEyelids();
+          setTimeout(() => model.openEyelids(), 500);
+          break;
+        case 2: {
+          model.keepEyeOpenParams({
+            lOpen: 0.8,
+            rOpen: 0.8,
+          });
+          setTimeout(() => model.stopKeepEyeValue(), 1000);
+          break;
+        }
+      }
+    }
+  }
+
+  async onTouchEnd() {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (!(this.live2dViewer instanceof Live2dViewer)) return;
+
+    this.isClicked = false;
+    this.live2dViewer.onTouchesEnded();
+  }
+
+  async onTouchMoved(pageX: number, pageY: number) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (!(this.live2dViewer instanceof Live2dViewer)) return;
+
+    if (this.isClicked) {
+      this.live2dViewer.onTouchesMoved(pageX, pageY);
+    }
   }
 
   async setCurrentModelToViewer(key: string) {
@@ -43,14 +100,6 @@ export class Live2dManager {
     }
   }
 
-  /*
-  async render(scene: (live2dViewer: Live2dViewer) => void) {
-    if (this.live2dViewer == undefined) return;
-    if (this.live2dViewer instanceof Live2dViewer) {
-      this.live2dSceneRenderer.render(this.live2dViewer, scene);
-    }
-  }
-  */
   async render() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
