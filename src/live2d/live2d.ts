@@ -24,6 +24,7 @@ async function readFileFunction(filePath: string) {
 export class Live2dManager {
   live2dViewer: unknown;
   isLoadedLive2dCore: boolean;
+  isFailedLive2dLoadCore: boolean;
   store: Store;
   live2dSceneRenderer: Live2dSceneRenderer;
   isClicked: boolean;
@@ -34,6 +35,7 @@ export class Live2dManager {
     this.store = store;
     this.live2dSceneRenderer = new Live2dSceneRenderer();
     this.isClicked = false;
+    this.isFailedLive2dLoadCore = false;
   }
 
   async onMouseDown(pageX: number, pageY: number) {
@@ -112,6 +114,8 @@ export class Live2dManager {
   }
 
   async getTypes() {
+    if (this.isFailedLive2dLoadCore) return undefined;
+
     const { Live2dViewer, Live2dModel, Live2dMotionSyncModel } = await import(
       "live2dmanager"
     )
@@ -124,6 +128,7 @@ export class Live2dManager {
       })
       .catch((e) => {
         window.backend.logError(e);
+        this.isFailedLive2dLoadCore = true;
         return {
           Live2dViewer: undefined,
           Live2dModel: undefined,
