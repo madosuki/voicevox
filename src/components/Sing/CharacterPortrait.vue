@@ -111,10 +111,11 @@ const showLive2d = async () => {
   if (!isLive2dPortrait.value) {
     return;
   }
-  console.log(`isLive2dPortrait in song: ${isLive2dPortrait.value}`);
 
   const place = document.getElementsByClassName("live2d-portrait");
   if (place.length < 1) return;
+  if (place[0].childElementCount > 0) return;
+  window.backend.logInfo("append live2d canvas on sing");
   place[0].appendChild(props.live2dCanvas);
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
@@ -196,7 +197,7 @@ watch(editorMode, async (newVal) => {
 });
 
 onUpdated(async () => {
-  console.log("onUpdated in CharacterPortrait on Sing Editor");
+  // console.log("onUpdated in CharacterPortrait on Sing Editor");
   if (!isLoadedLive2dCore.value) return;
   if (
     (!isEnableLive2dFeature.value && isContinueRunLive2d) ||
