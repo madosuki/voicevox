@@ -25,7 +25,6 @@
           :addMouseEventToLive2dCanvas
           :removeMouseEventAtLive2dCanvas
           :live2dCanvas
-          :live2dSceneRenderer
         />
       </template>
     </QSplitter>
@@ -41,7 +40,6 @@ import EngineStartupOverlay from "@/components/EngineStartupOverlay.vue";
 import ExportOverlay from "@/components/Sing/ExportOverlay.vue";
 import { useStore } from "@/store";
 import onetimeWatch from "@/helpers/onetimeWatch";
-import { Live2dSceneRenderer } from "@/live2d/renderer";
 import {
   DEFAULT_TPQN,
   createDefaultTempo,
@@ -56,7 +54,6 @@ const props = defineProps<{
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
-  live2dSceneRenderer: Live2dSceneRenderer;
 }>();
 
 const store = useStore();
