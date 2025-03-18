@@ -6,7 +6,7 @@ async function readFileFunction(filePath: string) {
   if (import.meta.env.VITE_TARGET === "electron") {
     const result = await window.backend.readFile({ filePath });
     if (result.ok) {
-      return result.value;
+      return result.value.buffer;
     }
     return new ArrayBuffer(0);
   } else {
