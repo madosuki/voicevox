@@ -2,11 +2,12 @@ import { Live2dSceneRenderer } from "./renderer";
 import { sceneOfPortrait } from "./scenes/portrait";
 import { Store } from "@/store";
 
-async function readFileFunction(filePath: string) {
+async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
   if (import.meta.env.VITE_TARGET === "electron") {
     const result = await window.backend.readFile({ filePath });
     if (result.ok) {
-      return result.value.buffer;
+      const buf = result.value.buffer;
+      return buf as ArrayBuffer;
     }
     return new ArrayBuffer(0);
   } else {
