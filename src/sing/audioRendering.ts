@@ -69,6 +69,11 @@ const convertToInt16WavFileData = (
   return buffer;
 };
 
+/**
+ * オーディオコンテキストで最も早くスケジュール可能な時刻を取得します。
+ * @param audioContext オーディオコンテキスト
+ * @returns 最も早くスケジュール可能な時刻（コンテキスト時刻）
+ */
 const getEarliestSchedulableContextTime = (audioContext: BaseAudioContext) => {
   const renderQuantumSize = 128;
   const sampleRate = audioContext.sampleRate;
@@ -588,6 +593,7 @@ class NoteEventScheduler implements EventScheduler {
  * オーディオプレイヤーのボイスです。音声の再生を行います。
  */
 class AudioPlayerVoice {
+  private readonly audioContext: BaseAudioContext;
   private readonly audioBufferSourceNode: AudioBufferSourceNode;
   private readonly buffer: AudioBuffer;
 
@@ -603,6 +609,7 @@ class AudioPlayerVoice {
   }
 
   constructor(audioContext: BaseAudioContext, buffer: AudioBuffer) {
+    this.audioContext = audioContext;
     this.audioBufferSourceNode = new AudioBufferSourceNode(audioContext);
     this.audioBufferSourceNode.buffer = buffer;
     this.audioBufferSourceNode.onended = () => {
@@ -621,6 +628,15 @@ class AudioPlayerVoice {
     if (this.stopContextTime != undefined) {
       throw new Error("Already started.");
     }
+    const earliestSchedulableContextTime = getEarliestSchedulableContextTime(
+      this.audioContext,
+    );
+    if (earliestSchedulableContextTime > contextTime) {
+      offset += earliestSchedulableContextTime - contextTime;
+      contextTime = earliestSchedulableContextTime;
+    }
+    this.audioBufferSourceNode.start(contextTime, offset);
+    this.stopContextTime = contextTime + this.buffer.duration;
 
     const processForLive2d = async () => {
       const { Live2dViewer, Live2dMotionSyncModel } = await import(
@@ -687,9 +703,6 @@ class AudioPlayerVoice {
     };
 
     processForLive2d().catch((e) => window.backend.logError(e));
-
-    this.audioBufferSourceNode.start(contextTime, offset);
-    this.stopContextTime = contextTime + this.buffer.duration;
   }
 
   /**

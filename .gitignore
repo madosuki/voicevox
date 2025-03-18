@@ -51,6 +51,9 @@ dist_preview/
 # Downloaded binaries
 vendored
 
+# Cache
+.eslintcache
+
 # Live2D
 live2dcubismcore.js
 live2dcubismcore.js.map

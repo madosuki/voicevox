@@ -223,7 +223,7 @@ export type IpcIHData = {
 
   READ_FILE: {
     args: [obj: { filePath: string }];
-    return: Result<ArrayBuffer>;
+    return: Result<Uint8Array>;
   };
 
   GET_LIVE2D_ASSETS_PATH: {
