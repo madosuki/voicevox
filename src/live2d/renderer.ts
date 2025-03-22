@@ -12,13 +12,17 @@ export class Live2dSceneRenderer {
   ): void {
     const fps = 1000 / 60;
     let lastTime = performance.now();
+    let isFirst = true;
     const loop = (currentTime: number) => {
       const deltaTime = currentTime - lastTime;
-      if (deltaTime <= fps) {
+      if (deltaTime <= fps && !isFirst) {
         this.requestAnimationFrameHandler = requestAnimationFrame((t: number) =>
           loop(t),
         );
         return;
+      }
+      if (isFirst) {
+        isFirst = false;
       }
       lastTime = deltaTime;
 
