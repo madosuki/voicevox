@@ -662,6 +662,7 @@ class AudioPlayerVoice {
         );
         const seconds =
           contextTime - this.audioBufferSourceNode.context.currentTime;
+        // 始まりがスコアシーケンサーでの左端である時に即時実行させる為の処理。
         if (
           (this.audioBufferSourceNode.context.currentTime === 0 ||
             seconds <= 0) &&
