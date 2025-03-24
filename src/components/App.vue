@@ -97,65 +97,20 @@ const isEnableLive2dFeature = computed(
 const live2dCanvas = document.createElement("canvas");
 const live2dManager = new Live2dManager(store);
 
-/*
-let isClicked = false;
 const mouseDown = (e: MouseEvent) => {
-  isClicked = true;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesBegin(e.pageX, e.pageY);
-
-  const modelKey = live2dViewer.getCurrentModelKey();
-  const model = live2dViewer.getModelFromKey(modelKey);
-  const n = Math.floor(Math.random() * 3);
-  if (model) {
-    model.stopKeepEyeValue();
-    switch (n) {
-      case 1:
-        model.closeEyelids();
-        setTimeout(() => model.openEyelids(), 500);
-        break;
-      case 2: {
-        model.keepEyeOpenParams({
-          lOpen: 0.8,
-          rOpen: 0.8,
-        });
-        setTimeout(() => model.stopKeepEyeValue(), 1000);
-        break;
-      }
-    }
-  }
+  void live2dManager.onMouseDown(e.pageX, e.pageY);
 };
+
 const mouseLeave = () => {
-  isClicked = false;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesEnded();
+  void live2dManager.onTouchEnd();
 };
+
 const mouseUp = () => {
-  isClicked = false;
-  if (live2dViewer == undefined) return;
-  live2dViewer.onTouchesEnded();
-};
-const mouseMove = async (e: MouseEvent) => {
-  if (isClicked && live2dViewer != undefined) {
-    live2dViewer.onTouchesMoved(e.pageX, e.pageY);
-  }
-};
-*/
-
-const mouseDown = async (e: MouseEvent) => {
-  void (await live2dManager.onMouseDown(e.pageX, e.pageY));
+  void live2dManager.onTouchEnd();
 };
 
-const mouseLeave = async () => {
-  void (await live2dManager.onTouchEnd());
-};
-
-const mouseUp = async () => {
-  void (await live2dManager.onTouchEnd());
-};
-
-const mouseMove = async (e: MouseEvent) => {
-  void (await live2dManager.onTouchMoved(e.pageX, e.pageY));
+const mouseMove = (e: MouseEvent) => {
+  void live2dManager.onTouchMoved(e.pageX, e.pageY);
 };
 
 const addMouseEventToLive2dCanvas = () => {
