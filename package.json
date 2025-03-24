@@ -159,7 +159,7 @@
       "@openapitools/openapi-generator-cli",
       "electron",
       "esbuild",
-      "live2dManager",
+      "live2dmanager",
       "msw",
       "vue-demi"
     ]
