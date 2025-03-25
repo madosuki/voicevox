@@ -186,8 +186,7 @@ watch(editorMode, async (newVal) => {
   ) {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
-    // ソングからトークへ遷移すると追加していたCanvasからDOMから消えるので追加する
-    console.log("do workaround when move talk to song");
+    // ソングからトークへ遷移すると追加していたCanvasがDOMから消えるので追加する
     if (isCanUseLive2dPortrait(characterName.value)) {
       isLive2dPortrait.value = true;
     }
@@ -197,7 +196,6 @@ watch(editorMode, async (newVal) => {
 });
 
 onUpdated(async () => {
-  // console.log("onUpdated in CharacterPortrait on Sing Editor");
   if (!isLoadedLive2dCore.value) return;
   if (
     (!isEnableLive2dFeature.value && isContinueRunLive2d) ||
