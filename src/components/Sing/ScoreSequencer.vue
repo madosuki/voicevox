@@ -291,6 +291,7 @@ import { createLogger } from "@/helpers/log";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { useSequencerStateMachine } from "@/composables/useSequencerStateMachine";
 import { PositionOnSequencer } from "@/sing/sequencerStateMachine/common";
+import { useAutoScrollOnEdge } from "@/composables/useAutoScrollOnEdge";
 import { Live2dManager } from "@/live2d/live2d";
 
 defineProps<{
@@ -298,7 +299,7 @@ defineProps<{
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
-}>();
+}>()
 
 const { warn } = createLogger("ScoreSequencer");
 const store = useStore();
@@ -465,6 +466,7 @@ const {
   previewPitchEdit,
   cursorState,
   guideLineTicks,
+  enableAutoScrollOnEdge,
 } = useSequencerStateMachine(store);
 
 const nowPreviewing = computed(() => previewMode.value !== "IDLE");
@@ -472,6 +474,9 @@ const nowPreviewing = computed(() => previewMode.value !== "IDLE");
 const previewNoteIds = computed(() => {
   return new Set(previewNotes.value.map((note) => note.id));
 });
+
+// マウスカーソルがシーケンサーの端に行ったときの自動スクロール
+useAutoScrollOnEdge(sequencerBody, enableAutoScrollOnEdge);
 
 // 歌詞を編集中のノート
 const editingLyricNote = computed(() => {
