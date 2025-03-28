@@ -299,7 +299,7 @@ defineProps<{
   removeMouseEventAtLive2dCanvas: () => void;
   live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
-}>()
+}>();
 
 const { warn } = createLogger("ScoreSequencer");
 const store = useStore();

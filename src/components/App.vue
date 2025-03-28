@@ -31,8 +31,8 @@
 import { watch, onMounted, ref, computed, toRaw, watchEffect } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import { TooltipProvider } from "radix-vue";
-import { Live2dManager } from "@/live2d/live2d";
 import { useCommonMenuBarData } from "./Menu/MenuBar/useCommonMenuBarData";
+import { Live2dManager } from "@/live2d/live2d";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
 import SingEditor from "@/components/Sing/SingEditor.vue";
 import { EngineId } from "@/type/preload";
