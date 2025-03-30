@@ -153,6 +153,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
   }
 
   isLive2dPortrait.value = true;
+  await nextTick();
 });
 
 const editorMode = computed(() => store.state.openedEditor);
@@ -170,6 +171,7 @@ watch(editorMode, async (newVal) => {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     // ソングからトークへ遷移すると追加していたCanvasがDOMから消えるので追加する
     isLive2dPortrait.value = true;
+    await nextTick();
     await showLive2d();
     return;
   }
@@ -188,6 +190,7 @@ watch([isLoadedLive2dCore, characterName], async () => {
 
   if (isCanUseLive2dPortrait(characterName.value)) {
     isLive2dPortrait.value = true;
+    await nextTick();
   } else {
     await disAppearLive2d();
   }

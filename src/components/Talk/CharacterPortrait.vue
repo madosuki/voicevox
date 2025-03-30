@@ -289,13 +289,10 @@ const disAppearLive2d = async () => {
 
 const isCanUseLive2dPortrait = (targetName: string): boolean => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
-  return name != undefined;
-  /*
   if (name == undefined) return false;
 
   const v = store.getters.LIVE2D_MODEL_INFO(name);
   return v != undefined && v.isUsable;
-  */
 };
 
 watch(isEnableLive2dFeature, async (newVal) => {
@@ -310,6 +307,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
 
   if (!isLive2dPortrait.value) {
     isLive2dPortrait.value = true;
+    await nextTick();
     await showLive2d();
   }
 });
@@ -329,6 +327,7 @@ watch(editorMode, async (newVal) => {
   isLive2dPortrait.value = true;
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
   await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
+  await nextTick();
 
   // ソングからトークに遷移する際にはonUpdateが発火しないのでここでLive2Dを表示させる
   await showLive2d();
@@ -346,6 +345,7 @@ watch([isLoadedLive2dCore, characterName], async () => {
     if (isCanUseLive2dPortrait(characterName.value)) {
       if (!isLive2dPortrait.value) {
         isLive2dPortrait.value = true;
+        await nextTick();
       }
     } else {
       await disAppearLive2d();
