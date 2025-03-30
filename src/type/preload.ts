@@ -532,4 +532,5 @@ export type Live2dModelInfo = {
   modelJsonName: string;
   lipSyncWait?: number;
   defaultExpression?: string;
+  isCubism3?: boolean;
 };
