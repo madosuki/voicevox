@@ -113,6 +113,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
 
   await live2dManager.initViewer();
   await live2dManager.initializeLive2dModelInfoRecord();
+  // await store.actions.LIVE2D_INITIALIZED({ isLive2dInitialized: true });
   await live2dManager.loadAllModels();
 });
 
