@@ -85,7 +85,7 @@ const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
-const changeLive2dModelIndex = async () => {
+const changeLive2dModel = async () => {
   if (
     live2dViewer.value == undefined ||
     !isLive2dInitialized.value ||
@@ -107,7 +107,7 @@ const changeLive2dModelIndex = async () => {
 const showLive2d = async () => {
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
 
-  await changeLive2dModelIndex();
+  await changeLive2dModel();
   if (!isLive2dPortrait.value) {
     return;
   }

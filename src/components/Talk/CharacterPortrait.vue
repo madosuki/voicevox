@@ -232,7 +232,7 @@ watch(characterName, () => {
   motionFileName.value = "None";
 });
 
-const changeLive2dModelIndex = async () => {
+const changeLive2dModel = async () => {
   const live2dTypes = await props.live2dManager.getTypes();
   if (live2dTypes == undefined) return;
   const Live2dViewer = live2dTypes.Live2dViewer;
@@ -257,7 +257,7 @@ const changeLive2dModelIndex = async () => {
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   }
-  console.log("changeLive2dModelIndex in talk");
+  console.log("changeLive2dModel in talk");
 };
 
 const showLive2d = async () => {
@@ -279,7 +279,7 @@ const showLive2d = async () => {
     place[0].appendChild(props.live2dCanvas);
   }
 
-  await changeLive2dModelIndex();
+  await changeLive2dModel();
   props.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
