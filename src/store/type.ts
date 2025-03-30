@@ -2404,6 +2404,10 @@ export type Live2dStoreTypes = {
   NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY: {
     getter(name: string): string | undefined;
   };
+
+  CAN_USE_LIVE2D_MODEL_ARRAY: {
+    getter: string[];
+  };
 };
 
 /*

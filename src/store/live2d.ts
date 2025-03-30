@@ -108,4 +108,10 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
       return state.canUseLive2dModelArray.find((v) => name.includes(v));
     },
   },
+
+  CAN_USE_LIVE2D_MODEL_ARRAY: {
+    getter(state) {
+      return state.canUseLive2dModelArray;
+    },
+  },
 });

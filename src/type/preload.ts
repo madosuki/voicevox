@@ -530,4 +530,6 @@ export type Live2dModelInfo = {
   isUsable: boolean;
   dirPath: string;
   modelJsonName: string;
+  lipSyncWait?: number;
+  defaultExpression?: string;
 };
