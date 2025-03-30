@@ -342,7 +342,6 @@ export class Live2dManager {
     }
   }
 
-  /*
   async loadModel(name: string) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
@@ -360,11 +359,47 @@ export class Live2dManager {
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
-      const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
-      const model = new Live2dModel()
+      const info = store.getters.LIVE2D_MODEL_INFO(name);
+      if (info == undefined) return;
+      const model = new Live2dModel(
+        info.dirPath,
+        info.modelJsonName,
+        live2dViewer,
+        readFileFunction,
+      );
+      model
+        .loadAssets()
+        .then(async () => {
+          if (live2dViewer == undefined) return;
+
+          if (info.lipSyncWait != undefined) {
+            model.setLipSyncWeight(info.lipSyncWait);
+          }
+
+          live2dViewer.addModel(info.id, model);
+          const updateInfo: Live2dModelInfo = {
+            id: info.id,
+            isUsable: true,
+            dirPath: info.dirPath,
+            modelJsonName: info.modelJsonName,
+            lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
+          };
+          await store.actions.LIVE2D_MODEL_INFO({
+            name: name,
+            info: updateInfo,
+          });
+
+          if (info.defaultExpression != undefined) {
+            model.setExpression(info.defaultExpression);
+          }
+        })
+        .catch((e) => {
+          window.backend.logError(
+            `Error when load ${name} live2d model assets: ${e}`,
+          );
+        });
     }
   }
-  */
 
   async loadAllModels() {
     const live2dTypes = await this.getTypes();
