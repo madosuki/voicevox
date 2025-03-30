@@ -252,6 +252,8 @@ export class Live2dManager {
     ) {
       const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
 
+      // Live2Dモデルをキャラクターに割り当てるにはここだけではなく store/live2d.tsのcanUseLive2dModelArrayも変更すること
+
       const metanInfo: Live2dModelInfo = {
         id: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff" as SpeakerId,
         isUsable: false,
@@ -381,8 +383,6 @@ export class Live2dManager {
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
-      // Live2Dモデルをキャラクターに割り当てるにはここだけではなく store/live2d.tsのcanUseLive2dModelArrayも変更すること
-
       const targets = store.getters.CAN_USE_LIVE2D_MODEL_ARRAY;
       for (const name of targets) {
         const info = store.getters.LIVE2D_MODEL_INFO(name);
