@@ -21,8 +21,6 @@ import { EditorType } from "@/type/preload";
 import { Live2dManager } from "@/live2d/live2d";
 
 const props = defineProps<{
-  addMouseEventToLive2dCanvas: () => void;
-  removeMouseEventAtLive2dCanvas: () => void;
   live2dManager: Live2dManager;
 }>();
 

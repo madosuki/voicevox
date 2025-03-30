@@ -19,13 +19,7 @@
       </template>
       <template #after>
         <!-- full-heightで高さをQSplitterの高さに揃える -->
-        <ScoreSequencer
-          class="full-height"
-          :live2dManager
-          :addMouseEventToLive2dCanvas
-          :removeMouseEventAtLive2dCanvas
-          :live2dCanvas
-        />
+        <ScoreSequencer class="full-height" :live2dManager />
       </template>
     </QSplitter>
   </div>
@@ -51,9 +45,6 @@ const props = defineProps<{
   isEnginesReady: boolean;
   isProjectFileLoaded: boolean | "waiting";
   live2dManager: Live2dManager;
-  addMouseEventToLive2dCanvas: () => void;
-  removeMouseEventAtLive2dCanvas: () => void;
-  live2dCanvas: HTMLCanvasElement;
 }>();
 
 const store = useStore();

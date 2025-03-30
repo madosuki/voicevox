@@ -39,13 +39,17 @@ export class Live2dManager {
     this.isClicked = false;
     this.isFailedLive2dLoadCore = false;
     this.canvas = canvas;
+
+    this.onTouchesEventListener = this.onTouches.bind(this);
+    this.onTouchEndEventListener = this.onTouchEnd.bind(this);
+    this.onTouchMovedEventListener = this.onTouchMoved.bind(this);
   }
 
   getCanvas() {
     return this.canvas;
   }
 
-  async onMouseDown(pageX: number, pageY: number) {
+  async TouchesBegin(pageX: number, pageY: number) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -76,8 +80,15 @@ export class Live2dManager {
       }
     }
   }
+  onTouches(event: PointerEvent): void {
+    void this.TouchesBegin(event.pageX, event.pageY);
+  }
+  private onTouchesEventListener: (
+    this: HTMLCanvasElement,
+    event: PointerEvent,
+  ) => void;
 
-  async onTouchEnd() {
+  async TouchEnd() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -87,8 +98,16 @@ export class Live2dManager {
     this.isClicked = false;
     this.live2dViewer.onTouchesEnded();
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onTouchEnd(event: PointerEvent) {
+    void this.TouchEnd();
+  }
+  onTouchEndEventListener: (
+    this: HTMLCanvasElement,
+    event: PointerEvent,
+  ) => void;
 
-  async onTouchMoved(pageX: number, pageY: number) {
+  async TouchMoved(pageX: number, pageY: number) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -98,6 +117,42 @@ export class Live2dManager {
     if (this.isClicked) {
       this.live2dViewer.onTouchesMoved(pageX, pageY);
     }
+  }
+  onTouchMoved(event: PointerEvent) {
+    void this.TouchMoved(event.pageX, event.pageY);
+  }
+  onTouchMovedEventListener: (
+    this: HTMLCanvasElement,
+    event: PointerEvent,
+  ) => void;
+
+  addMouseEventToLive2dCanvas() {
+    this.canvas.addEventListener("pointerdown", this.onTouchesEventListener, {
+      passive: true,
+    });
+    this.canvas.addEventListener("pointerup", this.onTouchEndEventListener, {
+      passive: true,
+    });
+    this.canvas.addEventListener("pointerleave", this.onTouchEndEventListener, {
+      passive: true,
+    });
+    this.canvas.addEventListener(
+      "pointermove",
+      this.onTouchMovedEventListener,
+      { passive: true },
+    );
+  }
+  remveMouseEvenet() {
+    this.canvas.removeEventListener("pointerdown", this.onTouchesEventListener);
+    this.canvas.removeEventListener("pointerup", this.onTouchEndEventListener);
+    this.canvas.removeEventListener(
+      "pointerleave",
+      this.onTouchEndEventListener,
+    );
+    this.canvas.removeEventListener(
+      "pointermove",
+      this.onTouchMovedEventListener,
+    );
   }
 
   async setCurrentModelToViewer(key: string) {

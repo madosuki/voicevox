@@ -5,9 +5,6 @@
         v-if="openedEditor != undefined"
         :subMenuData
         :editor="openedEditor"
-        :addMouseEventToLive2dCanvas
-        :removeMouseEventAtLive2dCanvas
-        :live2dCanvas
       />
       <KeepAlive>
         <Component
@@ -16,9 +13,6 @@
           :key="openedEditor"
           :isEnginesReady
           :isProjectFileLoaded
-          :addMouseEventToLive2dCanvas
-          :removeMouseEventAtLive2dCanvas
-          :live2dCanvas
           :live2dManager
         />
       </KeepAlive>
@@ -102,36 +96,6 @@ const isEnableLive2dFeature = computed(
 );
 const live2dCanvas = document.createElement("canvas");
 const live2dManager = new Live2dManager(live2dCanvas, store);
-
-const mouseDown = (e: MouseEvent) => {
-  void live2dManager.onMouseDown(e.pageX, e.pageY);
-};
-
-const mouseLeave = () => {
-  void live2dManager.onTouchEnd();
-};
-
-const mouseUp = () => {
-  void live2dManager.onTouchEnd();
-};
-
-const mouseMove = (e: MouseEvent) => {
-  void live2dManager.onTouchMoved(e.pageX, e.pageY);
-};
-
-const addMouseEventToLive2dCanvas = () => {
-  live2dCanvas.addEventListener("mousedown", mouseDown, { passive: true });
-  live2dCanvas.addEventListener("mouseup", mouseUp, { passive: true });
-  live2dCanvas.addEventListener("mouseleave", mouseLeave, { passive: true });
-  live2dCanvas.addEventListener("mousemove", mouseMove, { passive: true });
-};
-
-const removeMouseEventAtLive2dCanvas = () => {
-  live2dCanvas.removeEventListener("mousedown", mouseDown);
-  live2dCanvas.removeEventListener("mouseup", mouseUp);
-  live2dCanvas.removeEventListener("mouseleave", mouseLeave);
-  live2dCanvas.removeEventListener("mousemove", mouseMove);
-};
 
 window.addEventListener(
   "unload",

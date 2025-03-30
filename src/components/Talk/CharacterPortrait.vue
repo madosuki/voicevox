@@ -47,8 +47,6 @@ import { Live2dManager } from "@/live2d/live2d";
 const store = useStore();
 
 const props = defineProps<{
-  addMouseEventToLive2dCanvas: () => void;
-  removeMouseEventAtLive2dCanvas: () => void;
   live2dManager: Live2dManager;
 }>();
 
@@ -271,7 +269,7 @@ const showLive2d = async () => {
   }
 
   await changeLive2dModel();
-  props.addMouseEventToLive2dCanvas();
+  props.live2dManager.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
     await props.live2dManager.render();
@@ -283,7 +281,7 @@ const disAppearLive2d = async () => {
   await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   isLive2dPortrait.value = false;
 
-  props.removeMouseEventAtLive2dCanvas();
+  props.live2dManager.remveMouseEvenet();
 };
 
 const isCanUseLive2dPortrait = (targetName: string): boolean => {
