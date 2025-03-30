@@ -2399,8 +2399,8 @@ export type Live2dStoreTypes = {
   };
 
   ADDED_LIVE2D_MODEL_RECORD: {
-    mutation: { name: string; key: string };
-    action(payload: { name: string; key: string }): void;
+    mutation: { name: string; speakerId: SpeakerId };
+    action(payload: { name: string; speakerId: SpeakerId }): void;
   };
 
   KEY_FROM_ADDED_LIVE2D_MODEL_RECORD: {

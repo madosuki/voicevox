@@ -1,5 +1,6 @@
 import { Live2dStoreState, Live2dStoreTypes } from "./type";
 import { createPartialStore } from "./vuex";
+import { SpeakerId } from "@/type/preload";
 
 export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",
@@ -94,11 +95,17 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
   },
 
   ADDED_LIVE2D_MODEL_RECORD: {
-    mutation(state, { name, key }: { name: string; key: string }) {
-      state.addedLive2dModelNameRecord[name] = key;
+    mutation(
+      state,
+      { name, speakerId }: { name: string; speakerId: SpeakerId },
+    ) {
+      state.addedLive2dModelNameRecord[name] = speakerId;
     },
-    action({ commit }, { name, key }: { name: string; key: string }) {
-      commit("ADDED_LIVE2D_MODEL_RECORD", { name, key });
+    action(
+      { commit },
+      { name, speakerId }: { name: string; speakerId: SpeakerId },
+    ) {
+      commit("ADDED_LIVE2D_MODEL_RECORD", { name, speakerId });
     },
   },
 
