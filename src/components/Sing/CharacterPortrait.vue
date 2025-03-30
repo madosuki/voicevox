@@ -97,8 +97,6 @@ const changeLive2dModel = async () => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
-    await props.live2dManager.releaseAllLive2dModels();
-    await props.live2dManager.loadModel(targetName);
     await props.live2dManager.setCurrentModelToViewer(v.id);
   }
 };
