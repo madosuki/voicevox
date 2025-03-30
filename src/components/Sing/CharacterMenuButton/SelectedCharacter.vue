@@ -37,20 +37,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { Singer } from "@/store/type";
 import { CharacterInfo } from "@/type/preload";
 import { getStyleDescription } from "@/sing/viewHelper";
-import { useStore } from "@/store";
-import { Live2dManager } from "@/live2d/live2d";
-
-const store = useStore();
 
 const props = defineProps<{
   showSkeleton: boolean;
   selectedCharacterInfo: CharacterInfo | undefined;
   selectedSinger: Singer | undefined;
-  live2dManager: Live2dManager;
 }>();
 
 const selectedCharacterName = computed(() => {
@@ -76,25 +71,6 @@ const selectedStyleIconPath = computed(() => {
       style.engineId === props.selectedSinger?.engineId
     );
   })?.iconPath;
-});
-
-const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
-const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
-watch(selectedCharacterName, async (newVal) => {
-  if (
-    !isLoadedLive2dCore.value ||
-    !isLive2dInitialized.value ||
-    newVal == undefined
-  )
-    return;
-
-  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
-  if (name == undefined) return;
-
-  const v = store.getters.LIVE2D_MODEL_INFO(name);
-  if (v == undefined || !v.isUsable) return;
-
-  await props.live2dManager.setCurrentModelToViewer(v.id);
 });
 </script>
 

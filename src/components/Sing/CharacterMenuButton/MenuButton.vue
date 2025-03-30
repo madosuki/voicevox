@@ -1,11 +1,6 @@
 <template>
   <QBtn flat class="q-pa-none" :disable="uiLocked" noCaps>
-    <SelectedCharacter
-      :showSkeleton
-      :selectedCharacterInfo
-      :selectedSinger
-      :live2dManager
-    />
+    <SelectedCharacter :showSkeleton :selectedCharacterInfo :selectedSinger />
     <CharacterSelectMenu :trackId="selectedTrackId" />
   </QBtn>
 </template>
@@ -15,7 +10,6 @@ import { computed } from "vue";
 import SelectedCharacter from "./SelectedCharacter.vue";
 import CharacterSelectMenu from "./CharacterSelectMenu.vue";
 import { useStore } from "@/store";
-import { Live2dManager } from "@/live2d/live2d";
 
 defineOptions({
   name: "CharacterMenuButton",
@@ -23,9 +17,6 @@ defineOptions({
 
 const store = useStore();
 const uiLocked = computed(() => store.getters.UI_LOCKED);
-defineProps<{
-  live2dManager: Live2dManager;
-}>();
 
 const selectedTrackId = computed(() => store.getters.SELECTED_TRACK_ID);
 
