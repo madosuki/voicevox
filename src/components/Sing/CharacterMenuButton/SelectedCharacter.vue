@@ -91,10 +91,10 @@ watch(selectedCharacterName, async (newVal) => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(newVal);
   if (name == undefined) return;
 
-  const added = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  if (added == undefined) return;
+  const v = store.getters.LIVE2D_MODEL_INFO(name);
+  if (v == undefined || !v.isUsable) return;
 
-  await props.live2dManager.setCurrentModelToViewer(added);
+  await props.live2dManager.setCurrentModelToViewer(v.id);
 });
 </script>
 
