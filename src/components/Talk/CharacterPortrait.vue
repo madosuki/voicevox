@@ -281,7 +281,7 @@ const disAppearLive2d = async () => {
   await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   isLive2dPortrait.value = false;
 
-  props.live2dManager.remveMouseEvenet();
+  props.live2dManager.removeMouseEvenet();
 };
 
 const isCanUseLive2dPortrait = (targetName: string): boolean => {

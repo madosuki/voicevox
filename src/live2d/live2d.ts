@@ -142,7 +142,7 @@ export class Live2dManager {
       { passive: true },
     );
   }
-  remveMouseEvenet() {
+  removeMouseEvenet() {
     this.canvas.removeEventListener("pointerdown", this.onTouchesEventListener);
     this.canvas.removeEventListener("pointerup", this.onTouchEndEventListener);
     this.canvas.removeEventListener(
