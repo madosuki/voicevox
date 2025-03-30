@@ -233,14 +233,6 @@ watch(characterName, () => {
 });
 
 const changeLive2dModel = async () => {
-  const live2dTypes = await props.live2dManager.getTypes();
-  if (live2dTypes == undefined) return;
-  const Live2dViewer = live2dTypes.Live2dViewer;
-
-  const live2dViewer = props.live2dManager.getLive2dViewer();
-  if (!(live2dViewer instanceof Live2dViewer) || !isLive2dInitialized.value)
-    return;
-
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
   );
@@ -252,7 +244,7 @@ const changeLive2dModel = async () => {
 
   const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
   if (v != undefined) {
-    live2dViewer.setCurrentModel(v);
+    await props.live2dManager.setCurrentModelToViewer(v);
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
