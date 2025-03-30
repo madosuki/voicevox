@@ -178,14 +178,13 @@ watch(editorMode, async (newVal) => {
     newVal === ("song" as EditorType) &&
     isLoadedLive2dCore.value &&
     isEnableLive2dFeature.value &&
-    characterName.value != undefined
+    characterName.value != undefined &&
+    isCanUseLive2dPortrait(characterName.value)
   ) {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
     // ソングからトークへ遷移すると追加していたCanvasがDOMから消えるので追加する
-    if (isCanUseLive2dPortrait(characterName.value)) {
-      isLive2dPortrait.value = true;
-    }
+    isLive2dPortrait.value = true;
     await showLive2d();
     return;
   }
