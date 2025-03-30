@@ -261,7 +261,6 @@ const changeLive2dModelIndex = async () => {
 };
 
 const showLive2d = async () => {
-  console.log("show");
   const live2dTypes = await props.live2dManager.getTypes();
   if (live2dTypes == undefined) return;
   const Live2dViewer = live2dTypes.Live2dViewer;
@@ -275,9 +274,7 @@ const showLive2d = async () => {
   if (place == undefined || place.length < 1) {
     return;
   }
-  console.log(
-    `place length: ${place.length}, place[0].childElementCount: ${place[0].childElementCount}`,
-  );
+
   if (place.length === 1 && place[0].childElementCount === 0) {
     place[0].appendChild(props.live2dCanvas);
   }
@@ -286,7 +283,6 @@ const showLive2d = async () => {
   props.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
-    console.log("draw");
     await props.live2dManager.render();
     await store.actions.IS_DRAWING({ isDrawing: true });
   }
