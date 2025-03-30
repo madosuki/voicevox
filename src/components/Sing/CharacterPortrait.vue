@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onUpdated } from "vue";
+import { computed, ref, watch, nextTick, onUpdated, onMounted } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
 import { EditorType } from "@/type/preload";
@@ -138,6 +138,7 @@ const isCanUseLive2dPortrait = (targetName: string): boolean => {
   return v != undefined && v.isUsable;
 };
 
+/*
 watch(characterName, async (newVal: string | undefined) => {
   if (!isLoadedLive2dCore.value || newVal == undefined) return;
 
@@ -153,6 +154,7 @@ watch(characterName, async (newVal: string | undefined) => {
 
   isLive2dPortrait.value = true;
 });
+*/
 
 watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal) {
@@ -190,6 +192,38 @@ watch(editorMode, async (newVal) => {
   }
 });
 
+watch([isLoadedLive2dCore, characterName], async () => {
+  await nextTick();
+  console.log("nyaaaaaaaaaaaaaaaaan");
+  console.log(`loaded core: ${isLoadedLive2dCore.value}`);
+  if (!isLoadedLive2dCore.value) return;
+  if (
+    (!isEnableLive2dFeature.value && isContinueRunLive2d) ||
+    characterName.value == undefined
+  ) {
+    await disAppearLive2d();
+    return;
+  }
+
+  const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
+    characterName.value,
+  );
+  console.log(`character name: ${name}`);
+  if (name == undefined) return;
+
+  const v = store.getters.LIVE2D_MODEL_INFO(name);
+  if (v != undefined && v.isUsable) {
+    isLive2dPortrait.value = true;
+  } else {
+    await disAppearLive2d();
+  }
+
+  if (isLive2dPortrait.value) {
+    await showLive2d();
+  }
+});
+
+/*
 onUpdated(async () => {
   if (!isLoadedLive2dCore.value) return;
   if (
@@ -216,6 +250,7 @@ onUpdated(async () => {
     await showLive2d();
   }
 });
+*/
 </script>
 
 <style scoped lang="scss">

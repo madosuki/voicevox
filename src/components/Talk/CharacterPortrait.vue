@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onUpdated, Ref } from "vue";
+import { computed, watch, ref, onUpdated, Ref, nextTick, onMounted } from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
@@ -295,6 +295,7 @@ const isCanUseLive2dPortrait = (targetName: string): boolean => {
   return v != undefined && v.isUsable;
 };
 
+/*
 watch(characterName, async (newVal: string) => {
   if (!isLoadedLive2dCore.value) return;
 
@@ -310,7 +311,7 @@ watch(characterName, async (newVal: string) => {
 
   isLive2dPortrait.value = true;
 });
-
+*/
 watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal) {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
@@ -347,6 +348,29 @@ watch(editorMode, async (newVal) => {
   await showLive2d();
 });
 
+watch([isLoadedLive2dCore, characterName], async () => {
+  await nextTick();
+  if (!isLoadedLive2dCore.value) return;
+  if (!isEnableLive2dFeature.value && isContinueRunLive2d.value) {
+    await disAppearLive2d();
+    return;
+  }
+
+  console.log("onUpdated in talk");
+  if (isEnableLive2dFeature.value) {
+    if (isCanUseLive2dPortrait(characterName.value)) {
+      if (!isLive2dPortrait.value) {
+        isLive2dPortrait.value = true;
+      }
+    }
+
+    if (isLive2dPortrait.value) {
+      await showLive2d();
+    }
+  }
+});
+
+/*
 onUpdated(async () => {
   if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value && isContinueRunLive2d.value) {
@@ -367,6 +391,7 @@ onUpdated(async () => {
     }
   }
 });
+*/
 </script>
 
 <style scoped lang="scss">
