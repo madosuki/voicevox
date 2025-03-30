@@ -289,10 +289,13 @@ const disAppearLive2d = async () => {
 
 const isCanUseLive2dPortrait = (targetName: string): boolean => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
+  return name != undefined;
+  /*
   if (name == undefined) return false;
 
   const v = store.getters.LIVE2D_MODEL_INFO(name);
   return v != undefined && v.isUsable;
+  */
 };
 
 watch(isEnableLive2dFeature, async (newVal) => {

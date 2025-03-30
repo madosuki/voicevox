@@ -96,7 +96,7 @@ const changeLive2dModel = async () => {
   if (targetName == undefined) return;
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
-  if (v != undefined) {
+  if (v != undefined && v.isUsable) {
     await props.live2dManager.setCurrentModelToViewer(v.id);
   }
 };
@@ -111,9 +111,11 @@ const showLive2d = async () => {
 
   const place = document.getElementsByClassName("live2d-portrait");
   if (place.length < 1) return;
-  if (place[0].childElementCount > 0) return;
-  window.backend.logInfo("append live2d canvas on sing");
-  place[0].appendChild(props.live2dManager.getCanvas());
+  if (place[0].childElementCount < 1) {
+    window.backend.logInfo("append live2d canvas on sing");
+    place[0].appendChild(props.live2dManager.getCanvas());
+  }
+
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
   if (!isDrawing.value) {
