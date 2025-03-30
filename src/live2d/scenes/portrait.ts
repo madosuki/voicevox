@@ -16,10 +16,6 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
     return;
   }
 
-  if (!model.isCompleteSetup) {
-    return;
-  }
-
   const draw = () => {
     if (model.getModel()) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
