@@ -233,7 +233,7 @@ export class Live2dManager {
     return this.live2dViewer;
   }
 
-  async LoadAllModels() {
+  async loadAllModels() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -519,6 +519,17 @@ export class Live2dManager {
       await this.store.dispatch("LIVE2D_INITIALIZED", {
         isLive2dInitialized: false,
       });
+    }
+  }
+
+  async releaseAllLive2dModels() {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+
+    if (this.live2dViewer instanceof Live2dViewer) {
+      this.live2dSceneRenderer.cancelRender();
+      this.live2dViewer.releaseAllModel();
     }
   }
 
