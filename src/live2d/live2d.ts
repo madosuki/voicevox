@@ -367,37 +367,37 @@ export class Live2dManager {
         live2dViewer,
         readFileFunction,
       );
-      model
-        .loadAssets()
-        .then(async () => {
-          if (live2dViewer == undefined) return;
 
-          if (info.lipSyncWait != undefined) {
-            model.setLipSyncWeight(info.lipSyncWait);
-          }
-
-          live2dViewer.addModel(info.id, model);
-          const updateInfo: Live2dModelInfo = {
-            id: info.id,
-            isUsable: true,
-            dirPath: info.dirPath,
-            modelJsonName: info.modelJsonName,
-            lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
-          };
-          await store.actions.LIVE2D_MODEL_INFO({
-            name: name,
-            info: updateInfo,
-          });
-
-          if (info.defaultExpression != undefined) {
-            model.setExpression(info.defaultExpression);
-          }
-        })
-        .catch((e) => {
+      try {
+        await model.loadAssets();
+      } catch (e: unknown) {
+        if (e instanceof Error) {
           window.backend.logError(
             `Error when load ${name} live2d model assets: ${e}`,
           );
-        });
+        }
+      }
+
+      if (info.lipSyncWait != undefined) {
+        model.setLipSyncWeight(info.lipSyncWait);
+      }
+
+      live2dViewer.addModel(info.id, model);
+      const updateInfo: Live2dModelInfo = {
+        id: info.id,
+        isUsable: true,
+        dirPath: info.dirPath,
+        modelJsonName: info.modelJsonName,
+        lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
+      };
+      await store.actions.LIVE2D_MODEL_INFO({
+        name: name,
+        info: updateInfo,
+      });
+
+      if (info.defaultExpression != undefined) {
+        model.setExpression(info.defaultExpression);
+      }
     }
   }
 
