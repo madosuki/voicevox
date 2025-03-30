@@ -103,8 +103,6 @@ const changeLive2dModel = async () => {
 
 const showLive2d = async () => {
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
-
-  await changeLive2dModel();
   if (!isLive2dPortrait.value) {
     return;
   }
@@ -117,6 +115,7 @@ const showLive2d = async () => {
   }
 
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
+  await changeLive2dModel();
 
   if (!isDrawing.value) {
     await props.live2dManager.render();
