@@ -144,8 +144,11 @@ const getLive2dModelKey = (): string | undefined => {
     return undefined;
   }
 
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
-  return v;
+  const v = store.getters.LIVE2D_MODEL_INFO(targetName);
+  if (v == undefined || !v.isUsable) {
+    return undefined;
+  }
+  return v.id;
 };
 
 const expressionName = ref("None");
@@ -239,9 +242,9 @@ const changeLive2dModel = async () => {
     return;
   }
 
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
-  if (v != undefined) {
-    await props.live2dManager.setCurrentModelToViewer(v);
+  const v = store.getters.LIVE2D_MODEL_INFO(targetName);
+  if (v != undefined && v.isUsable) {
+    await props.live2dManager.setCurrentModelToViewer(v.id);
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
@@ -288,8 +291,8 @@ const isCanUseLive2dPortrait = (targetName: string): boolean => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
   if (name == undefined) return false;
 
-  const key = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  return key != undefined;
+  const v = store.getters.LIVE2D_MODEL_INFO(name);
+  return v != undefined && v.isUsable;
 };
 
 watch(characterName, async (newVal: string) => {

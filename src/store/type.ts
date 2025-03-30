@@ -55,6 +55,7 @@ import {
   NoteId,
   CommandId,
   TrackId,
+  Live2dModelInfo,
 } from "@/type/preload";
 import { IEngineConnectorFactory } from "@/infrastructures/EngineConnector";
 import {
@@ -2360,10 +2361,16 @@ export type Live2dStoreState = {
   isLive2dInitialized: boolean;
   isLive2dCoreLoaded: boolean;
   canUseLive2dModelArray: string[];
-  addedLive2dModelNameRecord: Record<string, string>;
+  live2dModelInfoRecord: Record<string, Live2dModelInfo>;
 };
 
 export type Live2dStoreTypes = {
+  LIVE2D_MODEL_INFO: {
+    mutation: { name: string; info: Live2dModelInfo };
+    action(payload: { name: string; info: Live2dModelInfo }): void;
+    getter(name: string): Live2dModelInfo | undefined;
+  };
+
   CURRENT_SHOW_LIVE2D_IN_TALK: {
     mutation: { isShow: boolean };
     action(payload: { isShow: boolean }): void;
@@ -2395,15 +2402,6 @@ export type Live2dStoreTypes = {
   };
 
   NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY: {
-    getter(name: string): string | undefined;
-  };
-
-  ADDED_LIVE2D_MODEL_RECORD: {
-    mutation: { name: string; speakerId: SpeakerId };
-    action(payload: { name: string; speakerId: SpeakerId }): void;
-  };
-
-  KEY_FROM_ADDED_LIVE2D_MODEL_RECORD: {
     getter(name: string): string | undefined;
   };
 };

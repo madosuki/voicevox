@@ -524,3 +524,10 @@ export interface MessageBoxReturnValue {
 export const SandboxKey = "backend";
 
 export type EditorType = "talk" | "song";
+
+export type Live2dModelInfo = {
+  id: SpeakerId;
+  isUsable: boolean;
+  dirPath: string;
+  modelJsonName: string;
+};

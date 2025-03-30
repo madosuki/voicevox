@@ -1,6 +1,6 @@
 import { Live2dStoreState, Live2dStoreTypes } from "./type";
 import { createPartialStore } from "./vuex";
-import { SpeakerId } from "@/type/preload";
+import { Live2dModelInfo, SpeakerId } from "@/type/preload";
 
 export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",
@@ -21,10 +21,25 @@ export const live2dStoreState: Live2dStoreState = {
     "中国うさぎ",
   ],
 
-  addedLive2dModelNameRecord: {},
+  live2dModelInfoRecord: {},
 };
 
 export const live2dStore = createPartialStore<Live2dStoreTypes>({
+  LIVE2D_MODEL_INFO: {
+    mutation(state, { name, info }: { name: string; info: Live2dModelInfo }) {
+      state.live2dModelInfoRecord[name] = info;
+    },
+    action(
+      { commit },
+      { name, info }: { name: string; info: Live2dModelInfo },
+    ) {
+      commit("LIVE2D_MODEL_INFO", { name, info });
+    },
+    getter: (state) => (name) => {
+      return state.live2dModelInfoRecord[name];
+    },
+  },
+
   CURRENT_SHOW_LIVE2D_IN_TALK: {
     mutation(state, { isShow }: { isShow: boolean }) {
       state.isCurrentShowInTalk = isShow;
@@ -91,27 +106,6 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
   NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY: {
     getter: (state) => (name) => {
       return state.canUseLive2dModelArray.find((v) => name.includes(v));
-    },
-  },
-
-  ADDED_LIVE2D_MODEL_RECORD: {
-    mutation(
-      state,
-      { name, speakerId }: { name: string; speakerId: SpeakerId },
-    ) {
-      state.addedLive2dModelNameRecord[name] = speakerId;
-    },
-    action(
-      { commit },
-      { name, speakerId }: { name: string; speakerId: SpeakerId },
-    ) {
-      commit("ADDED_LIVE2D_MODEL_RECORD", { name, speakerId });
-    },
-  },
-
-  KEY_FROM_ADDED_LIVE2D_MODEL_RECORD: {
-    getter: (state) => (name) => {
-      return state.addedLive2dModelNameRecord[name];
     },
   },
 });

@@ -1,6 +1,6 @@
 import { Live2dSceneRenderer } from "./renderer";
 import { sceneOfPortrait } from "./scenes/portrait";
-import { SpeakerId } from "@/type/preload";
+import { Live2dModelInfo, SpeakerId } from "@/type/preload";
 import { Store } from "@/store";
 
 async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
@@ -233,6 +233,30 @@ export class Live2dManager {
     return this.live2dViewer;
   }
 
+  /*
+  async loadModel(name: string) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const Live2dModel = live2dTypes.Live2dModel;
+    const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+
+    const live2dViewer = this.live2dViewer;
+    const store = this.store;
+
+    if (
+      live2dViewer != undefined &&
+      live2dViewer instanceof Live2dViewer &&
+      Live2dModel != undefined &&
+      Live2dMotionSyncModel != undefined
+    ) {
+      const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
+      const model = new Live2dModel()
+    }
+  }
+  */
+
   async loadAllModels() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
@@ -253,30 +277,29 @@ export class Live2dManager {
       const live2dAssetsPath = await window.backend.getLive2dAssetsPath();
       window.backend.logInfo(`live2dAssetsPath: ${live2dAssetsPath}`);
       // Live2Dモデルをキャラクターに割り当てるにはここだけではなく store/live2d.tsのcanUseLive2dModelArrayも変更すること
+
+      const metanInfo: Live2dModelInfo = {
+        id: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/四国めたん_vts/",
+        modelJsonName: "四国めたん.model3.json",
+      };
       const metan = new Live2dModel(
-        live2dAssetsPath + "/四国めたん_vts/",
-        "四国めたん.model3.json",
+        metanInfo.dirPath,
+        metanInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await metan.loadAssets();
-      metan.setLipSyncWeight(10);
-      live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "四国めたん",
-        key: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
-      });
-      */
       metan
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           metan.setLipSyncWeight(10);
-          live2dViewer.addModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff", metan);
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          live2dViewer.addModel(metanInfo.id, metan);
+          metanInfo.isUsable = true;
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "四国めたん",
-            speakerId: "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff" as SpeakerId,
+            info: metanInfo,
           });
         })
         .catch((e) => {
@@ -285,33 +308,28 @@ export class Live2dManager {
           );
         });
 
+      const zundamonInfo: Live2dModelInfo = {
+        id: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/Zundamon_vts/",
+        modelJsonName: "zundamon.model3.json",
+      };
       const zundamon = new Live2dModel(
-        live2dAssetsPath + "/Zundamon_vts/",
-        "zundamon.model3.json",
+        zundamonInfo.dirPath,
+        zundamonInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await zundamon.loadAssets();
-      zundamon.setLipSyncWeight(20);
-      live2dViewer.addModel("388f246b-8c41-4ac1-8e2d-5d79f3ff56d9", zundamon);
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "ずんだもん",
-        key: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
-      });
-      */
       zundamon
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           zundamon.setLipSyncWeight(20);
-          live2dViewer.addModel(
-            "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
-            zundamon,
-          );
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          live2dViewer.addModel(zundamonInfo.id, zundamon);
+          zundamonInfo.isUsable = true;
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "ずんだもん",
-            speakerId: "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9" as SpeakerId,
+            info: zundamonInfo,
           });
         })
         .catch((e) => {
@@ -320,37 +338,29 @@ export class Live2dManager {
           );
         });
 
+      const tsumugiInfo: Live2dModelInfo = {
+        id: "35b2c544-660e-401e-b503-0e14c635303a" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
+        modelJsonName: "春日部つむぎ公式live2Dモデル.model3.json",
+      };
       const kasukabeTsumugi = new Live2dModel(
-        live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
-        "春日部つむぎ公式live2Dモデル.model3.json",
+        tsumugiInfo.dirPath,
+        tsumugiInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
         true,
       );
-      /*
-      await kasukabeTsumugi.loadAssets();
-      kasukabeTsumugi.setLipSyncWeight(15);
-      live2dViewer.addModel(
-        "35b2c544-660e-401e-b503-0e14c635303a",
-        kasukabeTsumugi,
-      );
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "春日部つむぎ",
-        key: "35b2c544-660e-401e-b503-0e14c635303a",
-      });
-      */
       kasukabeTsumugi
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           kasukabeTsumugi.setLipSyncWeight(15);
-          live2dViewer.addModel(
-            "35b2c544-660e-401e-b503-0e14c635303a",
-            kasukabeTsumugi,
-          );
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          tsumugiInfo.isUsable = true;
+          live2dViewer.addModel(tsumugiInfo.id, kasukabeTsumugi);
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "春日部つむぎ",
-            speakerId: "35b2c544-660e-401e-b503-0e14c635303a" as SpeakerId,
+            info: tsumugiInfo,
           });
         })
         .catch((e) => {
@@ -360,36 +370,28 @@ export class Live2dManager {
           kasukabeTsumugi.release();
         });
 
+      const soraInfo: Live2dModelInfo = {
+        id: "481fb609-6446-4870-9f46-90c4dd623403" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/Sora_vts/",
+        modelJsonName: "kyuusyuu_sora.model3.json",
+      };
       const kyuusyuuSora = new Live2dModel(
-        live2dAssetsPath + "/Sora_vts/",
-        "kyuusyuu_sora.model3.json",
+        soraInfo.dirPath,
+        soraInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await kyuusyuuSora.loadAssets();
-      kyuusyuuSora.setLipSyncWeight(20);
-      live2dViewer.addModel(
-        "481fb609-6446-4870-9f46-90c4dd623403",
-        kyuusyuuSora,
-      );
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "九州そら",
-        key: "481fb609-6446-4870-9f46-90c4dd623403",
-      });
-      */
       kyuusyuuSora
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           kyuusyuuSora.setLipSyncWeight(20);
-          live2dViewer.addModel(
-            "481fb609-6446-4870-9f46-90c4dd623403",
-            kyuusyuuSora,
-          );
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          soraInfo.isUsable = true;
+          live2dViewer.addModel(soraInfo.id, kyuusyuuSora);
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "九州そら",
-            speakerId: "481fb609-6446-4870-9f46-90c4dd623403" as SpeakerId,
+            info: soraInfo,
           });
         })
         .catch((e) => {
@@ -398,38 +400,29 @@ export class Live2dManager {
           );
         });
 
+      const usagiInfo: Live2dModelInfo = {
+        id: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/Usagi_vts/",
+        modelJsonName: "usagi.model3.json",
+      };
       const chugokuUsagi = new Live2dModel(
-        live2dAssetsPath + "/Usagi_vts/",
-        "usagi.model3.json",
+        usagiInfo.dirPath,
+        usagiInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await chugokuUsagi.loadAssets();
-      chugokuUsagi.setLipSyncWeight(20);
-      chugokuUsagi.setExpression("Inaba");
-      live2dViewer.addModel(
-        "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-        chugokuUsagi,
-      );
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "中国うさぎ",
-        key: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-      });
-      */
       chugokuUsagi
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           chugokuUsagi.setLipSyncWeight(20);
           chugokuUsagi.setExpression("Inaba");
-          live2dViewer.addModel(
-            "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8",
-            chugokuUsagi,
-          );
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          usagiInfo.isUsable = true;
+          live2dViewer.addModel(usagiInfo.id, chugokuUsagi);
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "中国うさぎ",
-            speakerId: "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8" as SpeakerId,
+            info: usagiInfo,
           });
         })
         .catch((e) => {
@@ -438,31 +431,28 @@ export class Live2dManager {
           );
         });
 
+      const hauInfo: Live2dModelInfo = {
+        id: "3474ee95-c274-47f9-aa1a-8322163d96f1" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/Mao/",
+        modelJsonName: "Mao.model3.json",
+      };
       // モーションが動作するか検証するためにLive2dのサンプルモデルを使用。便宜上雨晴はうに。
       const hau = new Live2dModel(
-        live2dAssetsPath + "/Mao/",
-        "Mao.model3.json",
+        hauInfo.dirPath,
+        hauInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await hau.loadAssets();
-      hau.setLipSyncWeight(10);
-      live2dViewer.addModel("3474ee95-c274-47f9-aa1a-8322163d96f1", hau);
-      await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
-        name: "雨晴はう",
-        key: "3474ee95-c274-47f9-aa1a-8322163d96f1",
-      });
-      */
       hau
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
           hau.setLipSyncWeight(10);
-          live2dViewer.addModel("3474ee95-c274-47f9-aa1a-8322163d96f1", hau);
-          await store.dispatch("ADDED_LIVE2D_MODEL_RECORD", {
+          live2dViewer.addModel(hauInfo.id, hau);
+          await store.dispatch("LIVE2D_MODEL_INFO", {
             name: "雨晴はう",
-            speakerId: "3474ee95-c274-47f9-aa1a-8322163d96f1" as SpeakerId,
+            info: hauInfo,
           });
         })
         .catch((e) => {
@@ -471,36 +461,34 @@ export class Live2dManager {
           );
         });
 
+      const ritsuInfo: Live2dModelInfo = {
+        id: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b" as SpeakerId,
+        isUsable: false,
+        dirPath: live2dAssetsPath + "/Kei_basic/",
+        modelJsonName: "Kei_basic.model3.json",
+      };
       // Motion Sync サンプル。波音リツに割り当てているのは雨晴はうの時と同様の理由。
-      const kei = new Live2dMotionSyncModel(
-        live2dAssetsPath + "/Kei_basic/",
-        "Kei_basic.model3.json",
+      const ritsu = new Live2dMotionSyncModel(
+        ritsuInfo.dirPath,
+        ritsuInfo.modelJsonName,
         live2dViewer,
         readFileFunction,
       );
-      /*
-      await kei.loadAssets();
-      live2dViewer.addModel("b1a81618-b27b-40d2-b0ea-27a9ad408c4b", kei);
-      await store.actions.ADDED_LIVE2D_MODEL_RECORD({
-        name: "波音リツ",
-        key: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b",
-      });
-      */
-      kei
+      ritsu
         .loadAssets()
         .then(async () => {
           if (live2dViewer == undefined) return;
-          live2dViewer.addModel("b1a81618-b27b-40d2-b0ea-27a9ad408c4b", kei);
-          await store.actions.ADDED_LIVE2D_MODEL_RECORD({
+          live2dViewer.addModel(ritsuInfo.id, ritsu);
+          await store.actions.LIVE2D_MODEL_INFO({
             name: "波音リツ",
-            speakerId: "b1a81618-b27b-40d2-b0ea-27a9ad408c4b" as SpeakerId,
+            info: ritsuInfo,
           });
         })
         .catch((e) => {
           window.backend.logError(e);
         });
 
-      live2dViewer.setCurrentModel("7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff");
+      live2dViewer.setCurrentModel(metanInfo.id);
       await store.dispatch("LIVE2D_INITIALIZED", { isLive2dInitialized: true });
     }
   }

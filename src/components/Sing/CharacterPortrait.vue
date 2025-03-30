@@ -95,9 +95,9 @@ const changeLive2dModel = async () => {
   );
   if (targetName == undefined) return;
 
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(targetName);
+  const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
-    await props.live2dManager.setCurrentModelToViewer(v);
+    await props.live2dManager.setCurrentModelToViewer(v.id);
   }
 };
 
@@ -134,9 +134,8 @@ const isCanUseLive2dPortrait = (targetName: string): boolean => {
     return false;
   }
 
-  const key =
-    store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(live2dCharacterName);
-  return key != undefined;
+  const v = store.getters.LIVE2D_MODEL_INFO(live2dCharacterName);
+  return v != undefined && v.isUsable;
 };
 
 watch(characterName, async (newVal: string | undefined) => {
@@ -207,8 +206,8 @@ onUpdated(async () => {
   );
   if (name == undefined) return;
 
-  const v = store.getters.KEY_FROM_ADDED_LIVE2D_MODEL_RECORD(name);
-  if (v != undefined) {
+  const v = store.getters.LIVE2D_MODEL_INFO(name);
+  if (v != undefined && v.isUsable) {
     isLive2dPortrait.value = true;
   } else {
     await disAppearLive2d();
