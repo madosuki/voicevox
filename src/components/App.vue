@@ -148,7 +148,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
   if (!newVal || isLive2dInitialized.value) return;
 
   await live2dManager.initViewer(live2dCanvas);
-  await live2dManager.LoadModels();
+  await live2dManager.LoadAllModels();
 });
 
 // ファイルメニュー書き出しに使用するEXPORT_WAVE_FILE等にlive2dViewerを渡すのが難しく、VuexのstateにしてしまうとLive2D Modelのupdateメソッドの変更がmutationの制約に引っかかるためここで停止処理を行う。

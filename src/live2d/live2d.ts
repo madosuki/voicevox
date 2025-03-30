@@ -171,7 +171,7 @@ export class Live2dManager {
     return this.live2dViewer;
   }
 
-  async LoadModels() {
+  async LoadAllModels() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
