@@ -23,6 +23,7 @@ async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
 }
 
 export class Live2dManager {
+  canvas: HTMLCanvasElement;
   live2dViewer: unknown;
   isLoadedLive2dCore: boolean;
   isFailedLive2dLoadCore: boolean;
@@ -30,13 +31,18 @@ export class Live2dManager {
   live2dSceneRenderer: Live2dSceneRenderer;
   isClicked: boolean;
 
-  constructor(store: Store) {
+  constructor(canvas: HTMLCanvasElement, store: Store) {
     this.live2dViewer = undefined;
     this.isLoadedLive2dCore = false;
     this.store = store;
     this.live2dSceneRenderer = new Live2dSceneRenderer();
     this.isClicked = false;
     this.isFailedLive2dLoadCore = false;
+    this.canvas = canvas;
+  }
+
+  getCanvas() {
+    return this.canvas;
   }
 
   async onMouseDown(pageX: number, pageY: number) {
@@ -147,14 +153,14 @@ export class Live2dManager {
     return { Live2dViewer, Live2dModel, Live2dMotionSyncModel };
   }
 
-  async initViewer(canvas: HTMLCanvasElement) {
+  async initViewer() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
     const Live2dViewer = live2dTypes.Live2dViewer;
 
     try {
       const allocationMemory = 1024 * 1024 * 32;
-      this.live2dViewer = new Live2dViewer(canvas, 800, 800);
+      this.live2dViewer = new Live2dViewer(this.canvas, 800, 800);
       if (this.live2dViewer instanceof Live2dViewer) {
         this.live2dViewer.initialize(allocationMemory);
       }

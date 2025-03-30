@@ -44,7 +44,6 @@
           class="sequencer-character-portrait"
           :addMouseEventToLive2dCanvas
           :removeMouseEventAtLive2dCanvas
-          :live2dCanvas
           :live2dManager
           :style="{
             marginRight: `${scrollBarWidth}px`,
@@ -297,7 +296,6 @@ import { Live2dManager } from "@/live2d/live2d";
 defineProps<{
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
-  live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
 }>();
 

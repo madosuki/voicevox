@@ -49,7 +49,6 @@ const store = useStore();
 const props = defineProps<{
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
-  live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
 }>();
 
@@ -268,7 +267,7 @@ const showLive2d = async () => {
   }
 
   if (place.length === 1 && place[0].childElementCount === 0) {
-    place[0].appendChild(props.live2dCanvas);
+    place[0].appendChild(props.live2dManager.getCanvas());
   }
 
   await changeLive2dModel();

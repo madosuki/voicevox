@@ -23,7 +23,6 @@ import { Live2dManager } from "@/live2d/live2d";
 const props = defineProps<{
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
-  live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
 }>();
 
@@ -116,7 +115,7 @@ const showLive2d = async () => {
   if (place.length < 1) return;
   if (place[0].childElementCount > 0) return;
   window.backend.logInfo("append live2d canvas on sing");
-  place[0].appendChild(props.live2dCanvas);
+  place[0].appendChild(props.live2dManager.getCanvas());
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
 
   if (!isDrawing.value) {

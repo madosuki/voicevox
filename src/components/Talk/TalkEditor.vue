@@ -34,7 +34,6 @@
                 <CharacterPortrait
                   :addMouseEventToLive2dCanvas
                   :removeMouseEventAtLive2dCanvas
-                  :live2dCanvas
                   :live2dManager
                 />
               </template>
@@ -160,7 +159,6 @@ const props = defineProps<{
   isProjectFileLoaded: boolean | "waiting";
   addMouseEventToLive2dCanvas: () => void;
   removeMouseEventAtLive2dCanvas: () => void;
-  live2dCanvas: HTMLCanvasElement;
   live2dManager: Live2dManager;
 }>();
 

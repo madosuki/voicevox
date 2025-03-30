@@ -101,7 +101,7 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const live2dCanvas = document.createElement("canvas");
-const live2dManager = new Live2dManager(store);
+const live2dManager = new Live2dManager(live2dCanvas, store);
 
 const mouseDown = (e: MouseEvent) => {
   void live2dManager.onMouseDown(e.pageX, e.pageY);
@@ -147,7 +147,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
   );
   if (!newVal || isLive2dInitialized.value) return;
 
-  await live2dManager.initViewer(live2dCanvas);
+  await live2dManager.initViewer();
   await live2dManager.LoadAllModels();
 });
 
