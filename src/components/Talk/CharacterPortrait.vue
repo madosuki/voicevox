@@ -344,6 +344,8 @@ watch([isLoadedLive2dCore, characterName], async () => {
       if (!isLive2dPortrait.value) {
         isLive2dPortrait.value = true;
       }
+    } else {
+      await disAppearLive2d();
     }
 
     if (isLive2dPortrait.value) {
