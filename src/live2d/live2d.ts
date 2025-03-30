@@ -284,7 +284,7 @@ export class Live2dManager {
         dirPath: live2dAssetsPath + "/春日部つむぎ公式live2Dモデル/",
         modelJsonName: "春日部つむぎ公式live2Dモデル.model3.json",
         lipSyncWait: 15,
-        isCubism3: true,
+        isOldParamName: true,
       };
       await store.actions.LIVE2D_MODEL_INFO({
         name: "春日部つむぎ",
@@ -367,7 +367,7 @@ export class Live2dManager {
         info.modelJsonName,
         live2dViewer,
         readFileFunction,
-        info.isCubism3 ? info.isCubism3 : undefined,
+        info.isOldParamName,
       );
 
       try {
@@ -391,7 +391,7 @@ export class Live2dManager {
         dirPath: info.dirPath,
         modelJsonName: info.modelJsonName,
         lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
-        isCubism3: info.isCubism3 ? info.isCubism3 : undefined,
+        isOldParamName: info.isOldParamName,
       };
       await store.actions.LIVE2D_MODEL_INFO({
         name: name,
@@ -431,7 +431,7 @@ export class Live2dManager {
           info.modelJsonName,
           live2dViewer,
           readFileFunction,
-          info.isCubism3 ? info.isCubism3 : undefined,
+          info.isOldParamName,
         );
         model
           .loadAssets()
@@ -447,7 +447,7 @@ export class Live2dManager {
               dirPath: info.dirPath,
               modelJsonName: info.modelJsonName,
               lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
-              isCubism3: info.isCubism3 ? info.isCubism3 : undefined,
+              isOldParamName: info.isOldParamName,
             };
             await store.actions.LIVE2D_MODEL_INFO({
               name: name,
