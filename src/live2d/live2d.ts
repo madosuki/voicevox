@@ -50,7 +50,7 @@ export class Live2dManager {
     return this.canvas;
   }
 
-  async TouchesBegin(pageX: number, pageY: number) {
+  private async TouchesBegin(pageX: number, pageY: number) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -81,15 +81,12 @@ export class Live2dManager {
       }
     }
   }
-  onTouches(event: PointerEvent): void {
+  private onTouches(event: PointerEvent): void {
     void this.TouchesBegin(event.pageX, event.pageY);
   }
-  private onTouchesEventListener: (
-    this: HTMLCanvasElement,
-    event: PointerEvent,
-  ) => void;
+  private onTouchesEventListener: (event: PointerEvent) => void;
 
-  async TouchEnd() {
+  private async TouchEnd() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -100,13 +97,10 @@ export class Live2dManager {
     this.live2dViewer.onTouchesEnded();
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onTouchEnd(event: PointerEvent) {
+  private onTouchEnd(event: PointerEvent) {
     void this.TouchEnd();
   }
-  onTouchEndEventListener: (
-    this: HTMLCanvasElement,
-    event: PointerEvent,
-  ) => void;
+  private onTouchEndEventListener: (event: PointerEvent) => void;
 
   async TouchMoved(pageX: number, pageY: number) {
     const live2dTypes = await this.getTypes();
