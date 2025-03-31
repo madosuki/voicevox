@@ -199,7 +199,12 @@ const changeLive2dModel = async () => {
   }
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
-  if (v != undefined && v.isUsable) {
+  if (v != undefined) {
+    // unload loaded models and load current model.
+    await props.live2dManager.releaseAllLive2dModels();
+    await props.live2dManager.loadModel(targetName);
+    await store.actions.IS_DRAWING({ isDrawing: false });
+
     live2dExpressions.value = await props.live2dManager.getExpressionIdList(
       v.id,
     );
@@ -257,10 +262,13 @@ const disAppearLive2d = async () => {
 
 const isCanUseLive2dPortrait = (targetName: string): boolean => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
+  return name != undefined;
+  /*
   if (name == undefined) return false;
 
   const v = store.getters.LIVE2D_MODEL_INFO(name);
   return v != undefined && v.isUsable;
+  */
 };
 
 watch(isEnableLive2dFeature, async (newVal) => {
