@@ -156,28 +156,6 @@ const live2dExpressions: Ref<string[]> = ref([]);
 const motionFileName = ref("None");
 const live2dMotions: Ref<string[]> = ref([]);
 
-const currentLive2dModelKey = computed(() => getLive2dModelKey());
-watch(currentLive2dModelKey, async (newVal) => {
-  if (newVal == undefined) return;
-
-  const live2dTypes = await props.live2dManager.getTypes();
-  if (live2dTypes == undefined) return;
-  const Live2dViewer = live2dTypes.Live2dViewer;
-  const live2dViewer = props.live2dManager.getLive2dViewer();
-
-  if (live2dViewer instanceof Live2dViewer) {
-    const model = live2dViewer.getModelFromKey(newVal);
-    if (model != undefined) {
-      const expressionIdList = model.getExpressionIdList();
-      live2dExpressions.value = ["None", ...expressionIdList];
-
-      live2dMotions.value = model.getMotionFileNameList();
-    } else {
-      live2dExpressions.value = [];
-    }
-  }
-});
-
 const setExpression = async (name: string) => {
   const live2dTypes = await props.live2dManager.getTypes();
   if (live2dTypes == undefined) return;
@@ -244,6 +222,10 @@ const changeLive2dModel = async () => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined && v.isUsable) {
+    live2dExpressions.value = await props.live2dManager.getExpressionIdList(
+      v.id,
+    );
+    live2dMotions.value = await props.live2dManager.getMotionNameList(v.id);
     await props.live2dManager.setCurrentModelToViewer(v.id);
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
