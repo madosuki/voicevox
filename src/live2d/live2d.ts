@@ -513,10 +513,11 @@ export class Live2dManager {
           });
       }
 
+      /*
       const info = store.getters.LIVE2D_MODEL_INFO("四国めたん");
       if (info == undefined) return;
       live2dViewer.setCurrentModel(info.id);
-      await store.actions.LIVE2D_INITIALIZED({ isLive2dInitialized: true });
+      */
     }
   }
 
