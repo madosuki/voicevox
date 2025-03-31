@@ -133,23 +133,6 @@ const isContinueRunLive2d = computed(
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 const isDrawing = computed(() => store.getters.IS_DRAWING);
-const getLive2dModelKey = (): string | undefined => {
-  const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
-    characterName.value,
-  );
-  if (targetName == undefined) {
-    store.actions
-      .CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false })
-      .catch((e) => window.backend.logError(e));
-    return undefined;
-  }
-
-  const v = store.getters.LIVE2D_MODEL_INFO(targetName);
-  if (v == undefined || !v.isUsable) {
-    return undefined;
-  }
-  return v.id;
-};
 
 const expressionName = ref("None");
 const live2dExpressions: Ref<string[]> = ref([]);
