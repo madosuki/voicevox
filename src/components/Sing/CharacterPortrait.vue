@@ -82,26 +82,31 @@ const isDrawing = computed(() => store.getters.IS_DRAWING);
 const isLive2dInitialized = computed(() => store.getters.LIVE2D_INITIALIZED);
 const isLoadedLive2dCore = computed(() => store.getters.LIVE2D_CORE_LOADED);
 
-const changeLive2dModel = async () => {
+const changeLive2dModel = async (): Promise<boolean> => {
   if (
     live2dViewer.value == undefined ||
     !isLive2dInitialized.value ||
     characterName.value == undefined
   )
-    return;
+    return false;
 
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
   );
-  if (targetName == undefined) return;
+  if (targetName == undefined) return false;
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
     await props.live2dManager.releaseAllLive2dModels();
-    await props.live2dManager.loadModel(targetName);
+    const result = await props.live2dManager.loadModel(targetName);
+    if (!result) {
+      return false;
+    }
     await store.actions.IS_DRAWING({ isDrawing: false });
     await props.live2dManager.setCurrentModelToViewer(v.id);
   }
+
+  return true;
 };
 
 const showLive2d = async () => {
@@ -117,8 +122,12 @@ const showLive2d = async () => {
     place[0].appendChild(props.live2dManager.getCanvas());
   }
 
+  const result = await changeLive2dModel();
+  if (!result) {
+    isLive2dPortrait.value = false;
+    return;
+  }
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
-  await changeLive2dModel();
 
   if (!isDrawing.value) {
     await props.live2dManager.render();
@@ -131,7 +140,7 @@ const disAppearLive2d = async () => {
   isLive2dPortrait.value = false;
 };
 
-const isCanUseLive2dPortrait = (targetName: string): boolean => {
+const isMaybeCanLive2dPortrait = (targetName: string): boolean => {
   const live2dCharacterName =
     store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
   return live2dCharacterName != undefined;
@@ -154,7 +163,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
   }
 
   const targetName = characterName.value || "";
-  if (!isCanUseLive2dPortrait(targetName)) {
+  if (!isMaybeCanLive2dPortrait(targetName)) {
     return;
   }
 
@@ -171,7 +180,7 @@ watch(editorMode, async (newVal) => {
     isLoadedLive2dCore.value &&
     isEnableLive2dFeature.value &&
     characterName.value != undefined &&
-    isCanUseLive2dPortrait(characterName.value)
+    isMaybeCanLive2dPortrait(characterName.value)
   ) {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
@@ -194,7 +203,7 @@ watch([isLoadedLive2dCore, characterName], async () => {
     return;
   }
 
-  if (isCanUseLive2dPortrait(characterName.value)) {
+  if (isMaybeCanLive2dPortrait(characterName.value)) {
     isLive2dPortrait.value = true;
     await nextTick();
   } else {

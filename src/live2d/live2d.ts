@@ -389,9 +389,9 @@ export class Live2dManager {
     }
   }
 
-  async loadModel(name: string) {
+  async loadModel(name: string): Promise<boolean> {
     const live2dTypes = await this.getTypes();
-    if (live2dTypes == undefined) return;
+    if (live2dTypes == undefined) return false;
 
     const Live2dViewer = live2dTypes.Live2dViewer;
     const Live2dModel = live2dTypes.Live2dModel;
@@ -407,7 +407,7 @@ export class Live2dManager {
       Live2dMotionSyncModel != undefined
     ) {
       const info = store.getters.LIVE2D_MODEL_INFO(name);
-      if (info == undefined) return;
+      if (info == undefined) return false;
       const model = new Live2dModel(
         info.dirPath,
         info.modelJsonName,
@@ -424,6 +424,7 @@ export class Live2dManager {
             `Error when load ${name} live2d model assets: ${e}`,
           );
         }
+        return false;
       }
 
       if (info.lipSyncWait != undefined) {
@@ -449,6 +450,8 @@ export class Live2dManager {
         model.setExpression(info.defaultExpression);
       }
     }
+    
+    return true;
   }
 
   async loadAllModels() {

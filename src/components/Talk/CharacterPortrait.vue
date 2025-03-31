@@ -195,14 +195,17 @@ const changeLive2dModel = async () => {
   if (targetName == undefined) {
     await store.dispatch("CURRENT_SHOW_LIVE2D_IN_TALK", { isShow: false });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
-    return;
+    return false;
   }
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
     // unload loaded models and load current model.
     await props.live2dManager.releaseAllLive2dModels();
-    await props.live2dManager.loadModel(targetName);
+    const result = await props.live2dManager.loadModel(targetName);
+    if (!result) {
+      return false;
+    }
     await store.actions.IS_DRAWING({ isDrawing: false });
 
     live2dExpressions.value = await props.live2dManager.getExpressionIdList(
@@ -222,7 +225,9 @@ const changeLive2dModel = async () => {
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
   }
+
   console.log("changeLive2dModel in talk");
+  return true;
 };
 
 const showLive2d = async () => {
@@ -244,7 +249,11 @@ const showLive2d = async () => {
     place[0].appendChild(props.live2dManager.getCanvas());
   }
 
-  await changeLive2dModel();
+  const result = await changeLive2dModel();
+  if (!result) {
+    isLive2dPortrait.value = false;
+    return;
+  }
   props.live2dManager.addMouseEventToLive2dCanvas();
 
   if (!isDrawing.value) {
@@ -260,7 +269,7 @@ const disAppearLive2d = async () => {
   props.live2dManager.removeMouseEvenet();
 };
 
-const isCanUseLive2dPortrait = (targetName: string): boolean => {
+const isMaybeCanLive2dPortrait = (targetName: string): boolean => {
   const name = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(targetName);
   return name != undefined;
   /*
@@ -279,7 +288,7 @@ watch(isEnableLive2dFeature, async (newVal) => {
     return;
   }
 
-  if (!isCanUseLive2dPortrait(characterName.value)) return;
+  if (!isMaybeCanLive2dPortrait(characterName.value)) return;
 
   if (!isLive2dPortrait.value) {
     isLive2dPortrait.value = true;
@@ -299,7 +308,7 @@ watch(editorMode, async (newVal) => {
     !isLive2dInitialized.value
   )
     return;
-  if (!isCanUseLive2dPortrait(characterName.value)) return;
+  if (!isMaybeCanLive2dPortrait(characterName.value)) return;
   isLive2dPortrait.value = true;
   await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
   await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
@@ -318,7 +327,7 @@ watch([isLoadedLive2dCore, characterName], async () => {
   }
 
   if (isEnableLive2dFeature.value) {
-    if (isCanUseLive2dPortrait(characterName.value)) {
+    if (isMaybeCanLive2dPortrait(characterName.value)) {
       if (!isLive2dPortrait.value) {
         isLive2dPortrait.value = true;
         await nextTick();
