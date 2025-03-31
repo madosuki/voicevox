@@ -438,6 +438,7 @@ export class Live2dManager {
         modelJsonName: info.modelJsonName,
         lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
         isOldParamName: info.isOldParamName,
+        defaultExpression: info.defaultExpression,
       };
       await store.actions.LIVE2D_MODEL_INFO({
         name: name,
@@ -492,8 +493,9 @@ export class Live2dManager {
               isUsable: true,
               dirPath: info.dirPath,
               modelJsonName: info.modelJsonName,
-              lipSyncWait: info.lipSyncWait ? info.lipSyncWait : undefined,
+              lipSyncWait: info.lipSyncWait,
               isOldParamName: info.isOldParamName,
+              defaultExpression: info.defaultExpression,
             };
             await store.actions.LIVE2D_MODEL_INFO({
               name: name,

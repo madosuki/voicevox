@@ -188,11 +188,6 @@ const setMotion = async (name: string) => {
   }
 };
 
-watch(characterName, () => {
-  expressionName.value = "None";
-  motionFileName.value = "None";
-});
-
 const changeLive2dModel = async () => {
   const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
     characterName.value,
@@ -209,7 +204,15 @@ const changeLive2dModel = async () => {
       v.id,
     );
     live2dMotions.value = await props.live2dManager.getMotionNameList(v.id);
+    motionFileName.value = "None";
+    if (v.defaultExpression != undefined) {
+      expressionName.value = v.defaultExpression;
+    } else {
+      expressionName.value = "None";
+    }
+
     await props.live2dManager.setCurrentModelToViewer(v.id);
+
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
