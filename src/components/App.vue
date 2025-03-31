@@ -105,17 +105,21 @@ window.addEventListener(
   { passive: true },
 );
 
-watch(isEnableLive2dFeature, async (newVal) => {
-  console.log(
-    `isEnableLive2dFeature: ${newVal}, isLive2dInitialize: ${isLive2dInitialized.value}`,
-  );
-  if (!newVal || isLive2dInitialized.value) return;
+const stopWatchOfIsEnableLive2dFeature = watch(
+  isEnableLive2dFeature,
+  async (newVal) => {
+    console.log(
+      `isEnableLive2dFeature: ${newVal}, isLive2dInitialize: ${isLive2dInitialized.value}`,
+    );
+    if (!newVal || isLive2dInitialized.value) return;
 
-  await live2dManager.initViewer();
-  await live2dManager.initializeLive2dModelInfoRecord();
-  // await live2dManager.loadAllModels();
-  await store.actions.LIVE2D_INITIALIZED({ isLive2dInitialized: true });
-});
+    await live2dManager.initViewer();
+    await live2dManager.initializeLive2dModelInfoRecord();
+    // await live2dManager.loadAllModels();
+    await store.actions.LIVE2D_INITIALIZED({ isLive2dInitialized: true });
+    stopWatchOfIsEnableLive2dFeature();
+  },
+);
 
 // ファイルメニュー書き出しに使用するEXPORT_WAVE_FILE等にlive2dViewerを渡すのが難しく、VuexのstateにしてしまうとLive2D Modelのupdateメソッドの変更がmutationの制約に引っかかるためここで停止処理を行う。
 const isNowPlayingForSong = computed(() => store.state.nowPlaying);

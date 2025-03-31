@@ -154,8 +154,12 @@ const isMaybeCanLive2dPortrait = (targetName: string): boolean => {
   */
 };
 
-watch(isEnableLive2dFeature, async (newVal) => {
-  if (!newVal) {
+watch([isEnableLive2dFeature, isLive2dInitialized], async (newVal) => {
+  const newIsEnableLive2dFeature = newVal[0];
+  const newIsLive2dInitialize = newVal[1];
+
+  if (!newIsLive2dInitialize) return;
+  if (!newIsEnableLive2dFeature) {
     isLive2dPortrait.value = false;
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: false });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
@@ -169,6 +173,8 @@ watch(isEnableLive2dFeature, async (newVal) => {
 
   isLive2dPortrait.value = true;
   await nextTick();
+
+  await showLive2d();
 });
 
 const editorMode = computed(() => store.state.openedEditor);
