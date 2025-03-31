@@ -450,7 +450,7 @@ export class Live2dManager {
         model.setExpression(info.defaultExpression);
       }
     }
-    
+
     return true;
   }
 
