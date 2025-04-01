@@ -200,6 +200,7 @@ const changeLive2dModel = async () => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
+    /*
     // unload loaded models and load current model.
     await props.live2dManager.releaseAllLive2dModels();
     const result = await props.live2dManager.loadModel(targetName);
@@ -207,6 +208,7 @@ const changeLive2dModel = async () => {
       return false;
     }
     await store.actions.IS_DRAWING({ isDrawing: false });
+    */
 
     live2dExpressions.value = await props.live2dManager.getExpressionIdList(
       v.id,
@@ -304,8 +306,7 @@ watch([isEnableLive2dFeature, isLive2dInitialized], async (newVal) => {
 
 const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, async (newVal) => {
-  console.log(`editorMode: ${newVal}`);
-  console.log("in talk");
+  console.log(`detect change editorMode in talk: ${newVal}`);
   if (newVal === ("song" as EditorType)) return;
   if (
     !isEnableLive2dFeature.value ||

@@ -363,20 +363,9 @@ const currentBpm = computed(() => {
 const nowPlaying = computed(() => store.state.nowPlaying);
 
 const play = async () => {
-  const live2dViewer = props.live2dManager.getLive2dViewer();
-  const live2dTypes = await props.live2dManager.getTypes();
-  if (
-    live2dTypes != undefined &&
-    live2dViewer instanceof live2dTypes.Live2dViewer
-  ) {
-    void store.actions.SING_PLAY_AUDIO({
-      live2dViewer: live2dViewer,
-    });
-  } else {
-    void store.actions.SING_PLAY_AUDIO({
-      live2dViewer: undefined,
-    });
-  }
+  void store.actions.SING_PLAY_AUDIO({
+    live2dManager: props.live2dManager,
+  });
 };
 
 const stop = () => {

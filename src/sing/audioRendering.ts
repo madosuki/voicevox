@@ -1,3 +1,4 @@
+import { Live2dManager } from "@/live2d/live2d";
 import {
   noteNumberToFrequency,
   decibelToLinear,
@@ -137,7 +138,7 @@ export class Transport {
   private startTime = 0;
   private schedulers = new Map<Sequence, EventScheduler>();
 
-  private live2dViewer: unknown = undefined;
+  private live2dManager: Live2dManager | undefined = undefined;
 
   get state() {
     return this._state;
@@ -240,7 +241,7 @@ export class Transport {
 
     this.schedulers.forEach((scheduler) => {
       if (scheduler instanceof AudioEventScheduler) {
-        scheduler.schedule(time + this.scheduleAheadTime, this.live2dViewer);
+        scheduler.schedule(time + this.scheduleAheadTime, this.live2dManager);
       } else {
         scheduler.schedule(time + this.scheduleAheadTime);
       }
@@ -272,7 +273,7 @@ export class Transport {
   /**
    * 再生を開始します。すでに再生中の場合は何も行いません。
    */
-  start(live2dViewer?: unknown) {
+  start(live2dManager?: Live2dManager) {
     if (this._state === "started") return;
     const contextTime = this.audioContext.currentTime;
 
@@ -281,8 +282,8 @@ export class Transport {
     this.startContextTime = contextTime;
     this.startTime = this._time;
 
-    if (live2dViewer != undefined && this.live2dViewer == undefined) {
-      this.live2dViewer = live2dViewer;
+    if (live2dManager != undefined && this.live2dManager == undefined) {
+      this.live2dManager = live2dManager;
     }
 
     this.schedule(contextTime);
@@ -435,7 +436,7 @@ class AudioEventScheduler implements EventScheduler {
    * 指定された位置までスケジューリングを行います。
    * @param untilTime どこまでスケジューリングを行うかを表す位置
    */
-  schedule(untilTime: number, live2dViewer?: unknown) {
+  schedule(untilTime: number, live2dManager?: Live2dManager) {
     if (!this.isStarted) {
       throw new Error("Not started.");
     }
@@ -450,7 +451,7 @@ class AudioEventScheduler implements EventScheduler {
         console.log(
           `contextTime: ${contextTime}, offset: ${offset}, buffer length: ${event.buffer.length}`,
         );
-        this.player.play(contextTime, offset, event.buffer, live2dViewer);
+        this.player.play(contextTime, offset, event.buffer, live2dManager);
         this.index++;
       } else break;
     }
@@ -624,7 +625,7 @@ class AudioPlayerVoice {
    * @param contextTime 再生を行う時刻（コンテキスト時刻）
    * @param offset オフセット（秒）
    */
-  play(contextTime: number, offset: number, live2dViewer?: unknown) {
+  play(contextTime: number, offset: number, live2dManager?: Live2dManager) {
     if (this.stopContextTime != undefined) {
       throw new Error("Already started.");
     }
@@ -639,64 +640,32 @@ class AudioPlayerVoice {
     this.stopContextTime = contextTime + this.buffer.duration;
 
     const processForLive2d = async () => {
-      const { Live2dViewer, Live2dMotionSyncModel } = await import(
-        "live2dmanager"
-      )
-        .then((m) => {
-          return {
-            Live2dViewer: m.Live2dViewer,
-            Live2dMotionSyncModel: m.Live2dMotionSyncModel,
-          };
-        })
-        .catch((e) => {
-          window.backend.logError(e);
-          return { Live2dViewer: undefined, Live2dMotionSyncModel: undefined };
-        });
+      if (live2dManager == undefined) return;
       if (
-        Live2dViewer != undefined &&
-        live2dViewer instanceof Live2dViewer &&
+        live2dManager.getIsLoadedLive2dCore() &&
         this.audioBufferSourceNode.buffer != undefined
       ) {
-        const model = live2dViewer.getModelFromKey(
-          live2dViewer.getCurrentModelKey(),
-        );
         const seconds =
           contextTime - this.audioBufferSourceNode.context.currentTime;
         // 始まりがスコアシーケンサーでの左端である時に即時実行させる為の処理。
         if (
-          (this.audioBufferSourceNode.context.currentTime === 0 ||
-            seconds <= 0) &&
-          model != undefined
+          this.audioBufferSourceNode.context.currentTime === 0 ||
+          seconds <= 0
         ) {
           const wav = convertToInt16WavFileData(
             this.audioBufferSourceNode.buffer,
             offset,
           );
-          if (model instanceof Live2dMotionSyncModel) {
-            model.startMotionSync(wav).catch((e) => window.backend.logError(e));
-          } else {
-            model.startLipSync(wav).catch((e) => window.backend.logError(e));
-          }
+          await live2dManager.startLipSync(wav);
         } else {
           const miliSeconds = seconds * 1000;
-          setTimeout(() => {
-            if (
-              model != undefined &&
-              this.audioBufferSourceNode.buffer != undefined
-            ) {
+          setTimeout(async () => {
+            if (this.audioBufferSourceNode.buffer != undefined) {
               const wav = convertToInt16WavFileData(
                 this.audioBufferSourceNode.buffer,
                 offset,
               );
-              if (model instanceof Live2dMotionSyncModel) {
-                model
-                  .startMotionSync(wav)
-                  .catch((e) => window.backend.logError(e));
-              } else {
-                model
-                  .startLipSync(wav)
-                  .catch((e) => window.backend.logError(e));
-              }
+              await live2dManager.startLipSync(wav);
             }
           }, miliSeconds);
         }
@@ -757,7 +726,7 @@ export class AudioPlayer {
     contextTime: number,
     offset: number,
     buffer: AudioBuffer,
-    live2dViewer?: unknown,
+    live2dManager?: Live2dManager,
   ) {
     const voice = new AudioPlayerVoice(this.audioContext, buffer);
     this.voices = this.voices.filter((value) => {
@@ -765,7 +734,7 @@ export class AudioPlayer {
     });
     this.voices.push(voice);
     voice.output.connect(this.gainNode);
-    voice.play(contextTime, offset, live2dViewer);
+    voice.play(contextTime, offset, live2dManager);
   }
 
   /**

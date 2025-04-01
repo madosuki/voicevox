@@ -1,5 +1,4 @@
 import { Patch } from "immer";
-import { Live2dViewer } from "live2dmanager";
 import { z } from "zod";
 import { Project as UfProject } from "@sevenc-nanashi/utaformatix-ts";
 import {
@@ -78,6 +77,7 @@ import {
   MultiFileProjectFormat,
   SingleFileProjectFormat,
 } from "@/sing/utaformatixProject/utils";
+import { Live2dManager } from "@/live2d/live2d";
 
 /**
  * エディタ用のAudioQuery
@@ -464,7 +464,7 @@ export type AudioStoreTypes = {
   PLAY_AUDIO: {
     action(payload: {
       audioKey: AudioKey;
-      live2dViewer?: Live2dViewer;
+      live2dManager?: Live2dManager;
     }): boolean;
   };
 
@@ -472,7 +472,7 @@ export type AudioStoreTypes = {
     action(payload: {
       audioBlob: Blob;
       audioKey?: AudioKey;
-      live2dViewer?: Live2dViewer;
+      live2dManager?: Live2dManager;
     }): boolean;
   };
 
@@ -484,7 +484,7 @@ export type AudioStoreTypes = {
   };
 
   PLAY_CONTINUOUSLY_AUDIO: {
-    action(payload: { live2dViewer?: Live2dViewer }): void;
+    action(payload: { live2dManager?: Live2dManager }): void;
   };
 };
 
@@ -1229,7 +1229,7 @@ export type SingingStoreTypes = {
   };
 
   SING_PLAY_AUDIO: {
-    action(payload: { live2dViewer?: Live2dViewer }): void;
+    action(payload: { live2dManager?: Live2dManager }): void;
   };
 
   SING_STOP_AUDIO: {

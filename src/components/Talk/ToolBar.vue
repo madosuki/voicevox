@@ -100,18 +100,9 @@ const redo = () => {
 };
 const playContinuously = async () => {
   try {
-    const live2dViewer = props.live2dManager.getLive2dViewer();
-    const live2dTypes = await props.live2dManager.getTypes();
-    if (
-      live2dTypes != undefined &&
-      live2dViewer instanceof live2dTypes.Live2dViewer
-    ) {
-      await store.actions.PLAY_CONTINUOUSLY_AUDIO({
-        live2dViewer: live2dViewer,
-      });
-    } else {
-      await store.actions.PLAY_CONTINUOUSLY_AUDIO({ live2dViewer: undefined });
-    }
+    await store.actions.PLAY_CONTINUOUSLY_AUDIO({
+      live2dManager: props.live2dManager,
+    });
   } catch (e) {
     const msg = handlePossiblyNotMorphableError(e);
     void store.actions.SHOW_ALERT_DIALOG({

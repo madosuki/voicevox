@@ -65,6 +65,7 @@ import { UnreachableError } from "@/type/utility";
 import { errorToMessage } from "@/helpers/errorHelper";
 import path from "@/helpers/path";
 import { generateTextFileData } from "@/helpers/fileDataGenerator";
+import { Live2dManager } from "@/live2d/live2d";
 
 function generateAudioKey() {
   return AudioKey(uuid4());
@@ -1740,15 +1741,9 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         { mutations, actions },
         {
           audioKey,
-          live2dViewer,
-        }: { audioKey: AudioKey; live2dViewer?: unknown },
+          live2dManager,
+        }: { audioKey: AudioKey; live2dManager?: Live2dManager },
       ) => {
-        const Live2dViewer = await import("live2dmanager")
-          .then((m) => m.Live2dViewer)
-          .catch((e) => {
-            window.backend.logError(e);
-            return undefined;
-          });
         await actions.STOP_AUDIO();
 
         // 音声用意
@@ -1770,19 +1765,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }
 
         const { blob } = fetchAudioResult;
-        if (Live2dViewer != undefined && live2dViewer instanceof Live2dViewer) {
-          return actions.PLAY_AUDIO_BLOB({
-            audioBlob: blob,
-            audioKey,
-            live2dViewer,
-          });
-        } else {
-          return actions.PLAY_AUDIO_BLOB({
-            audioBlob: blob,
-            audioKey,
-            live2dViewer: undefined,
-          });
-        }
+        return actions.PLAY_AUDIO_BLOB({
+          audioBlob: blob,
+          audioKey,
+          live2dManager,
+        });
       },
     ),
   },
@@ -1794,11 +1781,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         {
           audioBlob,
           audioKey,
-          live2dViewer,
+          live2dManager,
         }: {
           audioBlob: Blob;
           audioKey?: AudioKey;
-          live2dViewer?: unknown;
+          live2dManager?: Live2dManager;
         },
       ) => {
         mutations.SET_AUDIO_SOURCE({ audioBlob });
@@ -1818,25 +1805,8 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           offset = startTime + 10e-6;
         }
 
-        const { Live2dViewer, Live2dMotionSyncModel } = await import(
-          "live2dmanager"
-        )
-          .then((m) => {
-            return {
-              Live2dViewer: m.Live2dViewer,
-              Live2dMotionSyncModel: m.Live2dMotionSyncModel,
-            };
-          })
-          .catch((e) => {
-            window.backend.logError(e);
-            return {
-              Live2dViewer: undefined,
-              Live2dMotionSyncModel: undefined,
-            };
-          });
         if (
-          Live2dViewer != undefined &&
-          live2dViewer instanceof Live2dViewer &&
+          live2dManager != undefined &&
           state.isCurrentShowInTalk &&
           audioKey != undefined
         ) {
@@ -1844,46 +1814,13 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             const audioItem = state.audioItems[audioKey];
             const speakerId = audioItem.voice.speakerId.toString();
 
-            let live2dModelsKey = "";
-            if (speakerId === "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9") {
-              live2dModelsKey = speakerId;
-            }
-            if (speakerId === "35b2c544-660e-401e-b503-0e14c635303a") {
-              live2dModelsKey = speakerId;
-            }
-            if (speakerId === "481fb609-6446-4870-9f46-90c4dd62340") {
-              live2dModelsKey = speakerId;
-            }
-            if (speakerId === "1f18ffc3-47ea-4ce0-9829-0576d03a7ec8") {
-              live2dModelsKey = speakerId;
-            }
-            if (speakerId === "b1a81618-b27b-40d2-b0ea-27a9ad408c4b") {
-              live2dModelsKey = speakerId;
-            }
-
-            if (live2dModelsKey !== "") {
-              live2dViewer.setCurrentModel(live2dModelsKey);
+            if (await live2dManager.isExistsModelFromKey(speakerId)) {
+              await live2dManager.setCurrentModelToViewer(speakerId);
             }
           }
 
           const buf = await audioBlob.arrayBuffer();
-          const currentLive2dModelsKey = live2dViewer.getCurrentModelKey();
-          /*
-          console.log(currentLive2dModelsKey);
-          console.log("generate audio");
-          */
-          const model = live2dViewer.getModelFromKey(currentLive2dModelsKey);
-          if (model) {
-            if (model instanceof Live2dMotionSyncModel) {
-              try {
-                await model.startMotionSync(buf);
-              } catch (e) {
-                window.backend.logError(e);
-              }
-            } else {
-              await model.startLipSync(buf);
-            }
-          }
+          await live2dManager.startLipSync(buf);
         }
 
         return actions.PLAY_AUDIO_PLAYER({ offset, audioKey });
@@ -1909,7 +1846,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
   PLAY_CONTINUOUSLY_AUDIO: {
     action: createUILockAction(
-      async ({ state, getters, mutations, actions }, { live2dViewer }) => {
+      async ({ state, getters, mutations, actions }, { live2dManager }) => {
         const currentAudioKey = state._activeAudioKey;
         const currentAudioPlayStartPoint = getters.AUDIO_PLAY_START_POINT;
 
@@ -1922,7 +1859,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           generateAudio: ({ audioKey }) =>
             actions.FETCH_AUDIO({ audioKey }).then((result) => result.blob),
           playAudioBlob: ({ audioBlob, audioKey }) =>
-            actions.PLAY_AUDIO_BLOB({ audioBlob, audioKey, live2dViewer }),
+            actions.PLAY_AUDIO_BLOB({ audioBlob, audioKey, live2dManager }),
         });
         player.addEventListener("playstart", (e) => {
           mutations.SET_ACTIVE_AUDIO_KEY({ audioKey: e.audioKey });

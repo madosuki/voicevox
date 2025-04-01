@@ -246,23 +246,10 @@ watch(accentPhrases, async () => {
 // audio play
 const play = async () => {
   try {
-    const live2dManager = props.live2dManager;
-    const live2dViewer = live2dManager.getLive2dViewer();
-    const live2dTypes = await live2dManager.getTypes();
-    if (
-      live2dTypes != undefined &&
-      live2dViewer instanceof live2dTypes.Live2dViewer
-    ) {
-      await store.actions.PLAY_AUDIO({
-        audioKey: props.activeAudioKey,
-        live2dViewer: live2dViewer,
-      });
-    } else {
-      await store.actions.PLAY_AUDIO({
-        audioKey: props.activeAudioKey,
-        live2dViewer: undefined,
-      });
-    }
+    await store.actions.PLAY_AUDIO({
+      audioKey: props.activeAudioKey,
+      live2dManager: props.live2dManager,
+    });
   } catch (e) {
     const msg = handlePossiblyNotMorphableError(e);
     void store.actions.SHOW_ALERT_DIALOG({

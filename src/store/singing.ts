@@ -1461,7 +1461,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
   },
 
   SING_PLAY_AUDIO: {
-    async action({ state, getters, mutations }, { live2dViewer }) {
+    async action({ state, getters, mutations }, { live2dManager }) {
       if (state.nowPlaying) {
         return;
       }
@@ -1470,7 +1470,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       }
       mutations.SET_PLAYBACK_STATE({ nowPlaying: true });
 
-      transport.start(live2dViewer);
+      transport.start(live2dManager);
       animationTimer.start(() => {
         playheadPosition.value = getters.SECOND_TO_TICK(transport.time);
       });

@@ -24,13 +24,13 @@ async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
 }
 
 export class Live2dManager {
-  canvas: HTMLCanvasElement;
-  live2dViewer: unknown;
-  isLoadedLive2dCore: boolean;
-  isFailedLive2dLoadCore: boolean;
-  store: Store;
-  live2dSceneRenderer: Live2dSceneRenderer;
-  isClicked: boolean;
+  private canvas: HTMLCanvasElement;
+  private live2dViewer: unknown;
+  private isLoadedLive2dCore: boolean;
+  private isFailedLive2dLoadCore: boolean;
+  private store: Store;
+  private live2dSceneRenderer: Live2dSceneRenderer;
+  private isClicked: boolean;
 
   constructor(canvas: HTMLCanvasElement, store: Store) {
     this.live2dViewer = undefined;
@@ -227,7 +227,33 @@ export class Live2dManager {
     return this.live2dViewer;
   }
 
-  async getMotionNameList(name: string): Promise<string[]> {
+  getIsLoadedLive2dCore(): boolean {
+    return this.isLoadedLive2dCore;
+  }
+
+  async isExistsModelFromKey(key: string): Promise<boolean> {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return false;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const Live2dModel = live2dTypes.Live2dModel;
+    const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+
+    const live2dViewer = this.live2dViewer;
+    if (
+      live2dViewer != undefined &&
+      live2dViewer instanceof Live2dViewer &&
+      Live2dModel != undefined &&
+      Live2dMotionSyncModel != undefined
+    ) {
+      const model = live2dViewer.getModelFromKey(key);
+      if (model != undefined) return true;
+    }
+
+    return false;
+  }
+
+  async getMotionNameList(key: string): Promise<string[]> {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return [];
 
@@ -242,7 +268,7 @@ export class Live2dManager {
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
-      const model = live2dViewer.getModelFromKey(name);
+      const model = live2dViewer.getModelFromKey(key);
       if (model != undefined) {
         return model.getMotionFileNameList();
       }
@@ -250,7 +276,7 @@ export class Live2dManager {
     return [];
   }
 
-  async getExpressionIdList(name: string): Promise<string[]> {
+  async getExpressionIdList(key: string): Promise<string[]> {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return [];
 
@@ -265,7 +291,7 @@ export class Live2dManager {
       Live2dModel != undefined &&
       Live2dMotionSyncModel != undefined
     ) {
-      const model = live2dViewer.getModelFromKey(name);
+      const model = live2dViewer.getModelFromKey(key);
       if (model != undefined) {
         return ["None", ...model.getExpressionIdList()];
       }
@@ -518,6 +544,10 @@ export class Live2dManager {
     }
   }
 
+  cancelRender() {
+    this.live2dSceneRenderer.cancelRender();
+  }
+
   async releaseLive2d() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
@@ -543,6 +573,27 @@ export class Live2dManager {
     if (this.live2dViewer instanceof Live2dViewer) {
       this.live2dSceneRenderer.cancelRender();
       this.live2dViewer.releaseAllModel();
+    }
+  }
+
+  async startLipSync(buf: ArrayBuffer) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const live2dViewer = this.live2dViewer;
+
+    if (live2dViewer instanceof Live2dViewer) {
+      const m = live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
+      if (m == undefined) {
+        return;
+      }
+
+      const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+      if (m instanceof Live2dMotionSyncModel) {
+        await m.startMotionSync(buf);
+      } else {
+        await m.startLipSync(buf);
+      }
     }
   }
 

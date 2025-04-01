@@ -97,12 +97,14 @@ const changeLive2dModel = async (): Promise<boolean> => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
+    /*
     await props.live2dManager.releaseAllLive2dModels();
     const result = await props.live2dManager.loadModel(targetName);
     if (!result) {
       return false;
     }
     await store.actions.IS_DRAWING({ isDrawing: false });
+    */
     await props.live2dManager.setCurrentModelToViewer(v.id);
   }
 
@@ -181,6 +183,7 @@ const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, async (newVal) => {
   console.log(`detect new val of editorMode in song: ${newVal}`);
   console.log(`characterName: ${characterName.value}`);
+  if (newVal === ("talk" as EditorType)) return;
   if (
     newVal === ("song" as EditorType) &&
     isLoadedLive2dCore.value &&
