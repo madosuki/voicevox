@@ -210,6 +210,8 @@ const changeLive2dModel = async () => {
     await store.actions.IS_DRAWING({ isDrawing: false });
     */
 
+    await props.live2dManager.setCurrentModelToViewer(v.id);
+
     live2dExpressions.value = await props.live2dManager.getExpressionIdList(
       v.id,
     );
@@ -220,8 +222,6 @@ const changeLive2dModel = async () => {
     } else {
       expressionName.value = "None";
     }
-
-    await props.live2dManager.setCurrentModelToViewer(v.id);
 
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
   } else {
