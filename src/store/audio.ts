@@ -1807,6 +1807,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
         if (
           live2dManager != undefined &&
+          live2dManager.getIsLoadedLive2dCore() &&
           state.isCurrentShowInTalk &&
           audioKey != undefined
         ) {

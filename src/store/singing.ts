@@ -1470,7 +1470,11 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       }
       mutations.SET_PLAYBACK_STATE({ nowPlaying: true });
 
-      transport.start(live2dManager);
+      if (live2dManager != undefined && live2dManager.getIsLoadedLive2dCore()) {
+        transport.start(live2dManager);
+      } else {
+        transport.start();
+      }
       animationTimer.start(() => {
         playheadPosition.value = getters.SECOND_TO_TICK(transport.time);
       });
