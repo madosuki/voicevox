@@ -1,6 +1,6 @@
 import { Live2dStoreState, Live2dStoreTypes } from "./type";
 import { createPartialStore } from "./vuex";
-import { Live2dModelInfo } from "@/type/preload";
+import { AudioKey, Live2dModelInfo, SpeakerId } from "@/type/preload";
 
 export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",
@@ -22,6 +22,7 @@ export const live2dStoreState: Live2dStoreState = {
   ],
 
   live2dModelInfoRecord: {},
+  previousUseExpressionNameRecord: {},
 };
 
 export const live2dStore = createPartialStore<Live2dStoreTypes>({
@@ -112,6 +113,47 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
   CAN_USE_LIVE2D_MODEL_ARRAY: {
     getter(state) {
       return state.canUseLive2dModelArray;
+    },
+  },
+
+  PREVIOUS_USING_EXPRESSION: {
+    mutation(
+      state,
+      {
+        audioKey,
+        speakerId,
+        expressionName,
+      }: { audioKey: AudioKey; speakerId: SpeakerId; expressionName: string },
+    ) {
+      if (state.previousUseExpressionNameRecord[audioKey] == undefined) {
+        const record: Record<SpeakerId, string> = {};
+        record[speakerId] = expressionName;
+        state.previousUseExpressionNameRecord[audioKey] = record;
+        return;
+      }
+
+      state.previousUseExpressionNameRecord[audioKey][speakerId] =
+        expressionName;
+    },
+    action(
+      { commit },
+      {
+        audioKey,
+        speakerId,
+        expressionName,
+      }: { audioKey: AudioKey; speakerId: SpeakerId; expressionName: string },
+    ) {
+      commit("PREVIOUS_USING_EXPRESSION", {
+        audioKey,
+        speakerId,
+        expressionName,
+      });
+    },
+    getter: (state) => (audioKey, speakerId) => {
+      if (state.previousUseExpressionNameRecord[audioKey] == undefined)
+        return undefined;
+
+      return state.previousUseExpressionNameRecord[audioKey][speakerId];
     },
   },
 });

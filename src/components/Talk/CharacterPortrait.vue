@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { computed, watch, ref, Ref, nextTick } from "vue";
 import { useStore } from "@/store";
-import { AudioKey, EditorType } from "@/type/preload";
+import { AudioKey, EditorType, SpeakerId } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
 import { Live2dManager } from "@/live2d/live2d";
 
@@ -140,6 +140,9 @@ const motionFileName = ref("None");
 const live2dMotions: Ref<string[]> = ref([]);
 
 const setExpression = async (name: string) => {
+  const audioKey = store.getters.ACTIVE_AUDIO_KEY;
+  if (audioKey == undefined) return;
+
   const live2dTypes = await props.live2dManager.getTypes();
   if (live2dTypes == undefined) return;
   const Live2dViewer = live2dTypes.Live2dViewer;
@@ -151,10 +154,25 @@ const setExpression = async (name: string) => {
     if (model == undefined) return;
     model.releaseMotions();
     model.releaseExpressions();
+    console.log(
+      `expression name: ${name}, key: ${live2dViewer.getCurrentModelKey()}, audioKey: ${audioKey}`,
+    );
     if (name === "None") {
       model.stopExpression();
+
+      await store.actions.PREVIOUS_USING_EXPRESSION({
+        audioKey: audioKey,
+        speakerId: live2dViewer.getCurrentModelKey() as SpeakerId,
+        expressionName: "None",
+      });
     } else {
       model.setExpression(name);
+
+      await store.actions.PREVIOUS_USING_EXPRESSION({
+        audioKey: audioKey,
+        speakerId: live2dViewer.getCurrentModelKey() as SpeakerId,
+        expressionName: name,
+      });
     }
   }
 };
@@ -186,6 +204,33 @@ const setMotion = async (name: string) => {
       }
     }
   }
+};
+
+const restoreExpression = async (audioKey: AudioKey) => {
+  const targetName = store.getters.NAME_FROM_CAN_USE_LIVE2D_MODEL_ARRAY(
+    characterName.value,
+  );
+  if (targetName == undefined) return;
+
+  const v = store.getters.LIVE2D_MODEL_INFO(targetName);
+  if (v == undefined) return;
+
+  const previsouUsingExpression = store.getters.PREVIOUS_USING_EXPRESSION(
+    audioKey,
+    v.id,
+  );
+  /*
+  console.log(`active audio key: ${audioKey}, speakerId: ${v.id}`);
+  console.log(`previous expression name: ${previsouUsingExpression}`);
+  */
+  if (previsouUsingExpression == undefined) {
+    await setExpression("None");
+    expressionName.value = "None";
+    return;
+  }
+
+  await setExpression(previsouUsingExpression);
+  expressionName.value = previsouUsingExpression;
 };
 
 const changeLive2dModel = async () => {
@@ -221,6 +266,10 @@ const changeLive2dModel = async () => {
       expressionName.value = v.defaultExpression;
     } else {
       expressionName.value = "None";
+    }
+
+    if (activeAudioKeyComputed.value != undefined) {
+      await restoreExpression(activeAudioKeyComputed.value);
     }
 
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: true });
@@ -324,27 +373,51 @@ watch(editorMode, async (newVal) => {
   await showLive2d();
 });
 
-watch([isLoadedLive2dCore, characterName], async () => {
+const activeAudioKeyComputed = computed(() => store.getters.ACTIVE_AUDIO_KEY);
+const prevAudioKey = ref();
+const prevCharacter = ref();
+watch([isLoadedLive2dCore, characterName, activeAudioKeyComputed], async () => {
   await nextTick();
   if (!isLoadedLive2dCore.value) return;
   if (!isEnableLive2dFeature.value && isContinueRunLive2d.value) {
     await disAppearLive2d();
     return;
   }
+  if (!isMaybeCanLive2dPortrait(characterName.value)) {
+    await disAppearLive2d();
+    return;
+  }
 
-  if (isEnableLive2dFeature.value) {
-    if (isMaybeCanLive2dPortrait(characterName.value)) {
-      if (!isLive2dPortrait.value) {
-        isLive2dPortrait.value = true;
-        await nextTick();
-      }
-    } else {
-      await disAppearLive2d();
-    }
+  if (!isLive2dPortrait.value) {
+    isLive2dPortrait.value = true;
+    await nextTick();
+  }
 
-    if (isLive2dPortrait.value) {
-      await showLive2d();
+  if (
+    activeAudioKeyComputed.value != undefined &&
+    characterName.value != undefined
+  ) {
+    if (prevCharacter.value === characterName.value) {
+      await restoreExpression(activeAudioKeyComputed.value);
     }
+  }
+
+  if (
+    activeAudioKeyComputed.value != undefined &&
+    prevAudioKey.value !== activeAudioKeyComputed.value
+  ) {
+    prevAudioKey.value = activeAudioKeyComputed.value;
+  }
+
+  if (
+    characterName.value != undefined &&
+    prevCharacter.value !== characterName.value
+  ) {
+    prevCharacter.value = characterName.value;
+  }
+
+  if (isLive2dPortrait.value) {
+    await showLive2d();
   }
 });
 </script>

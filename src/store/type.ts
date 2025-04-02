@@ -2362,6 +2362,7 @@ export type Live2dStoreState = {
   isLive2dCoreLoaded: boolean;
   canUseLive2dModelArray: string[];
   live2dModelInfoRecord: Record<string, Live2dModelInfo>;
+  previousUseExpressionNameRecord: Record<AudioKey, Record<SpeakerId, string>>;
 };
 
 export type Live2dStoreTypes = {
@@ -2407,6 +2408,20 @@ export type Live2dStoreTypes = {
 
   CAN_USE_LIVE2D_MODEL_ARRAY: {
     getter: string[];
+  };
+
+  PREVIOUS_USING_EXPRESSION: {
+    mutation: {
+      audioKey: AudioKey;
+      speakerId: SpeakerId;
+      expressionName: string;
+    };
+    action(palyoad: {
+      audioKey: AudioKey;
+      speakerId: SpeakerId;
+      expressionName: string;
+    }): void;
+    getter(audioKey: AudioKey, speakerId: SpeakerId): string | undefined;
   };
 };
 
