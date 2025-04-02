@@ -154,9 +154,6 @@ const setExpression = async (name: string) => {
     if (model == undefined) return;
     model.releaseMotions();
     model.releaseExpressions();
-    console.log(
-      `expression name: ${name}, key: ${live2dViewer.getCurrentModelKey()}, audioKey: ${audioKey}`,
-    );
     if (name === "None") {
       model.stopExpression();
 
