@@ -216,10 +216,6 @@ const restoreExpression = async (audioKey: AudioKey) => {
   if (v == undefined) return;
 
   const previousExpression = store.getters.PREVIOUS_EXPRESSION(audioKey, v.id);
-  /*
-  console.log(`active audio key: ${audioKey}, speakerId: ${v.id}`);
-  console.log(`previous expression name: ${previsouUsingExpression}`);
-  */
   if (previousExpression == undefined) {
     await setExpression("None");
     expressionName.value = "None";
