@@ -2423,6 +2423,11 @@ export type Live2dStoreTypes = {
     }): void;
     getter(audioKey: AudioKey, speakerId: SpeakerId): string | undefined;
   };
+
+  DELETE_PREVIOUS_EXPRESSION: {
+    mutation: { audioKey: AudioKey };
+    action(payload: { audioKey: AudioKey }): void;
+  };
 };
 
 /*

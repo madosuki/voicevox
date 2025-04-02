@@ -156,4 +156,13 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
       return state.previousUseExpressionNameRecord[audioKey][speakerId];
     },
   },
+
+  DELETE_PREVIOUS_EXPRESSION: {
+    mutation(state, { audioKey }: { audioKey: AudioKey }) {
+      delete state.previousUseExpressionNameRecord[audioKey];
+    },
+    action({ commit }, { audioKey }: { audioKey: AudioKey }) {
+      commit("DELETE_PREVIOUS_EXPRESSION", { audioKey });
+    },
+  },
 });
