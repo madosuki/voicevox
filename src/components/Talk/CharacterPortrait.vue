@@ -214,8 +214,14 @@ const restoreExpression = async (audioKey: AudioKey) => {
 
   const previousExpression = store.getters.PREVIOUS_EXPRESSION(audioKey, v.id);
   if (previousExpression == undefined) {
-    await setExpression("None");
-    expressionName.value = "None";
+    if (v.defaultExpression != undefined) {
+      await setExpression(v.defaultExpression);
+      expressionName.value = v.defaultExpression;
+    } else {
+      await setExpression("None");
+      expressionName.value = "None";
+    }
+
     return;
   }
 
@@ -253,11 +259,6 @@ const changeLive2dModel = async () => {
     live2dMotions.value = await props.live2dManager.getMotionNameList(v.id);
     await setMotion("None");
     motionFileName.value = "None";
-    if (v.defaultExpression != undefined) {
-      expressionName.value = v.defaultExpression;
-    } else {
-      expressionName.value = "None";
-    }
 
     if (activeAudioKeyComputed.value != undefined) {
       await restoreExpression(activeAudioKeyComputed.value);
