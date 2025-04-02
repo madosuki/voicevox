@@ -251,6 +251,7 @@ const changeLive2dModel = async () => {
       v.id,
     );
     live2dMotions.value = await props.live2dManager.getMotionNameList(v.id);
+    await setMotion("None");
     motionFileName.value = "None";
     if (v.defaultExpression != undefined) {
       expressionName.value = v.defaultExpression;
