@@ -215,7 +215,7 @@ const restoreExpression = async (audioKey: AudioKey) => {
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v == undefined) return;
 
-  const previsouUsingExpression = store.getters.PREVIOUS_USING_EXPRESSION(
+  const previousUsingExpression = store.getters.PREVIOUS_USING_EXPRESSION(
     audioKey,
     v.id,
   );
@@ -223,14 +223,14 @@ const restoreExpression = async (audioKey: AudioKey) => {
   console.log(`active audio key: ${audioKey}, speakerId: ${v.id}`);
   console.log(`previous expression name: ${previsouUsingExpression}`);
   */
-  if (previsouUsingExpression == undefined) {
+  if (previousUsingExpression == undefined) {
     await setExpression("None");
     expressionName.value = "None";
     return;
   }
 
-  await setExpression(previsouUsingExpression);
-  expressionName.value = previsouUsingExpression;
+  await setExpression(previousUsingExpression);
+  expressionName.value = previousUsingExpression;
 };
 
 const changeLive2dModel = async () => {
