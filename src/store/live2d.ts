@@ -22,7 +22,7 @@ export const live2dStoreState: Live2dStoreState = {
   ],
 
   live2dModelInfoRecord: {},
-  previousUseExpressionNameRecord: {},
+  previousExpressionNameRecord: {},
 };
 
 export const live2dStore = createPartialStore<Live2dStoreTypes>({
@@ -116,7 +116,7 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
     },
   },
 
-  PREVIOUS_USING_EXPRESSION: {
+  PREVIOUS_EXPRESSION: {
     mutation(
       state,
       {
@@ -125,15 +125,14 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
         expressionName,
       }: { audioKey: AudioKey; speakerId: SpeakerId; expressionName: string },
     ) {
-      if (state.previousUseExpressionNameRecord[audioKey] == undefined) {
+      if (state.previousExpressionNameRecord[audioKey] == undefined) {
         const record: Record<SpeakerId, string> = {};
         record[speakerId] = expressionName;
-        state.previousUseExpressionNameRecord[audioKey] = record;
+        state.previousExpressionNameRecord[audioKey] = record;
         return;
       }
 
-      state.previousUseExpressionNameRecord[audioKey][speakerId] =
-        expressionName;
+      state.previousExpressionNameRecord[audioKey][speakerId] = expressionName;
     },
     action(
       { commit },
@@ -143,23 +142,23 @@ export const live2dStore = createPartialStore<Live2dStoreTypes>({
         expressionName,
       }: { audioKey: AudioKey; speakerId: SpeakerId; expressionName: string },
     ) {
-      commit("PREVIOUS_USING_EXPRESSION", {
+      commit("PREVIOUS_EXPRESSION", {
         audioKey,
         speakerId,
         expressionName,
       });
     },
     getter: (state) => (audioKey, speakerId) => {
-      if (state.previousUseExpressionNameRecord[audioKey] == undefined)
+      if (state.previousExpressionNameRecord[audioKey] == undefined)
         return undefined;
 
-      return state.previousUseExpressionNameRecord[audioKey][speakerId];
+      return state.previousExpressionNameRecord[audioKey][speakerId];
     },
   },
 
   DELETE_PREVIOUS_EXPRESSION: {
     mutation(state, { audioKey }: { audioKey: AudioKey }) {
-      delete state.previousUseExpressionNameRecord[audioKey];
+      delete state.previousExpressionNameRecord[audioKey];
     },
     action({ commit }, { audioKey }: { audioKey: AudioKey }) {
       commit("DELETE_PREVIOUS_EXPRESSION", { audioKey });

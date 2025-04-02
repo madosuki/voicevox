@@ -2362,7 +2362,7 @@ export type Live2dStoreState = {
   isLive2dCoreLoaded: boolean;
   canUseLive2dModelArray: string[];
   live2dModelInfoRecord: Record<string, Live2dModelInfo>;
-  previousUseExpressionNameRecord: Record<AudioKey, Record<SpeakerId, string>>;
+  previousExpressionNameRecord: Record<AudioKey, Record<SpeakerId, string>>;
 };
 
 export type Live2dStoreTypes = {
@@ -2410,7 +2410,7 @@ export type Live2dStoreTypes = {
     getter: string[];
   };
 
-  PREVIOUS_USING_EXPRESSION: {
+  PREVIOUS_EXPRESSION: {
     mutation: {
       audioKey: AudioKey;
       speakerId: SpeakerId;

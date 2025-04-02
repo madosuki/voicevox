@@ -160,7 +160,7 @@ const setExpression = async (name: string) => {
     if (name === "None") {
       model.stopExpression();
 
-      await store.actions.PREVIOUS_USING_EXPRESSION({
+      await store.actions.PREVIOUS_EXPRESSION({
         audioKey: audioKey,
         speakerId: live2dViewer.getCurrentModelKey() as SpeakerId,
         expressionName: "None",
@@ -168,7 +168,7 @@ const setExpression = async (name: string) => {
     } else {
       model.setExpression(name);
 
-      await store.actions.PREVIOUS_USING_EXPRESSION({
+      await store.actions.PREVIOUS_EXPRESSION({
         audioKey: audioKey,
         speakerId: live2dViewer.getCurrentModelKey() as SpeakerId,
         expressionName: name,
@@ -215,22 +215,19 @@ const restoreExpression = async (audioKey: AudioKey) => {
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v == undefined) return;
 
-  const previousUsingExpression = store.getters.PREVIOUS_USING_EXPRESSION(
-    audioKey,
-    v.id,
-  );
+  const previousExpression = store.getters.PREVIOUS_EXPRESSION(audioKey, v.id);
   /*
   console.log(`active audio key: ${audioKey}, speakerId: ${v.id}`);
   console.log(`previous expression name: ${previsouUsingExpression}`);
   */
-  if (previousUsingExpression == undefined) {
+  if (previousExpression == undefined) {
     await setExpression("None");
     expressionName.value = "None";
     return;
   }
 
-  await setExpression(previousUsingExpression);
-  expressionName.value = previousUsingExpression;
+  await setExpression(previousExpression);
+  expressionName.value = previousExpression;
 };
 
 const changeLive2dModel = async () => {
