@@ -41,9 +41,9 @@ export class Live2dManager {
     this.isFailedLive2dLoadCore = false;
     this.canvas = canvas;
 
-    this.onTouchesEventListener = this.onTouches.bind(this);
-    this.onTouchEndEventListener = this.onTouchEnd.bind(this);
-    this.onTouchMovedEventListener = this.onTouchMoved.bind(this);
+    this.onTouchesEventListenerFunction = this.onTouches.bind(this);
+    this.onTouchEndEventListenerFunction = this.onTouchEnd.bind(this);
+    this.onTouchMovedEventListenerFunction = this.onTouchMoved.bind(this);
   }
 
   getCanvas() {
@@ -84,7 +84,7 @@ export class Live2dManager {
   private onTouches(event: PointerEvent): void {
     void this.TouchesBegin(event.pageX, event.pageY);
   }
-  private onTouchesEventListener: (event: PointerEvent) => void;
+  private onTouchesEventListenerFunction: (event: PointerEvent) => void;
 
   private async TouchEnd() {
     const live2dTypes = await this.getTypes();
@@ -100,9 +100,9 @@ export class Live2dManager {
   private onTouchEnd(event: PointerEvent) {
     void this.TouchEnd();
   }
-  private onTouchEndEventListener: (event: PointerEvent) => void;
+  private onTouchEndEventListenerFunction: (event: PointerEvent) => void;
 
-  async TouchMoved(pageX: number, pageY: number) {
+  private async TouchMoved(pageX: number, pageY: number) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
 
@@ -113,40 +113,59 @@ export class Live2dManager {
       this.live2dViewer.onTouchesMoved(pageX, pageY);
     }
   }
-  onTouchMoved(event: PointerEvent) {
+  private onTouchMoved(event: PointerEvent) {
     void this.TouchMoved(event.pageX, event.pageY);
   }
-  onTouchMovedEventListener: (
+
+  private onTouchMovedEventListenerFunction: (
     this: HTMLCanvasElement,
     event: PointerEvent,
   ) => void;
 
   addMouseEventToLive2dCanvas() {
-    this.canvas.addEventListener("pointerdown", this.onTouchesEventListener, {
-      passive: true,
-    });
-    this.canvas.addEventListener("pointerup", this.onTouchEndEventListener, {
-      passive: true,
-    });
-    this.canvas.addEventListener("pointerleave", this.onTouchEndEventListener, {
-      passive: true,
-    });
+    this.canvas.addEventListener(
+      "pointerdown",
+      this.onTouchesEventListenerFunction,
+      {
+        passive: true,
+      },
+    );
+    this.canvas.addEventListener(
+      "pointerup",
+      this.onTouchEndEventListenerFunction,
+      {
+        passive: true,
+      },
+    );
+    this.canvas.addEventListener(
+      "pointerleave",
+      this.onTouchEndEventListenerFunction,
+      {
+        passive: true,
+      },
+    );
     this.canvas.addEventListener(
       "pointermove",
-      this.onTouchMovedEventListener,
+      this.onTouchMovedEventListenerFunction,
       { passive: true },
     );
   }
   removeMouseEvenet() {
-    this.canvas.removeEventListener("pointerdown", this.onTouchesEventListener);
-    this.canvas.removeEventListener("pointerup", this.onTouchEndEventListener);
+    this.canvas.removeEventListener(
+      "pointerdown",
+      this.onTouchesEventListenerFunction,
+    );
+    this.canvas.removeEventListener(
+      "pointerup",
+      this.onTouchEndEventListenerFunction,
+    );
     this.canvas.removeEventListener(
       "pointerleave",
-      this.onTouchEndEventListener,
+      this.onTouchEndEventListenerFunction,
     );
     this.canvas.removeEventListener(
       "pointermove",
-      this.onTouchMovedEventListener,
+      this.onTouchMovedEventListenerFunction,
     );
   }
 
