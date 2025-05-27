@@ -52,7 +52,7 @@ importers:
         version: https://codeload.github.com/VOICEVOX/kuromoji.js/tar.gz/0e8d670cd3df64217d0502d3bb71f431531ff353
       live2dmanager:
         specifier: github:madosuki/live2dManager
-        version: https://codeload.github.com/madosuki/live2dManager/tar.gz/cdacf34a1cbe23de8fbbabbc0f17229ec124f6fe
+        version: https://codeload.github.com/madosuki/live2dManager/tar.gz/9c2d6afa36f44b5d458907589cb0f565e8b02239
       markdown-it:
         specifier: 14.1.0
         version: 14.1.0
@@ -3461,8 +3461,8 @@ packages:
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
 
-  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/cdacf34a1cbe23de8fbbabbc0f17229ec124f6fe:
-    resolution: {tarball: https://codeload.github.com/madosuki/live2dManager/tar.gz/cdacf34a1cbe23de8fbbabbc0f17229ec124f6fe}
+  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/9c2d6afa36f44b5d458907589cb0f565e8b02239:
+    resolution: {tarball: https://codeload.github.com/madosuki/live2dManager/tar.gz/9c2d6afa36f44b5d458907589cb0f565e8b02239}
     version: 1.0.0
 
   locate-path@6.0.0:
@@ -5155,11 +5155,11 @@ packages:
   vue-component-type-helpers@2.2.0:
     resolution: {integrity: sha512-cYrAnv2me7bPDcg9kIcGwjJiSB6Qyi08+jLDo9yuvoFQjzHiPTzML7RnkJB1+3P6KMsX/KbCD4QE3Tv/knEllw==}
 
-  vue-component-type-helpers@2.2.10:
-    resolution: {integrity: sha512-iDUO7uQK+Sab2tYuiP9D1oLujCWlhHELHMgV/cB13cuGbG4qwkLHvtfWb6FzvxrIOPDnU0oHsz2MlQjhYDeaHA==}
-
   vue-component-type-helpers@2.2.8:
     resolution: {integrity: sha512-4bjIsC284coDO9om4HPA62M7wfsTvcmZyzdfR0aUlFXqq4tXxM1APyXpNVxPC8QazKw9OhmZNHBVDA6ODaZsrA==}
+
+  vue-component-type-helpers@3.0.0-alpha.8:
+    resolution: {integrity: sha512-90tDQ0Si5EOuBj1IWGg4o0prHt3H5xysZS/9z/m5TTC8xTKrDYAUQvbWiNVa9VXg/ED3ah6yDuQirXW+O6bTdA==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -6427,7 +6427,7 @@ snapshots:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.5.13(typescript@5.8.2)
-      vue-component-type-helpers: 2.2.10
+      vue-component-type-helpers: 3.0.0-alpha.8
 
   '@swc/helpers@0.5.15':
     dependencies:
@@ -8856,7 +8856,7 @@ snapshots:
     dependencies:
       uc.micro: 2.1.0
 
-  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/cdacf34a1cbe23de8fbbabbc0f17229ec124f6fe: {}
+  live2dmanager@https://codeload.github.com/madosuki/live2dManager/tar.gz/9c2d6afa36f44b5d458907589cb0f565e8b02239: {}
 
   locate-path@6.0.0:
     dependencies:
@@ -10761,9 +10761,9 @@ snapshots:
 
   vue-component-type-helpers@2.2.0: {}
 
-  vue-component-type-helpers@2.2.10: {}
-
   vue-component-type-helpers@2.2.8: {}
+
+  vue-component-type-helpers@3.0.0-alpha.8: {}
 
   vue-demi@0.14.10(vue@3.5.13(typescript@5.8.2)):
     dependencies:
