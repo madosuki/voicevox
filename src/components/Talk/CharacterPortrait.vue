@@ -241,7 +241,6 @@ const changeLive2dModel = async () => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
-    /*
     // unload loaded models and load current model.
     await props.live2dManager.releaseAllLive2dModels();
     const result = await props.live2dManager.loadModel(targetName);
@@ -249,7 +248,6 @@ const changeLive2dModel = async () => {
       return false;
     }
     await store.actions.IS_DRAWING({ isDrawing: false });
-    */
 
     await props.live2dManager.setCurrentModelToViewer(v.id);
 
@@ -318,7 +316,8 @@ const isMaybeCanLive2dPortrait = (targetName: string): boolean => {
   if (name == undefined) return false;
 
   const v = store.getters.LIVE2D_MODEL_INFO(name);
-  return v != undefined && v.isUsable;
+  // return v != undefined && v.isUsable;
+  return v != undefined;
 };
 
 watch([isEnableLive2dFeature, isLive2dInitialized], async (newVal) => {

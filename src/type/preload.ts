@@ -527,7 +527,7 @@ export type EditorType = "talk" | "song";
 
 export type Live2dModelInfo = {
   id: SpeakerId;
-  isUsable: boolean;
+  isUsable: boolean; // foar load all live2d models with async. Indicate ready useable a live2d model.
   dirPath: string;
   modelJsonName: string;
   lipSyncWait?: number;

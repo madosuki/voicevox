@@ -428,6 +428,30 @@ export class Live2dManager {
     }
   }
 
+  public async isModelCompleteSetup(speakerId: string): Promise<boolean> {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return false;
+
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const Live2dModel = live2dTypes.Live2dModel;
+    const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+
+    const live2dViewer = this.live2dViewer;
+
+    if (
+      live2dViewer != undefined &&
+      live2dViewer instanceof Live2dViewer &&
+      Live2dModel != undefined &&
+      Live2dMotionSyncModel != undefined
+    ) {
+      const model = live2dViewer.getModelFromKey(speakerId);
+      if (model == undefined) return false;
+      return model.isCompleteSetup;
+    }
+
+    return false;
+  }
+
   async loadModel(name: string): Promise<boolean> {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return false;

@@ -1818,6 +1818,13 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             if (await live2dManager.isExistsModelFromKey(speakerId)) {
               await live2dManager.setCurrentModelToViewer(speakerId);
             }
+
+            let count = 0;
+            while (!(await live2dManager.isModelCompleteSetup(speakerId))) {
+              if (count > 100) break;
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+              ++count;
+            }
           }
 
           const buf = await audioBlob.arrayBuffer();

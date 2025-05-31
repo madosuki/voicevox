@@ -13,7 +13,7 @@ export function sceneOfPortrait(live2dViewer: Live2dViewer) {
   const model: Live2dModel | Live2dMotionSyncModel | undefined =
     live2dViewer.getModelFromKey(key);
   if (model == undefined) {
-    window.backend.logError("target Live2D Model is undefined");
+    // window.backend.logError("target Live2D Model is undefined");
     return;
   }
 
