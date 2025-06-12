@@ -363,7 +363,6 @@ watch(editorMode, async (newVal) => {
 });
 
 const activeAudioKeyComputed = computed(() => store.getters.ACTIVE_AUDIO_KEY);
-const prevAudioKey = ref();
 const prevCharacter = ref();
 watch([isLoadedLive2dCore, characterName, activeAudioKeyComputed], async () => {
   await nextTick();
@@ -389,13 +388,6 @@ watch([isLoadedLive2dCore, characterName, activeAudioKeyComputed], async () => {
     if (prevCharacter.value === characterName.value) {
       await restoreExpression(activeAudioKeyComputed.value);
     }
-  }
-
-  if (
-    activeAudioKeyComputed.value != undefined &&
-    prevAudioKey.value !== activeAudioKeyComputed.value
-  ) {
-    prevAudioKey.value = activeAudioKeyComputed.value;
   }
 
   if (
