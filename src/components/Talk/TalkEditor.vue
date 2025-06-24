@@ -584,6 +584,7 @@ const loadDraggedFile = (event: { dataTransfer: DataTransfer | null }) => {
 
   // electronの場合のみファイルパスを取得できる
   const filePath = isElectron ? window.backend.getPathForFile(file) : undefined;
+  console.log(filePath);
 
   switch (path.extname(file.name)) {
     case ".txt":
