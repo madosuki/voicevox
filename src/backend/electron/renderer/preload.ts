@@ -223,7 +223,7 @@ const api: Sandbox = {
   },
 
   /** webUtils.getPathForFileを呼ぶ */
-  getPathForFile: (file) => {
+  getPathForFile: async (file) => {
     return webUtils.getPathForFile(file);
   },
 };

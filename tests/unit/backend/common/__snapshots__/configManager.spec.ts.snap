@@ -17,6 +17,7 @@ exports[`0.13.0からマイグレーションできる 1`] = `
   "enableKatakanaEnglish": true,
   "enableMemoNotation": false,
   "enableMultiEngine": false,
+  "enableMultiSelect": true,
   "enablePreset": false,
   "enableRubyNotation": false,
   "engineSettings": {
@@ -29,7 +30,6 @@ exports[`0.13.0からマイグレーションできる 1`] = `
     "enableInterrogativeUpspeak": false,
     "enableLive2dPortrait": false,
     "enableMorphing": false,
-    "enableMultiSelect": false,
     "shouldKeepTuningOnTextChange": false,
     "showParameterPanel": false,
   },
