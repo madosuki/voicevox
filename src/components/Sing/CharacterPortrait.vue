@@ -97,7 +97,6 @@ const changeLive2dModel = async (): Promise<boolean> => {
 
   const v = store.getters.LIVE2D_MODEL_INFO(targetName);
   if (v != undefined) {
-    console.log("nyan");
     // unload loaded models and load current model.
     await props.live2dManager.releaseAllLive2dModels();
     const result = await props.live2dManager.loadModel(targetName);
