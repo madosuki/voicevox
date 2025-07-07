@@ -353,7 +353,9 @@ watch([isEnableLive2dFeature, isLive2dInitialized], async (newVal) => {
 const editorMode = computed(() => store.state.openedEditor);
 watch(editorMode, async (newVal) => {
   console.log(`detect change editorMode in talk: ${newVal}`);
-  if (newVal === ("song" as EditorType)) return;
+  if (newVal === ("song" as EditorType)) {
+    return;
+  }
   if (
     !isEnableLive2dFeature.value ||
     !isLoadedLive2dCore.value ||
@@ -436,6 +438,8 @@ onUnmounted(() => {
   }
 });
 watch([portraitWidth, portraitHeight], async () => {
+  if (portraitWidth.value === 0 || portraitHeight.value === 0) return;
+
   await props.live2dManager.resizeViewer(
     portraitWidth.value,
     portraitHeight.value,

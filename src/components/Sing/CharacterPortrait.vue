@@ -14,7 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from "vue";
+import {
+  computed,
+  ref,
+  watch,
+  nextTick,
+  Ref,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
 import { EditorType } from "@/type/preload";
@@ -119,10 +127,15 @@ const showLive2d = async () => {
   }
 
   const place = document.getElementsByClassName("live2d-portrait");
+  console.log(`place num: ${place.length}`);
   if (place.length < 1) return;
+  console.log(`${place[0].childElementCount}`);
+  // ソングからトークへ遷移すると追加していたCanvasがDOMから消えるので追加する
   if (place[0].childElementCount < 1) {
     window.backend.logInfo("append live2d canvas on sing");
     place[0].appendChild(props.live2dManager.getCanvas());
+    await props.live2dManager.resizeViewer(800, 800);
+    console.log(`${place[0].childElementCount}`);
   }
 
   const result = await changeLive2dModel();
@@ -193,7 +206,7 @@ watch(editorMode, async (newVal) => {
   ) {
     await store.actions.CURRENT_SHOW_LIVE2D_IN_SONG({ isShow: true });
     await store.actions.CURRENT_SHOW_LIVE2D_IN_TALK({ isShow: false });
-    // ソングからトークへ遷移すると追加していたCanvasがDOMから消えるので追加する
+
     isLive2dPortrait.value = true;
     await nextTick();
     await showLive2d();
