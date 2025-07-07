@@ -176,11 +176,11 @@ import CharacterMenuButton from "@/components/Sing/CharacterMenuButton/MenuButto
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { SequencerEditTarget } from "@/store/type";
 import { UnreachableError } from "@/type/utility";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 const store = useStore();
 const props = defineProps<{
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);

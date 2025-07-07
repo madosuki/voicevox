@@ -77,7 +77,7 @@ import type {
   Track,
 } from "@/domain/project/type";
 import { LatestProjectType } from "@/infrastructures/projectFile/type";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 /**
  * エディタ用のAudioQuery
@@ -464,7 +464,7 @@ export type AudioStoreTypes = {
   PLAY_AUDIO: {
     action(payload: {
       audioKey: AudioKey;
-      live2dManager?: Live2dManager;
+      live2dManager?: Live2dManagerForV;
     }): boolean;
   };
 
@@ -472,7 +472,7 @@ export type AudioStoreTypes = {
     action(payload: {
       audioBlob: Blob;
       audioKey?: AudioKey;
-      live2dManager?: Live2dManager;
+      live2dManager?: Live2dManagerForV;
     }): boolean;
   };
 
@@ -484,7 +484,7 @@ export type AudioStoreTypes = {
   };
 
   PLAY_CONTINUOUSLY_AUDIO: {
-    action(payload: { live2dManager?: Live2dManager }): void;
+    action(payload: { live2dManager?: Live2dManagerForV }): void;
   };
 };
 
@@ -1258,7 +1258,7 @@ export type SingingStoreTypes = {
   };
 
   SING_PLAY_AUDIO: {
-    action(payload: { live2dManager?: Live2dManager }): void;
+    action(payload: { live2dManager?: Live2dManagerForV }): void;
   };
 
   SING_STOP_AUDIO: {

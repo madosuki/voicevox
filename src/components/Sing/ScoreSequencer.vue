@@ -289,10 +289,10 @@ import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { useSequencerStateMachine } from "@/composables/useSequencerStateMachine";
 import { PositionOnSequencer } from "@/sing/sequencerStateMachine/common";
 import { useAutoScrollOnEdge } from "@/composables/useAutoScrollOnEdge";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 defineProps<{
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const { warn } = createLogger("ScoreSequencer");

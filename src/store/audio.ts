@@ -65,7 +65,7 @@ import { UnreachableError } from "@/type/utility";
 import { errorToMessage } from "@/helpers/errorHelper";
 import path from "@/helpers/path";
 import { generateTextFileData } from "@/helpers/fileDataGenerator";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 function generateAudioKey() {
   return AudioKey(uuid4());
@@ -1748,7 +1748,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         {
           audioKey,
           live2dManager,
-        }: { audioKey: AudioKey; live2dManager?: Live2dManager },
+        }: { audioKey: AudioKey; live2dManager?: Live2dManagerForV },
       ) => {
         await actions.STOP_AUDIO();
 
@@ -1791,7 +1791,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         }: {
           audioBlob: Blob;
           audioKey?: AudioKey;
-          live2dManager?: Live2dManager;
+          live2dManager?: Live2dManagerForV;
         },
       ) => {
         mutations.SET_AUDIO_SOURCE({ audioBlob });

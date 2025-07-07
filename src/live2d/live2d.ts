@@ -23,8 +23,9 @@ async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
   }
 }
 
-export class Live2dManager {
+export class Live2dManagerForV {
   private canvas: HTMLCanvasElement;
+  private live2dmanager: unknown;
   private live2dViewer: unknown;
   private isLoadedLive2dCore: boolean;
   private isFailedLive2dLoadCore: boolean;
@@ -33,6 +34,7 @@ export class Live2dManager {
   private isClicked: boolean;
 
   constructor(canvas: HTMLCanvasElement, store: Store) {
+    this.live2dmanager = undefined;
     this.live2dViewer = undefined;
     this.isLoadedLive2dCore = false;
     this.store = store;
@@ -46,6 +48,10 @@ export class Live2dManager {
     this.onTouchMovedEventListenerFunction = this.onTouchMoved.bind(this);
   }
 
+  public resizeCanvas(width: number, height: number) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+  }
   getCanvas() {
     return this.canvas;
   }
@@ -192,49 +198,78 @@ export class Live2dManager {
   async getTypes() {
     if (this.isFailedLive2dLoadCore) return undefined;
 
-    const { Live2dViewer, Live2dModel, Live2dMotionSyncModel } = await import(
-      "live2dmanager"
-    )
-      .then((m) => {
-        return {
-          Live2dViewer: m.Live2dViewer,
-          Live2dModel: m.Live2dModel,
-          Live2dMotionSyncModel: m.Live2dMotionSyncModel,
-        };
-      })
-      .catch((e) => {
-        window.backend.logError(e);
-        this.isFailedLive2dLoadCore = true;
-        return {
-          Live2dViewer: undefined,
-          Live2dModel: undefined,
-          Live2dMotionSyncModel: undefined,
-        };
-      });
+    const { Live2dManager, Live2dViewer, Live2dModel, Live2dMotionSyncModel } =
+      await import("live2dmanager")
+        .then((m) => {
+          return {
+            Live2dManager: m.Live2dManager,
+            Live2dViewer: m.Live2dViewer,
+            Live2dModel: m.Live2dModel,
+            Live2dMotionSyncModel: m.Live2dMotionSyncModel,
+          };
+        })
+        .catch((e) => {
+          window.backend.logError(e);
+          this.isFailedLive2dLoadCore = true;
+          return {
+            Live2dManager: undefined,
+            Live2dViewer: undefined,
+            Live2dModel: undefined,
+            Live2dMotionSyncModel: undefined,
+          };
+        });
 
     if (
+      Live2dManager == undefined ||
       Live2dViewer == undefined ||
       Live2dModel == undefined ||
       Live2dMotionSyncModel == undefined
     )
       return undefined;
 
-    return { Live2dViewer, Live2dModel, Live2dMotionSyncModel };
+    return { Live2dManager, Live2dViewer, Live2dModel, Live2dMotionSyncModel };
   }
 
+  async initialize(width: number, height: number) {
+    const live2dTypes = await this.getTypes();
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    const Live2dManager = live2dTypes.Live2dManager;
+
+    try {
+      // const allocationMemory = 1024 * 1024 * 32;
+      this.live2dViewer = new Live2dViewer(this.canvas, width, height);
+      if (this.live2dViewer instanceof Live2dViewer) {
+        this.live2dViewer.initialize();
+        this.live2dmanager = new Live2dManager(this.live2dViewer);
+
+        if (this.live2dmanager instanceof Live2dManager) {
+          this.live2dmanager.initialize();
+        }
+      }
+      this.isLoadedLive2dCore = true;
+      await this.store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
+    } catch (e) {
+      window.backend.logError(e);
+    }
+  }
+
+  // for resize canvas
   async initViewer() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
     const Live2dViewer = live2dTypes.Live2dViewer;
 
     try {
+      /*
       const allocationMemory = 1024 * 1024 * 32;
-      this.live2dViewer = new Live2dViewer(this.canvas, 800, 800);
+      this.live2dViewer = new Live2dViewer(this.canvas, width, height);
+      */
       if (this.live2dViewer instanceof Live2dViewer) {
-        this.live2dViewer.initialize(allocationMemory);
+        this.live2dViewer.initialize();
       }
-      this.isLoadedLive2dCore = true;
-      await this.store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
+      // this.isLoadedLive2dCore = true;
+      // await this.store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
     } catch (e) {
       window.backend.logError(e);
     }

@@ -26,7 +26,7 @@ import { watch, onMounted, ref, computed, toRaw, watchEffect } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
 import { TooltipProvider } from "radix-vue";
 import { useCommonMenuBarData } from "./Menu/MenuBar/useCommonMenuBarData";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
 import SingEditor from "@/components/Sing/SingEditor.vue";
 import { EngineId } from "@/type/preload";
@@ -95,7 +95,7 @@ const isEnableLive2dFeature = computed(
   () => store.state.experimentalSetting.enableLive2dPortrait,
 );
 const live2dCanvas = document.createElement("canvas");
-const live2dManager = new Live2dManager(live2dCanvas, store);
+const live2dManager = new Live2dManagerForV(live2dCanvas, store);
 
 window.addEventListener(
   "unload",
@@ -113,7 +113,7 @@ const stopWatchOfIsEnableLive2dFeature = watch(
     );
     if (!newVal || isLive2dInitialized.value) return;
 
-    await live2dManager.initViewer();
+    await live2dManager.initialize(800, 800);
     await live2dManager.initializeLive2dModelInfoRecord();
     // await live2dManager.loadAllModels();
     await store.actions.LIVE2D_INITIALIZED({ isLive2dInitialized: true });

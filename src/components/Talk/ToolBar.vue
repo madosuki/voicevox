@@ -30,7 +30,7 @@ import { ToolbarButtonTagType } from "@/type/preload";
 import { getToolbarButtonName } from "@/store/utility";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { handlePossiblyNotMorphableError } from "@/store/audioGenerate";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 type ButtonContent = {
   text: string;
@@ -46,7 +46,7 @@ const store = useStore();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<{
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);

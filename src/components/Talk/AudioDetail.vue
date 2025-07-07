@@ -91,11 +91,11 @@ import { EngineManifest } from "@/openapi/models";
 import { useShiftKey, useAltKey } from "@/composables/useModifierKey";
 import { useHotkeyManager } from "@/plugins/hotkeyPlugin";
 import { handlePossiblyNotMorphableError } from "@/store/audioGenerate";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 const props = defineProps<{
   activeAudioKey: AudioKey;
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const store = useStore();

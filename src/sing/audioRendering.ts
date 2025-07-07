@@ -1,4 +1,4 @@
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 import {
   noteNumberToFrequency,
   decibelToLinear,
@@ -138,7 +138,7 @@ export class Transport {
   private startTime = 0;
   private schedulers = new Map<Sequence, EventScheduler>();
 
-  private live2dManager: Live2dManager | undefined = undefined;
+  private live2dManager: Live2dManagerForV | undefined = undefined;
 
   get state() {
     return this._state;
@@ -273,7 +273,7 @@ export class Transport {
   /**
    * 再生を開始します。すでに再生中の場合は何も行いません。
    */
-  start(live2dManager?: Live2dManager) {
+  start(live2dManager?: Live2dManagerForV) {
     if (this._state === "started") return;
     const contextTime = this.audioContext.currentTime;
 
@@ -436,7 +436,7 @@ class AudioEventScheduler implements EventScheduler {
    * 指定された位置までスケジューリングを行います。
    * @param untilTime どこまでスケジューリングを行うかを表す位置
    */
-  schedule(untilTime: number, live2dManager?: Live2dManager) {
+  schedule(untilTime: number, live2dManager?: Live2dManagerForV) {
     if (!this.isStarted) {
       throw new Error("Not started.");
     }
@@ -625,7 +625,7 @@ class AudioPlayerVoice {
    * @param contextTime 再生を行う時刻（コンテキスト時刻）
    * @param offset オフセット（秒）
    */
-  play(contextTime: number, offset: number, live2dManager?: Live2dManager) {
+  play(contextTime: number, offset: number, live2dManager?: Live2dManagerForV) {
     if (this.stopContextTime != undefined) {
       throw new Error("Already started.");
     }
@@ -726,7 +726,7 @@ export class AudioPlayer {
     contextTime: number,
     offset: number,
     buffer: AudioBuffer,
-    live2dManager?: Live2dManager,
+    live2dManager?: Live2dManagerForV,
   ) {
     const voice = new AudioPlayerVoice(this.audioContext, buffer);
     this.voices = this.voices.filter((value) => {

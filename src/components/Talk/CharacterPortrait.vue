@@ -1,5 +1,5 @@
 <template>
-  <div class="character-portrait-wrapper">
+  <div ref="portraitSize" class="character-portrait-wrapper">
     <span class="character-name">{{ characterName }}</span>
     <span v-if="isMultipleEngine" class="character-engine-name">{{
       engineName
@@ -38,16 +38,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, Ref, nextTick } from "vue";
+import {
+  computed,
+  watch,
+  ref,
+  Ref,
+  nextTick,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import { useStore } from "@/store";
 import { AudioKey, EditorType, SpeakerId } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 const store = useStore();
 
 const props = defineProps<{
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const characterInfo = computed(() => {
@@ -400,6 +408,36 @@ watch([isLoadedLive2dCore, characterName, activeAudioKeyComputed], async () => {
   if (isLive2dPortrait.value) {
     await showLive2d();
   }
+});
+
+const portraitSize: Ref<Element | undefined> = ref();
+const portraitWidth = ref(0);
+const portraitHeight = ref(0);
+let resizeObserver: ResizeObserver | undefined = undefined;
+onMounted(() => {
+  if (portraitSize.value != undefined) {
+    const rect = portraitSize.value.getBoundingClientRect();
+    portraitWidth.value = rect.width;
+    portraitHeight.value = rect.height;
+
+    resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        portraitWidth.value = width;
+        portraitHeight.value = height;
+      }
+    });
+    resizeObserver.observe(portraitSize.value);
+  }
+});
+onUnmounted(() => {
+  if (resizeObserver != undefined) {
+    resizeObserver.disconnect();
+  }
+});
+watch([portraitWidth, portraitHeight], async () => {
+  props.live2dManager.resizeCanvas(portraitWidth.value, portraitHeight.value);
+  await props.live2dManager.initViewer();
 });
 </script>
 

@@ -158,12 +158,12 @@ import {
 } from "@/domain/hotkeyAction";
 import { isElectron } from "@/helpers/platform";
 import { dragAndDropReorder } from "@/helpers/reorderHelper";
-import { Live2dManager } from "@/live2d/live2d";
+import { Live2dManagerForV } from "@/live2d/live2d";
 
 const props = defineProps<{
   isEnginesReady: boolean;
   isProjectFileLoaded: boolean | "waiting";
-  live2dManager: Live2dManager;
+  live2dManager: Live2dManagerForV;
 }>();
 
 const store = useStore();
