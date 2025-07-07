@@ -436,8 +436,10 @@ onUnmounted(() => {
   }
 });
 watch([portraitWidth, portraitHeight], async () => {
-  props.live2dManager.resizeCanvas(portraitWidth.value, portraitHeight.value);
-  await props.live2dManager.initViewer();
+  await props.live2dManager.resizeViewer(
+    portraitWidth.value,
+    portraitHeight.value,
+  );
 });
 </script>
 

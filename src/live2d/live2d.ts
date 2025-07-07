@@ -48,10 +48,6 @@ export class Live2dManagerForV {
     this.onTouchMovedEventListenerFunction = this.onTouchMoved.bind(this);
   }
 
-  public resizeCanvas(width: number, height: number) {
-    this.canvas.width = width;
-    this.canvas.height = height;
-  }
   getCanvas() {
     return this.canvas;
   }
@@ -254,8 +250,7 @@ export class Live2dManagerForV {
     }
   }
 
-  // for resize canvas
-  async initViewer() {
+  async resizeViewer(width: number, height: number) {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
     const Live2dViewer = live2dTypes.Live2dViewer;
@@ -266,7 +261,7 @@ export class Live2dManagerForV {
       this.live2dViewer = new Live2dViewer(this.canvas, width, height);
       */
       if (this.live2dViewer instanceof Live2dViewer) {
-        this.live2dViewer.initialize();
+        this.live2dViewer.resize(width, height);
       }
       // this.isLoadedLive2dCore = true;
       // await this.store.dispatch("LIVE2D_CORE_LOADED", { isLive2dLoaded: true });
