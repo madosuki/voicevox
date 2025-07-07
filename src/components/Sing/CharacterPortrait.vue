@@ -112,7 +112,7 @@ const changeLive2dModel = async (): Promise<boolean> => {
 };
 
 const showLive2d = async () => {
-  console.log("show live2d");
+  window.backend.logInfo("show live2d in song editor");
   if (!live2dViewer.value || !isLive2dInitialized.value) return;
   if (!isLive2dPortrait.value) {
     return;
