@@ -25,7 +25,7 @@ async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
 
 export class Live2dManagerForV {
   private canvas: HTMLCanvasElement;
-  private live2dmanager: unknown;
+  private live2dManager: unknown;
   private live2dViewer: unknown;
   private isLoadedLive2dCore: boolean;
   private isFailedLive2dLoadCore: boolean;
@@ -34,7 +34,7 @@ export class Live2dManagerForV {
   private isClicked: boolean;
 
   constructor(canvas: HTMLCanvasElement, store: Store) {
-    this.live2dmanager = undefined;
+    this.live2dManager = undefined;
     this.live2dViewer = undefined;
     this.isLoadedLive2dCore = false;
     this.store = store;
@@ -236,11 +236,10 @@ export class Live2dManagerForV {
       // const allocationMemory = 1024 * 1024 * 32;
       this.live2dViewer = new Live2dViewer(this.canvas, width, height);
       if (this.live2dViewer instanceof Live2dViewer) {
-        this.live2dViewer.initialize();
-        this.live2dmanager = new Live2dManager(this.live2dViewer);
+        this.live2dManager = new Live2dManager(this.live2dViewer);
 
-        if (this.live2dmanager instanceof Live2dManager) {
-          this.live2dmanager.initialize();
+        if (this.live2dManager instanceof Live2dManager) {
+          this.live2dManager.initialize();
         }
       }
       this.isLoadedLive2dCore = true;
@@ -624,14 +623,14 @@ export class Live2dManagerForV {
   async releaseLive2d() {
     const live2dTypes = await this.getTypes();
     if (live2dTypes == undefined) return;
-    const Live2dViewer = live2dTypes.Live2dViewer;
+    const Live2dManager = live2dTypes.Live2dManager;
 
     if (
-      this.live2dViewer != undefined &&
-      this.live2dViewer instanceof Live2dViewer
+      this.live2dManager != undefined &&
+      this.live2dManager instanceof Live2dManager
     ) {
       this.live2dSceneRenderer.cancelRender();
-      this.live2dViewer.release();
+      this.live2dManager.release();
       await this.store.dispatch("LIVE2D_INITIALIZED", {
         isLive2dInitialized: false,
       });
