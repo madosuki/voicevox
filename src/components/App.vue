@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { watch, onMounted, ref, computed, toRaw, watchEffect } from "vue";
 import { useGtm } from "@gtm-support/vue-gtm";
-import { TooltipProvider } from "radix-vue";
+import { TooltipProvider } from "reka-ui";
 import { useCommonMenuBarData } from "./Menu/MenuBar/useCommonMenuBarData";
 import { Live2dManagerForV } from "@/live2d/live2d";
 import TalkEditor from "@/components/Talk/TalkEditor.vue";
