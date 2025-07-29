@@ -2009,7 +2009,7 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
       });
 
       // レンダリング中の場合は、レンダリングの中断を要求して終了する
-      if (state.nowRendering) {
+      if (songTrackRenderer.isRendering) {
         songTrackRenderer.requestRenderingInterruption();
         return;
       }
@@ -2051,7 +2051,9 @@ export const singingStore = createPartialStore<SingingStoreTypes>({
         mutations.SET_STOP_RENDERING_REQUESTED({
           stopRenderingRequested: true,
         });
-        songTrackRenderer.requestRenderingInterruption();
+        if (songTrackRenderer.isRendering) {
+          songTrackRenderer.requestRenderingInterruption();
+        }
 
         await createPromiseThatResolvesWhen(() => !state.nowRendering);
 
