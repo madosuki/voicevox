@@ -172,7 +172,7 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
 
   GET_POLICY_TEXT: {
     async action() {
-      return await window.backend.getTextAsset("PrivacyPolicy");
+      return await window.backend.getTextAsset("Policy");
     },
   },
 
