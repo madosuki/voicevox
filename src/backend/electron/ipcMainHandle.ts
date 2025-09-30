@@ -190,11 +190,19 @@ export function getIpcMainHandle(params: {
       _,
       { title, defaultPath, name, extensions },
     ) => {
+      const xdgCurrentDesktop = process.env.ORIGINAL_XDG_CURRENT_DESKTOP;
+      const modifyDefaultPath =
+        defaultPath != undefined &&
+        process.platform === "linux" &&
+        xdgCurrentDesktop != undefined &&
+        xdgCurrentDesktop === "KDE"
+          ? `~/${defaultPath}`
+          : defaultPath;
       const result = await retryShowSaveDialogWhileSafeDir(
         () =>
           windowManager.showSaveDialog({
             title,
-            defaultPath,
+            defaultPath: modifyDefaultPath,
             filters: [{ name, extensions }],
             properties: ["createDirectory"],
           }),
