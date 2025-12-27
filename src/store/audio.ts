@@ -392,7 +392,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           instance.invoke("speakers")({}),
           state.engineManifests[engineId].supportedFeatures.sing
             ? await instance.invoke("singers")({})
-            : [],
+            : Promise.resolve([]),
         ]).catch((error) => {
           window.backend.logError(error, `Failed to get Speakers.`);
           throw error;
