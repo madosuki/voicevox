@@ -897,6 +897,7 @@ export type SingingStoreState = {
   phraseQueries: Map<EditorFrameAudioQueryKey, EditorFrameAudioQuery>;
   phraseSingingPitches: Map<SingingPitchKey, SingingPitch>;
   phraseSingingVolumes: Map<SingingVolumeKey, SingingVolume>;
+  phraseSequenceIds: Map<PhraseKey, SequenceId>;
   sequencerZoomX: number;
   sequencerZoomY: number;
   sequencerSnapType: number;
@@ -1163,6 +1164,14 @@ export type SingingStoreTypes = {
 
   DELETE_PHRASE_SINGING_VOLUME: {
     mutation: { singingVolumeKey: SingingVolumeKey };
+  };
+
+  SET_PHRASE_SEQUENCE_ID: {
+    mutation: { phraseKey: PhraseKey; sequenceId: SequenceId };
+  };
+
+  DELETE_PHRASE_SEQUENCE_ID: {
+    mutation: { phraseKey: PhraseKey };
   };
 
   SELECTED_TRACK: {
@@ -1484,6 +1493,10 @@ export type SingingStoreTypes = {
       fileType: ExportSongProjectFileType;
       fileTypeLabel: string;
     }): Promise<SaveResultObject>;
+  };
+
+  GET_SEQUENCE_AUDIO_BUFFER: {
+    getter(sequenceId: SequenceId): AudioBuffer | undefined;
   };
 };
 

@@ -1,9 +1,6 @@
 import { Live2dManagerForV } from "@/live2d/live2d";
-import {
-  noteNumberToFrequency,
-  decibelToLinear,
-  linearToDecibel,
-} from "@/sing/domain";
+import { decibelToLinear, linearToDecibel } from "@/sing/audio";
+import { noteNumberToFrequency } from "@/sing/music";
 import { Timer } from "@/sing/utility";
 
 const convertToInt16WavFileData = (
