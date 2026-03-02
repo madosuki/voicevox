@@ -38,17 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  watch,
-  ref,
-  Ref,
-  nextTick,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { computed, watch, ref, nextTick, onMounted, onUnmounted } from "vue";
+import type { Ref } from "vue";
 import { useStore } from "@/store";
-import type { AudioKey } from "@/type/preload";
+import type { AudioKey, SpeakerId, EditorType } from "@/type/preload";
 import { formatCharacterStyleName } from "@/store/utility";
 import { Live2dManagerForV } from "@/live2d/live2d";
 

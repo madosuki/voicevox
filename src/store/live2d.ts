@@ -1,6 +1,6 @@
-import { Live2dStoreState, Live2dStoreTypes } from "./type";
+import type { Live2dStoreState, Live2dStoreTypes } from "./type";
 import { createPartialStore } from "./vuex";
-import { AudioKey, Live2dModelInfo, SpeakerId } from "@/type/preload";
+import type { AudioKey, Live2dModelInfo, SpeakerId } from "@/type/preload";
 
 export const live2dStoreState: Live2dStoreState = {
   latestUseCharacterKeyInTalk: "",

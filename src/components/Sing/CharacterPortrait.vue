@@ -17,7 +17,7 @@
 import { computed, ref, watch, nextTick } from "vue";
 import { useStore } from "@/store";
 import { formatCharacterStyleName } from "@/store/utility";
-import { EditorType } from "@/type/preload";
+import type { EditorType } from "@/type/preload";
 import { Live2dManagerForV } from "@/live2d/live2d";
 
 const props = defineProps<{

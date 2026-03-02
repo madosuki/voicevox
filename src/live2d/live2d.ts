@@ -1,7 +1,7 @@
 import { Live2dSceneRenderer } from "./renderer";
 import { sceneOfPortrait } from "./scenes/portrait";
-import { Live2dModelInfo, SpeakerId } from "@/type/preload";
-import { Store } from "@/store";
+import type { Live2dModelInfo, SpeakerId } from "@/type/preload";
+import type { Store } from "@/store";
 
 async function readFileFunction(filePath: string): Promise<ArrayBuffer> {
   if (import.meta.env.VITE_TARGET === "electron") {
