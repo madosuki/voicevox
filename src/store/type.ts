@@ -1,7 +1,7 @@
-import { Patch } from "immer";
+import type { Patch } from "immer";
 import { z } from "zod";
-import { Project as UfProject } from "@sevenc-nanashi/utaformatix-ts";
-import {
+import type { Project as UfProject } from "@sevenc-nanashi/utaformatix-ts";
+import type {
   MutationTree,
   MutationsBase,
   GettersBase,
@@ -11,8 +11,8 @@ import {
   Store,
   DotNotationActionContext,
 } from "./vuex";
-import { createCommandMutationTree, PayloadRecipeTree } from "./command";
-import {
+import { createCommandMutationTree, type PayloadRecipeTree } from "./command";
+import type {
   AccentPhrase,
   AudioQuery,
   EngineManifest,
@@ -22,7 +22,7 @@ import {
   FrameAudioQuery,
   Note as NoteForRequestToEngine,
 } from "@/openapi";
-import {
+import type {
   CharacterInfo,
   DefaultStyleId,
   AcceptRetrieveTelemetryStatus,
@@ -56,16 +56,16 @@ import {
   TrackId,
   Live2dModelInfo,
 } from "@/type/preload";
-import { IEngineConnectorFactory } from "@/infrastructures/EngineConnector";
-import {
+import type { IEngineConnectorFactory } from "@/infrastructures/EngineConnector";
+import type {
   TextDialogResult,
   NotifyAndNotShowAgainButtonOption,
   MessageDialogOptions,
   ConfirmDialogOptions,
   WarningDialogOptions,
 } from "@/components/Dialog/Dialog";
-import { HotkeySettingType } from "@/domain/hotkeyAction";
-import {
+import type { HotkeySettingType } from "@/domain/hotkeyAction";
+import type {
   MultiFileProjectFormat,
   SingleFileProjectFormat,
 } from "@/sing/utaformatixProject/utils";
@@ -76,8 +76,8 @@ import type {
   TimeSignature,
   Track,
 } from "@/domain/project/type";
-import { LatestProjectType } from "@/infrastructures/projectFile/type";
-import { WavFormat } from "@/helpers/fileDataGenerator";
+import type { LatestProjectType } from "@/infrastructures/projectFile/type";
+import type { WavFormat } from "@/helpers/fileDataGenerator";
 import { Live2dManagerForV } from "@/live2d/live2d";
 
 /**
@@ -859,7 +859,7 @@ export type PitchEditTool = "DRAW" | "ERASE";
 export type VolumeEditTool = "DRAW" | "ERASE";
 // パラメータパネル内の編集対象
 // NOTE: 音素タイミング編集などを追加する際に拡張
-export type ParameterPanelEditTarget = "VOLUME";
+export type ParameterPanelEditTarget = "PHONEME_TIMING" | "VOLUME";
 
 // プロジェクトの書き出しに使えるファイル形式
 export type ExportSongProjectFileType =
@@ -1614,6 +1614,10 @@ export type SingingCommandStoreTypes = {
     action(payload: { trackId: TrackId }): void;
   };
 
+  COMMAND_DUPLICATE_TRACK: {
+    action(payload: { trackId: TrackId }): void;
+  };
+
   COMMAND_SET_TRACK_NAME: {
     mutation: { trackId: TrackId; name: string };
     action(payload: { trackId: TrackId; name: string }): void;
@@ -2310,11 +2314,12 @@ export type UiStoreTypes = {
   CHECK_EDITED_AND_NOT_SAVE: {
     action(
       obj:
-        | { closeOrReload: "close" }
+        | { nextAction: "close" }
         | {
-            closeOrReload: "reload";
+            nextAction: "reload";
             isMultiEngineOffMode?: boolean;
-          },
+          }
+        | { nextAction: "switchToWelcome" },
     ): Promise<void>;
   };
 
