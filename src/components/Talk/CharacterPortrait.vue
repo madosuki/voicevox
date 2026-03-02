@@ -48,11 +48,7 @@ import {
   onUnmounted,
 } from "vue";
 import { useStore } from "@/store";
-<<<<<<< HEAD
-import { AudioKey, EditorType, SpeakerId } from "@/type/preload";
-=======
 import type { AudioKey } from "@/type/preload";
->>>>>>> 4ccfcfbe3fe35e06488d1bd6580fb5316e4a0674
 import { formatCharacterStyleName } from "@/store/utility";
 import { Live2dManagerForV } from "@/live2d/live2d";
 

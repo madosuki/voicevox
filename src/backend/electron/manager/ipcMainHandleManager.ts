@@ -392,6 +392,15 @@ class IpcMainHandleManager {
           return failure(a.code, a);
         }
       },
+
+      GET_LIVE2D_ASSETS_PATH: () => {
+        // Live2d assets directory
+        const live2dAssetsPath = path.join(
+          app.getPath("userData"),
+          "live2d_assets",
+        );
+        return live2dAssetsPath;
+      },
     };
   }
 
