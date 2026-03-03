@@ -1877,7 +1877,11 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
             if (currentAudioKey !== audioKey) {
               mutations.SET_AUDIO_PLAY_START_POINT({ startPoint: undefined });
             }
-            return actions.PLAY_AUDIO_BLOB({ audioBlob, audioKey, live2dManager });
+            return actions.PLAY_AUDIO_BLOB({
+              audioBlob,
+              audioKey,
+              live2dManager,
+            });
           },
         });
         player.addEventListener("playstart", (e) => {
