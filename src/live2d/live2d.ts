@@ -631,7 +631,7 @@ export class Live2dManagerForV {
     ) {
       this.live2dSceneRenderer.cancelRender();
       this.live2dManager.release();
-      await this.store.dispatch("LIVE2D_INITIALIZED", {
+      await this.store.actions.LIVE2D_INITIALIZED({
         isLive2dInitialized: false,
       });
     }
