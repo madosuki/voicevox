@@ -1,4 +1,23 @@
-import { Live2dViewer } from "live2dmanager";
+async function getTypes(isFailedLive2dLoadCore: boolean) {
+  if (isFailedLive2dLoadCore) return undefined;
+
+  const { Live2dViewer } = await import("live2dmanager")
+    .then((m) => {
+      return {
+        Live2dViewer: m.Live2dViewer,
+      };
+    })
+    .catch((e) => {
+      window.backend.logError(e);
+      return {
+        Live2dViewer: undefined,
+      };
+    });
+
+  if (Live2dViewer == undefined) return undefined;
+
+  return { Live2dViewer };
+}
 
 export class Live2dSceneRenderer {
   private requestAnimationFrameHandler: number;
@@ -6,10 +25,21 @@ export class Live2dSceneRenderer {
     this.requestAnimationFrameHandler = 0;
   }
 
-  public render(
-    live2dViewer: Live2dViewer,
-    scene: (live2dViewer: Live2dViewer) => void,
-  ): void {
+  async render(
+    live2dViewer: unknown,
+    scene: (
+      live2dViewer: unknown,
+      isFailedLive2dLoadCore: boolean,
+    ) => Promise<void>,
+    isFailedLive2dLoadCore: boolean,
+  ): Promise<void> {
+    const live2dTypes = await getTypes(isFailedLive2dLoadCore);
+    if (live2dTypes == undefined) return;
+    const Live2dViewer = live2dTypes.Live2dViewer;
+    if (Live2dViewer == undefined || !(live2dViewer instanceof Live2dViewer)) {
+      return;
+    }
+
     const fps = 1000 / 60;
     let lastTime = performance.now();
     let isFirst = true;
@@ -47,7 +77,9 @@ export class Live2dSceneRenderer {
       }
       gl.flush();
 
-      scene(live2dViewer);
+      scene(live2dViewer, isFailedLive2dLoadCore).catch((e) =>
+        window.backend.logError(e),
+      );
       // requestAnimationFrameはunsigned long型な0以外の値なrequest idを返す． ref: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame#return_value
       this.requestAnimationFrameHandler = requestAnimationFrame(loop);
     };

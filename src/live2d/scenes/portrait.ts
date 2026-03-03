@@ -1,17 +1,60 @@
-import {
-  Live2dModel,
-  Live2dMotionSyncModel,
-  Live2dViewer,
-} from "live2dmanager";
+async function getTypes(isFailedLive2dLoadCore: boolean) {
+  if (isFailedLive2dLoadCore) return undefined;
 
-export function sceneOfPortrait(live2dViewer: Live2dViewer) {
+  const { Live2dManager, Live2dViewer, Live2dModel, Live2dMotionSyncModel } =
+    await import("live2dmanager")
+      .then((m) => {
+        return {
+          Live2dManager: m.Live2dManager,
+          Live2dViewer: m.Live2dViewer,
+          Live2dModel: m.Live2dModel,
+          Live2dMotionSyncModel: m.Live2dMotionSyncModel,
+        };
+      })
+      .catch((e) => {
+        window.backend.logError(e);
+        return {
+          Live2dManager: undefined,
+          Live2dViewer: undefined,
+          Live2dModel: undefined,
+          Live2dMotionSyncModel: undefined,
+        };
+      });
+
+  if (
+    Live2dManager == undefined ||
+    Live2dViewer == undefined ||
+    Live2dModel == undefined ||
+    Live2dMotionSyncModel == undefined
+  )
+    return undefined;
+
+  return { Live2dManager, Live2dViewer, Live2dModel, Live2dMotionSyncModel };
+}
+
+export async function sceneOfPortrait(
+  live2dViewer: unknown,
+  isFailedLive2dLoadCore: boolean,
+) {
+  const live2dTypes = await getTypes(isFailedLive2dLoadCore);
+  if (live2dTypes == undefined) return;
+  const Live2dViewer = live2dTypes.Live2dViewer;
+  const Live2dModel = live2dTypes.Live2dModel;
+  const Live2dMotionSyncModel = live2dTypes.Live2dMotionSyncModel;
+  if (
+    Live2dViewer == undefined ||
+    !(live2dViewer instanceof Live2dViewer) ||
+    Live2dModel == undefined ||
+    Live2dMotionSyncModel == undefined
+  ) {
+    return;
+  }
   const { width, height } = live2dViewer.canvas;
 
   const projection = live2dViewer.getNewMatrix44();
 
   const key = live2dViewer.getCurrentModelKey();
-  const model: Live2dModel | Live2dMotionSyncModel | undefined =
-    live2dViewer.getModelFromKey(key);
+  const model = live2dViewer.getModelFromKey(key);
   if (model == undefined) {
     // window.backend.logError("target Live2D Model is undefined");
     return;

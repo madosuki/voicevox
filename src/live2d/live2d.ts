@@ -185,10 +185,12 @@ export class Live2dManagerForV {
     if (live2dTypes == undefined) return;
     const Live2dViewer = live2dTypes.Live2dViewer;
     if (this.live2dViewer instanceof Live2dViewer) {
-      this.live2dSceneRenderer.render(this.live2dViewer, sceneOfPortrait);
+      await this.live2dSceneRenderer.render(
+        this.live2dViewer,
+        sceneOfPortrait,
+        this.isFailedLive2dLoadCore,
+      );
     }
-
-    return;
   }
 
   async getTypes() {
